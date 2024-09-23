@@ -14,21 +14,11 @@
 
 export default function convertBytesToHuman(bytes) {
     if (typeof bytes !== "number" || bytes < 0 || bytes % 1 !== 0) return false;
+    if (bytes === 0) return "0 B";
 
-    if (bytes < 1024) return bytes + " B";
+    const values = ["B", "KB", "MB", "GB", "TB", "PB", "EB"];
+    const e = Math.floor(Math.log(bytes) / Math.log(1024));
+    const ans = bytes / Math.pow(1024, e);
 
-    const inBytes = {
-        TB: 1099511627776,
-        GB: 1073741824,
-        MB: 1048576,
-        KB: 1024,
-    };
-
-    for (let key in inBytes) {
-        if (bytes === inBytes[key]) {
-            return bytes / inBytes[key] + ` ${key}`;
-        } else if (bytes >= inBytes[key]) {
-            return (bytes / inBytes[key]).toFixed(2) + ` ${key}`;
-        }
-    }
+    return Number.isInteger(ans) ? ans + " " + values[e] : ans.toFixed(2) + " " + values[e];
 }
