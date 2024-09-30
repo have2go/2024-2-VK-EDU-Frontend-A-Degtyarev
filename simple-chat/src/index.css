@@ -37,8 +37,8 @@ input {
     border: none;
     outline: none;
     width: 100%;
-    background-color: #4b4453;
-    padding: 0 22px;
+    background-color: #4b44539d;
+    padding: 0 60px 0 20px;
     min-height: 58px;
     border-radius: 0 0 22px 22px;
     color: rgb(231, 224, 236);
@@ -51,6 +51,7 @@ input::placeholder {
 }
 
 .container {
+    position: relative;
     display: flex;
     flex-direction: column;
     background-color: #211e27;
@@ -58,6 +59,13 @@ input::placeholder {
     max-width: 400px;
     height: 80%;
     padding: 0 14px 14px;
+}
+
+.test-button {
+    position: absolute;
+    top: 0;
+    right: -120px;
+    width: 100px;
 }
 
 .info {
@@ -127,8 +135,8 @@ input::placeholder {
     height: 100%;
     display: flex;
     flex-direction: column-reverse;
-    align-items: end;
-    padding: 10px;
+    /* align-items: end; */
+    padding: 15px 10px;
     border-radius: 28px 28px 0 0;
     overflow-y: auto;
     overflow-x: hidden;
@@ -144,6 +152,13 @@ input::placeholder {
     gap: 2px;
     position: relative;
     max-width: 90%;
+    align-self: end;
+}
+
+.message_incoming {
+    align-self: flex-start;
+    background-color: #4b4453;
+    color: white;
 }
 
 .message::before {
@@ -159,6 +174,11 @@ input::placeholder {
     z-index: 1;
 }
 
+.message_incoming::before {
+    background-color: #4b4453;
+    left: -8px;
+}
+
 .message::after {
     content: "";
     position: absolute;
@@ -169,6 +189,11 @@ input::placeholder {
     border-radius: 0 100%;
     background: #151219;
     z-index: 3;
+}
+
+.message_incoming::after {
+    left: -10px;
+    border-radius: 100% 0;
 }
 
 .message__text {
@@ -196,6 +221,59 @@ input::placeholder {
     color: black;
     font-size: 18px;
     z-index: 2;
+}
+
+.message__arrows_incoming {
+    color: white;
+    font-size: 18px;
+    z-index: 2;
+}
+
+.form__input-container {
+    position: relative;
+}
+
+.form__send-btn {
+    position: absolute;
+    top: 12px;
+    right: 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    border: none;
+    outline: none;
+}
+
+.tooltip {
+    position: relative;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 160px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+    bottom: -17px;
+    left: -80%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 11px;
+}
+
+.message_incoming .tooltip .tooltiptext {
+    margin: 0 0 0 30px;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
 }
 
 /* width */
