@@ -1,2 +1,4 @@
 # dependencies
-/node_modules
+/dz1/node_modules
+/simple-chat/node_modules
+/simple-chat/build
