@@ -1,0 +1,116 @@
+.header {
+    display: flex;
+    align-items: center;
+    height: 50px;
+    padding: 15px 20px;
+    box-sizing: content-box;
+}
+
+.header__search {
+    margin-left: auto;
+}
+
+.header__title {
+    margin-left: 40px;
+    color: #cfbff5;
+    font-size: 24px;
+    font-weight: 400;
+}
+
+.chatlist {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background-color: #151219;
+    height: 100%;
+    border-radius: 28px 28px 0 0;
+    padding: 16px;
+    overflow-y: scroll;
+    box-sizing: border-box;
+}
+
+.chatlist__element {
+    display: flex;
+    background-color: #4b4453;
+    padding: 10px 16px;
+    border-radius: 28px;
+}
+
+.chatlist__avatar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    height: 60px;
+    background-color: #151219;
+    border-radius: 9999px;
+}
+
+.chatlist__text-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 10px;
+    gap: 3px;
+    max-width: calc(100% - 140px);
+}
+
+.chatlist__name {
+    font-size: 18px;
+    color: #cfbff5;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.chatlist__last-msg {
+    color: white;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chatlist__info {
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: end;
+    min-width: 40px;
+    gap: 5px;
+}
+
+.chatlist__sent-at {
+    color: white;
+    font-size: 12px;
+}
+
+.chatlist__link {
+    text-decoration: none;
+}
+
+.chatlist__quantity {
+    color: black;
+    background-color: #cfbff5;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 9999px;
+    font-size: 12px;
+    padding: 0 5px;
+    gap: 2px;
+}
+
+.new-msg {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    cursor: pointer;
+    background-color: #cfbff5;
+    border: none;
+    outline: none;
+    height: 60px;
+    width: 60px;
+    border-radius: 16px;
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, .7);
+}

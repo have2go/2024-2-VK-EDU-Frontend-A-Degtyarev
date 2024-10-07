@@ -1,4 +1,5 @@
-import "./index.css";
+import '../globals.css'
+import "./chat.css";
 
 const form = document.querySelector("form");
 const input = document.querySelector(".form__input");

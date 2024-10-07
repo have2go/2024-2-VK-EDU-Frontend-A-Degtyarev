@@ -1,6 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
-
-html {
+/* html {
     box-sizing: border-box;
 }
 
@@ -27,11 +25,11 @@ body {
 
 p {
     margin: 0;
-}
-
+} */
+/* 
 input[type="submit"] {
     visibility: collapse;
-}
+} */
 
 input {
     border: none;
@@ -50,14 +48,7 @@ input::placeholder {
     opacity: 0.5;
 }
 
-.container {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    background-color: #211e27;
-    width: 100%;
-    max-width: 400px;
-    height: 80%;
+.container_chat {
     padding: 0 14px 14px;
 }
 
@@ -125,7 +116,6 @@ input::placeholder {
     display: flex;
     flex-direction: column;
     justify-content: end;
-    border: 1px solid rgba(25, 25, 25, 0.32);
     background-color: #151219;
     border-radius: 28px;
     padding: 0;
@@ -212,11 +202,6 @@ input::placeholder {
     z-index: 5;
 }
 
-.material-symbols-outlined {
-    color: #cfbff5;
-    font-size: 32px;
-}
-
 .message__arrows {
     color: black;
     font-size: 18px;
@@ -276,13 +261,3 @@ input::placeholder {
     opacity: 1;
 }
 
-/* width */
-::-webkit-scrollbar {
-    width: 10px;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-    background: #cfbff5;
-    border-radius: 10px;
-}
