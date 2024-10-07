@@ -1,12 +1,12 @@
-import "../globals.css";
-import "./chatList.css";
+import "./globals.css";
+import "./index.css";
 
 const USER = "Алексей Дегтярев";
 
 const chatList = document.querySelector(".chatlist");
 
 const elementTemplate = obj =>
-    `<a class="chatlist__link" href="/chat/chat.html">
+    `<a class="chatlist__link" href="/chat.html">
         <div class="chatlist__element">
             <div class="chatlist__avatar">
                 <span class="material-symbols-outlined" style="font-size: 50px">

@@ -13,8 +13,8 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 module.exports = {
     context: SRC_PATH,
     entry: {
-        chat: "./chat/chat.js",
-        chatList: "./chatList/chatList.js",
+        chat: "./chat.js",
+        chatList: "./index.js",
     },
     output: {
         path: BUILD_PATH,
@@ -44,13 +44,13 @@ module.exports = {
     },
     plugins: [
         new HTMLWebpackPlugin({
-            filename: "chat/chat.html",
-            template: "./chat/chat.html",
+            filename: "chat.html",
+            template: "./chat.html",
             chunks: ["chat"],
         }),
         new HTMLWebpackPlugin({
-            filename: "chatList/chatList.html",
-            template: "./chatList/chatList.html",
+            filename: "index.html",
+            template: "./index.html",
             chunks: ["chatList"],
         }),
         ...(!isDevelopment
@@ -67,6 +67,6 @@ module.exports = {
         },
         hot: true,
         port: 3000,
-        open: "/chatList/chatList.html",
+        open: "index.html",
     },
 };
