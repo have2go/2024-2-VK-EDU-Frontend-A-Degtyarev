@@ -21,7 +21,17 @@
                 <span class="material-symbols-outlined header__search"> search </span>
             </header>
             <div class="chatlist"></div>
-            <button class="new-msg"><span class="material-symbols-outlined" style="color: #151219;"> edit </span></button>
+            <button class="new-msg">
+                <span class="material-symbols-outlined new-msg__symbol"> edit </span>
+            </button>
+            <div class="newchat">
+                <form class="newchat__form">
+                    <h3 class="newchat__title">Кому вы хотите написать?</h3>
+                    <input type="text" class="newchat__name" placeholder="Имя собеседника" required />
+                    <button class="newchat__submit-btn" type="submit">Создать чат</button>
+                    <button class="newchat__close-btn"><span class="material-symbols-outlined"> close </span></button>
+                </form>
+            </div>
         </div>
     </body>
 </html>
