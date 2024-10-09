@@ -32,6 +32,7 @@ input::placeholder {
     justify-content: space-between;
     height: 50px;
     margin: 15px 0;
+    max-width: 100%;
 }
 
 .info__user {
@@ -39,6 +40,7 @@ input::placeholder {
     align-items: center;
     gap: 10px;
     margin-left: 8px;
+    max-width: 100%;
 }
 
 .info__avatar-container {
@@ -62,6 +64,10 @@ input::placeholder {
 .info__name {
     color: #cfbff5;
     font-size: 20px;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 140px;
+    text-overflow: ellipsis;
 }
 
 .info__last-seen {

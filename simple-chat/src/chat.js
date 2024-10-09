@@ -1,31 +1,24 @@
-import './globals.css'
+import "./globals.css";
 import "./chat.css";
+import { months } from "./utils/constants";
 
 const form = document.querySelector("form");
 const input = document.querySelector(".form__input");
 const messages = document.querySelector(".messages");
 const testBtn = document.querySelector(".test-button");
+const companionName = document.querySelector(".info__name");
 
-const months = [
-    "января",
-    "февраля",
-    "марта",
-    "апреля",
-    "мая",
-    "июня",
-    "июля",
-    "августа",
-    "сентября",
-    "октября",
-    "ноября",
-    "декабря",
-];
-
-const MESSAGE_LIST_KEY = "messageArr";
+const CHAT_LIST_KEY = "chatListArr";
 const USER = "Alex";
 
-let messagesToRender = [];
+const chatId = Number(new URLSearchParams(window.location.search).get("chat_id"));
+
+let chatListArr = JSON.parse(localStorage.chatListArr);
 let newMessages = [];
+
+const curentChatIndex = chatListArr.findIndex(chat => chat.id === chatId);
+
+companionName.textContent = chatListArr[curentChatIndex].companionName;
 
 const messageTemplate = obj => {
     const creationDate = new Date(obj.createdAt);
@@ -51,20 +44,18 @@ const messageTemplate = obj => {
     `;
 };
 
-if (localStorage.messageArr) {
-    messagesToRender = JSON.parse(localStorage.getItem(MESSAGE_LIST_KEY));
-}
-
 form.addEventListener("submit", handleSubmit);
 
 testBtn.onclick = () => sendTestMessage();
+
 function sendTestMessage() {
     const date = new Date();
     newMessages.push({
         message: "Тестовое сообщение",
         createdAt: date,
-        author: "Bob",
+        author: chatListArr[curentChatIndex].companionName,
     });
+    chatListArr[curentChatIndex].quantityNew += 1;
 }
 
 function handleSubmit(event) {
@@ -75,12 +66,12 @@ function handleSubmit(event) {
 function sendMessage() {
     if (input.value) {
         const date = new Date();
-        messagesToRender.push({
+        chatListArr[curentChatIndex].messages.push({
             message: input.value,
             createdAt: date,
             author: USER,
         });
-        localStorage.setItem(MESSAGE_LIST_KEY, JSON.stringify(messagesToRender));
+        localStorage.setItem(CHAT_LIST_KEY, JSON.stringify(chatListArr));
         input.value = "";
         render();
         messages.scrollTo({
@@ -91,16 +82,21 @@ function sendMessage() {
 
 setInterval(() => {
     if (newMessages.length > 0) {
-        messagesToRender.push(...newMessages);
+        chatListArr[curentChatIndex].messages.push(...newMessages);
         newMessages = [];
-        const sortedMessages = messagesToRender.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-        localStorage.setItem(MESSAGE_LIST_KEY, JSON.stringify(sortedMessages));
+        chatListArr[curentChatIndex].messages = chatListArr[curentChatIndex].messages.sort(
+            (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+        );
+        localStorage.setItem(CHAT_LIST_KEY, JSON.stringify(chatListArr));
         render();
     }
 }, 500);
 
 function render() {
-    document.querySelector(".messages").innerHTML = messagesToRender.map(messageTemplate).reverse().join("");
+    document.querySelector(".messages").innerHTML = chatListArr[curentChatIndex].messages
+        .map(messageTemplate)
+        .reverse()
+        .join("");
 }
 
 render();

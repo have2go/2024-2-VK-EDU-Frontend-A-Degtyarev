@@ -2,7 +2,7 @@
     display: flex;
     align-items: center;
     height: 50px;
-    padding: 15px 20px;
+    padding: 15px 15px;
     box-sizing: content-box;
 }
 
@@ -24,15 +24,14 @@
     background-color: #151219;
     height: 100%;
     border-radius: 28px 28px 0 0;
-    padding: 16px;
+    padding: 12px 2px 12px 12px;
     overflow-y: scroll;
-    box-sizing: border-box;
 }
 
 .chatlist__element {
     display: flex;
     background-color: #4b4453;
-    padding: 10px 16px;
+    padding: 10px;
     border-radius: 28px;
 }
 
@@ -66,6 +65,7 @@
 .chatlist__last-msg {
     color: white;
     overflow: hidden;
+    white-space: nowrap;
     text-overflow: ellipsis;
 }
 
@@ -97,7 +97,7 @@
     align-items: center;
     border-radius: 9999px;
     font-size: 12px;
-    padding: 0 5px;
+    padding: 0 9px;
     gap: 2px;
 }
 
@@ -113,4 +113,75 @@
     width: 60px;
     border-radius: 16px;
     box-shadow: 0px 6px 15px rgba(0, 0, 0, .7);
+}
+
+.new-msg__symbol {
+    color: #151219;
+}
+
+.newchat {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, .7);
+    opacity: 0;
+    z-index: -1;
+    transition: all .2s ease-in;
+}
+
+.newchat_active {
+    opacity: 1;
+    z-index: 9999;
+}
+
+.newchat__form {
+    position: relative;
+    background-color: #4b4453;
+    display: flex;
+    flex-direction: column;
+    border-radius: 28px;
+    padding: 18px;
+    gap: 20px;
+}
+
+.newchat__title {
+    color: #cfbff5;
+    margin: 0;
+}
+
+.newchat__name {
+    outline: none;
+    border: none;
+    border-radius: 10px;
+    padding: 0 8px;
+    height: 30px;
+    background-color: rgb(239, 235, 248)
+}
+
+.newchat__name::placeholder {
+    color: #4b445394;
+}
+
+.newchat__submit-btn {
+    height: 40px;
+    background-color: #cfbff5;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    color: #4b4453;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.newchat__close-btn {
+    position: absolute;
+    top: -25px;
+    right: -25px;
+    padding: 0;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
 }
