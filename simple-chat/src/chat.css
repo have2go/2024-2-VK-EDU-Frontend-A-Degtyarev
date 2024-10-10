@@ -1,0 +1,236 @@
+input {
+    border: none;
+    outline: none;
+    width: 100%;
+    background-color: #4b44539d;
+    padding: 0 60px 0 20px;
+    min-height: 58px;
+    border-radius: 0 0 22px 22px;
+    color: rgb(231, 224, 236);
+    font-size: 16px;
+}
+
+input::placeholder {
+    color: rgb(231, 224, 236);
+    opacity: 0.5;
+}
+
+.container_chat {
+    padding: 0 14px 14px;
+}
+
+.test-button {
+    position: absolute;
+    top: 0;
+    right: -120px;
+    width: 100px;
+}
+
+.info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 50px;
+    margin: 15px 0;
+    max-width: 100%;
+}
+
+.info__user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 8px;
+    max-width: 100%;
+}
+
+.info__avatar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    background-color: #151219;
+    border-radius: 9999px;
+    margin-left: 12px;
+}
+
+.info__name-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    height: 50px;
+}
+
+.info__name {
+    color: #cfbff5;
+    font-size: 20px;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 140px;
+    text-overflow: ellipsis;
+}
+
+.info__last-seen {
+    color: #cfbff5;
+    opacity: 0.7;
+    font-size: 12px;
+}
+
+.info__utils-container {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    gap: 20px;
+}
+
+.form {
+    width: 100%;
+    height: calc(100% - 80px);
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    background-color: #151219;
+    border-radius: 28px;
+    padding: 0;
+}
+
+.messages {
+    height: 100%;
+    display: flex;
+    flex-direction: column-reverse;
+    /* align-items: end; */
+    padding: 15px 10px;
+    border-radius: 28px 28px 0 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.message {
+    border-radius: 16px;
+    margin: 4px 0;
+    padding: 6px 10px 0;
+    background-color: #cfbff5;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: relative;
+    max-width: 90%;
+    align-self: end;
+}
+
+.message_incoming {
+    align-self: flex-start;
+    background-color: #4b4453;
+    color: white;
+}
+
+.message::before {
+    position: absolute;
+    content: "";
+    display: block;
+    background-color: #cfbff5;
+    width: 25px;
+    height: 14px;
+    bottom: 0;
+    right: -8px;
+    border-radius: 100% 100% 0 0 / 100% 100% 0 0;
+    z-index: 1;
+}
+
+.message_incoming::before {
+    background-color: #4b4453;
+    left: -8px;
+}
+
+.message::after {
+    content: "";
+    position: absolute;
+    right: -10px;
+    bottom: 0;
+    width: 10px;
+    height: 16px;
+    border-radius: 0 100%;
+    background: #151219;
+    z-index: 3;
+}
+
+.message_incoming::after {
+    left: -10px;
+    border-radius: 100% 0;
+}
+
+.message__text {
+    overflow-wrap: break-word;
+}
+
+.message__info {
+    align-self: flex-end;
+    display: flex;
+    gap: 3px;
+}
+
+.message__time {
+    font-size: 12px;
+    text-align: end;
+    z-index: 5;
+}
+
+.message__arrows {
+    color: black;
+    font-size: 18px;
+    z-index: 2;
+}
+
+.message__arrows_incoming {
+    color: white;
+    font-size: 18px;
+    z-index: 2;
+}
+
+.form__input-container {
+    position: relative;
+}
+
+.form__send-btn {
+    position: absolute;
+    top: 12px;
+    right: 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    border: none;
+    outline: none;
+}
+
+.tooltip {
+    position: relative;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 160px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+    bottom: -17px;
+    left: -80%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 11px;
+}
+
+.message_incoming .tooltip .tooltiptext {
+    margin: 0 0 0 30px;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
