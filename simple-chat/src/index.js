@@ -1,7 +1,7 @@
 import "./globals.css";
 import "./index.css";
-import { elementTemplate, sampleUsers } from "./utils/constants";
-
+import { elementTemplate } from "./utils/constants";
+// localStorage.clear()
 const chatList = document.querySelector(".chatlist");
 const newChatModal = document.querySelector(".newchat");
 const openModalBtn = document.querySelector(".new-msg");
@@ -9,12 +9,12 @@ const closeModalBtn = document.querySelector(".newchat__close-btn");
 const submitCreationBtn = document.querySelector(".newchat__submit-btn");
 const nameInput = document.querySelector(".newchat__name");
 
-let chatListArr = JSON.parse(localStorage.getItem("chatListArr")) || sampleUsers;
+let chatListArr = JSON.parse(localStorage.getItem("chatListArr")) || [];
 
 if (!JSON.parse(localStorage.getItem("chatListArr"))) localStorage.setItem("chatListArr", JSON.stringify(chatListArr));
 
 // если создали новый чат, но ничего в нём не написали - при возвращении к списку чатов удалим его
-if (chatListArr.at(-1).messages.length === 0) {
+if (chatListArr.messages && chatListArr.at(-1).messages.length === 0) {
     chatListArr.pop();
     localStorage.setItem("chatListArr", JSON.stringify(chatListArr));
 }
@@ -67,6 +67,7 @@ function generateUniqueId() {
 }
 
 function render() {
+    // chatListArr.pop();
     chatList.innerHTML = chatListArr.map(elementTemplate).join("");
 }
 

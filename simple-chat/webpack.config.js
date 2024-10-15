@@ -15,6 +15,7 @@ module.exports = {
     entry: {
         chat: "./chat.js",
         chatList: "./index.js",
+        404: "./404.js",
     },
     output: {
         path: BUILD_PATH,
@@ -40,6 +41,18 @@ module.exports = {
                 include: SRC_PATH,
                 use: [isDevelopment ? "style-loader" : MiniCSSExtractPlugin.loader, "css-loader"],
             },
+            {
+                test: /\.svg$/, // Правило для обработки SVG
+                use: [
+                    {
+                        loader: "url-loader", // Обработчик для SVG
+                        options: {
+                            limit: 8192, // Если размер меньше 8kb, SVG будет встроен
+                            name: "[name].[hash:8].[ext]", // Формат имени выходного файла
+                        },
+                    },
+                ],
+            },
         ],
     },
     plugins: [
@@ -52,6 +65,11 @@ module.exports = {
             filename: "index.html",
             template: "./index.html",
             chunks: ["chatList"],
+        }),
+        new HTMLWebpackPlugin({
+            filename: "404.html",
+            template: "./404.html",
+            chunks: ["404"],
         }),
         ...(!isDevelopment
             ? [
