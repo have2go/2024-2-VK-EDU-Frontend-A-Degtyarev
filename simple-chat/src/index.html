@@ -14,20 +14,22 @@
         <title>Список чатов</title>
     </head>
     <body>
-        <div class="container container_chatlist">
+        <div class="container">
             <header class="header">
-                <span class="material-symbols-outlined"> menu </span>
+                <span class="material-symbols-outlined header__menu"> menu </span>
                 <h1 class="header__title">Список чатов</h1>
                 <span class="material-symbols-outlined header__search"> search </span>
+                <button class="new-msg">
+                    <span class="material-symbols-outlined new-msg__symbol"> edit </span>
+                </button>
             </header>
-            <div class="chatlist"></div>
-            <button class="new-msg">
-                <span class="material-symbols-outlined new-msg__symbol"> edit </span>
-            </button>
+            <div class="content content_chatlist">
+                <div class="chatlist"></div>
+            </div>
             <div class="newchat">
                 <form class="newchat__form">
                     <h3 class="newchat__title">Кому вы хотите написать?</h3>
-                    <input type="text" class="newchat__name" placeholder="Имя собеседника" required />
+                    <input type="text" class="newchat__name" placeholder="Имя собеседника" required autocomplete="off" />
                     <button class="newchat__submit-btn" type="submit">Создать чат</button>
                     <button class="newchat__close-btn"><span class="material-symbols-outlined"> close </span></button>
                 </form>

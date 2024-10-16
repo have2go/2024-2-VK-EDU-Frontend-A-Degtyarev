@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html>
-    <head lang="ru">
+<html lang="ru">
+    <head>
         <meta charset="UTF-8" />
         <link
             rel="stylesheet"
@@ -14,11 +14,10 @@
         <title>Чат</title>
     </head>
     <body>
-        <div class="container container_chat">
-            <button class="test-button">Имитация отправки сообщения от собеседника</button>
+        <div class="container">
             <div class="info">
                 <div class="info__user">
-                    <a href="./index.html"><span class="material-symbols-outlined"> arrow_back </span></a>
+                    <a href="./index.html"><span class="material-symbols-outlined info__back"> arrow_back </span></a>
                     <div class="info__avatar-container">
                         <span class="material-symbols-outlined"> account_circle </span>
                     </div>
@@ -28,17 +27,26 @@
                     </div>
                 </div>
                 <div class="info__utils-container">
-                    <span class="material-symbols-outlined"> search </span>
-                    <span class="material-symbols-outlined"> more_vert </span>
+                    <span class="material-symbols-outlined info__search"> search </span>
+                    <span class="material-symbols-outlined info__more"> more_vert </span>
                 </div>
             </div>
-            <form class="form" action="/">
-                <div class="messages"></div>
-                <div class="form__input-container">
-                    <input class="form__input" name="message-text" placeholder="Введите сообщение" type="text" />
-                    <button class="form__send-btn"><span class="material-symbols-outlined"> send </span></button>
-                </div>
-            </form>
+            <div class="content content_chat">
+                <button class="test-button">Имитация отправки сообщения от собеседника</button>
+                <form class="form" action="/">
+                    <div class="messages"></div>
+                    <div class="form__input-container">
+                        <input
+                            class="form__input"
+                            name="message-text"
+                            placeholder="Введите сообщение"
+                            type="text"
+                            autocomplete="off"
+                        />
+                        <button class="form__send-btn"><span class="material-symbols-outlined"> send </span></button>
+                    </div>
+                </form>
+            </div>
         </div>
     </body>
 </html>
