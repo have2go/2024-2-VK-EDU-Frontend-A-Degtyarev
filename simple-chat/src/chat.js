@@ -72,10 +72,10 @@ function handleSubmit(event) {
 }
 
 function sendMessage() {
-    if (input.value) {
+    if (input.value.trim()) {
         const date = new Date();
         chatListArr[curentChatIndex].messages.push({
-            message: input.value,
+            message: input.value.trim(),
             createdAt: date,
             author: USER,
         });

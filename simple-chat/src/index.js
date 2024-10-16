@@ -14,7 +14,7 @@ let chatListArr = JSON.parse(localStorage.getItem("chatListArr")) || [];
 if (!JSON.parse(localStorage.getItem("chatListArr"))) localStorage.setItem("chatListArr", JSON.stringify(chatListArr));
 
 // если создали новый чат, но ничего в нём не написали - при возвращении к списку чатов удалим его
-if (chatListArr.messages && chatListArr.at(-1).messages.length === 0) {
+if (chatListArr.length > 0 && chatListArr.at(-1).messages.length === 0) {
     chatListArr.pop();
     localStorage.setItem("chatListArr", JSON.stringify(chatListArr));
 }
@@ -67,7 +67,6 @@ function generateUniqueId() {
 }
 
 function render() {
-    // chatListArr.pop();
     chatList.innerHTML = chatListArr.map(elementTemplate).join("");
 }
 

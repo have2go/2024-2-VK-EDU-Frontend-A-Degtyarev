@@ -50,7 +50,6 @@ input::placeholder {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-left: 8px;
     max-width: 100%;
 }
 
@@ -58,8 +57,8 @@ input::placeholder {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
     background-color: #151219;
     border-radius: 9999px;
 }
@@ -91,6 +90,22 @@ input::placeholder {
     align-items: center;
     height: 100%;
     margin-left: 5px;
+}
+
+.info__back,
+.info__search,
+.info__more {
+    padding: 6px;
+    border-radius: 100%;
+    transition: all 0.2s ease;
+    font-size: 28px;
+}
+
+.info__back:hover,
+.info__search:hover,
+.info__more:hover {
+    background-color: #1512195b;
+    cursor: pointer;
 }
 
 .form {
@@ -255,6 +270,23 @@ input::placeholder {
     opacity: 1;
 }
 
+@media screen and (min-width: 380px) {
+    .info__user {
+        margin-left: 8px;
+    }
+
+    .info__back,
+    .info__search,
+    .info__more {
+        font-size: 32px;
+    }
+
+    .info__avatar-container {
+        width: 50px;
+        height: 50px;
+    }
+}
+
 @media screen and (min-width: 768px) {
     .content_chat {
         padding: 0 0 14px;
@@ -268,10 +300,4 @@ input::placeholder {
         max-width: 768px;
         padding: 0;
     }
-}
-
-@media screen and (min-width: 1024px) {
-}
-
-@media screen and (min-width: 1280px) {
 }

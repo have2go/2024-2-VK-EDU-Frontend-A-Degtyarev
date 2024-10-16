@@ -37,6 +37,19 @@
     margin-left: auto;
 }
 
+.header__search,
+.header__menu {
+    padding: 6px;
+    border-radius: 100%;
+    transition: all 0.2s ease;
+}
+
+.header__search:hover,
+.header__menu:hover {
+    background: #1512195b;
+    cursor: pointer;
+}
+
 .header__title {
     margin-left: 40px;
     color: #cfbff5;
@@ -51,7 +64,7 @@
     gap: 8px;
     padding: 12px 12px 12px 12px;
     background-color: #151219;
-    min-height: 100%;
+    flex-grow: 1;
 }
 
 .chatlist__element {
