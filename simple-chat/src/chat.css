@@ -15,15 +15,25 @@ input::placeholder {
     opacity: 0.5;
 }
 
-.container_chat {
+.content_chat {
     padding: 0 14px 14px;
+    margin: 0;
+    max-height: calc(100% - 80px);
 }
 
 .test-button {
     position: absolute;
-    top: 0;
-    right: -120px;
-    width: 100px;
+    top: 10px;
+    left: 25px;
+    border-radius: 22px;
+    font-size: 12px;
+    width: 200px;
+    height: 50px;
+    cursor: pointer;
+    border: none;
+    background-color: greenyellow;
+    box-shadow: 0 0 10px black;
+    z-index: 9999;
 }
 
 .info {
@@ -32,26 +42,24 @@ input::placeholder {
     justify-content: space-between;
     height: 50px;
     margin: 15px 0;
-    max-width: 100%;
+    width: 100vw;
+    padding: 0 15px;
 }
 
 .info__user {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-left: 8px;
-    max-width: 100%;
+    width: 100%;
 }
 
 .info__avatar-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
     background-color: #151219;
     border-radius: 9999px;
-    margin-left: 12px;
 }
 
 .info__name-container {
@@ -59,6 +67,10 @@ input::placeholder {
     flex-direction: column;
     justify-content: end;
     height: 50px;
+    min-width: 70px;
+    width: 100%;
+    margin-left: 10px;
+    max-width: calc(100vw - 210px);
 }
 
 .info__name {
@@ -66,7 +78,6 @@ input::placeholder {
     font-size: 20px;
     overflow: hidden;
     white-space: nowrap;
-    max-width: 140px;
     text-overflow: ellipsis;
 }
 
@@ -80,12 +91,27 @@ input::placeholder {
     display: flex;
     align-items: center;
     height: 100%;
-    gap: 20px;
+}
+
+.info__back,
+.info__search,
+.info__more {
+    padding: 6px;
+    border-radius: 100%;
+    transition: all 0.2s ease;
+    font-size: 28px;
+}
+
+.info__back:hover,
+.info__search:hover,
+.info__more:hover {
+    background-color: #1512195b;
+    cursor: pointer;
 }
 
 .form {
     width: 100%;
-    height: calc(100% - 80px);
+    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: end;
@@ -193,15 +219,26 @@ input::placeholder {
 
 .form__send-btn {
     position: absolute;
-    top: 12px;
-    right: 10px;
+    top: 5px;
+    right: 16px;
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: transparent;
+    padding: 8px 6px;
+    border-radius: 100%;
+    font-size: 12px;
     border: none;
     outline: none;
+    transition: all 0.2s ease;
+}
+.form__send-btn::before {
+    content: "\00a0";
+}
+
+.form__send-btn:hover {
+    background: #1512195b;
 }
 
 .tooltip {
@@ -234,3 +271,42 @@ input::placeholder {
     opacity: 1;
 }
 
+@media screen and (min-width: 380px) {
+    .info__user {
+        margin-left: 8px;
+    }
+
+    .info__back,
+    .info__search,
+    .info__more {
+        font-size: 32px;
+    }
+
+    .info__avatar-container {
+        width: 50px;
+        height: 50px;
+    }
+
+    .info__name-container {
+        max-width: calc(100vw - 230px);
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .content_chat {
+        padding: 0 0 14px;
+    }
+
+    .test-button {
+        left: 12px;
+    }
+
+    .info {
+        max-width: 768px;
+        padding: 0;
+    }
+
+    .info__name-container {
+        max-width: 520px;
+    }
+}

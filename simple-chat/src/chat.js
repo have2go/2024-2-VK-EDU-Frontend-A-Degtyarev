@@ -16,6 +16,14 @@ const chatId = Number(new URLSearchParams(window.location.search).get("chat_id")
 let chatListArr = JSON.parse(localStorage.chatListArr);
 let newMessages = [];
 
+document.addEventListener("DOMContentLoaded", function () {
+    if (window.location.pathname.includes("chat.html")) {
+        if (!chatId || !chatListArr.some(chat => chat.id === chatId)) {
+            window.location.href = "./404.html";
+        }
+    }
+});
+
 const curentChatIndex = chatListArr.findIndex(chat => chat.id === chatId);
 
 companionName.textContent = chatListArr[curentChatIndex].companionName;
@@ -64,10 +72,10 @@ function handleSubmit(event) {
 }
 
 function sendMessage() {
-    if (input.value) {
+    if (input.value.trim()) {
         const date = new Date();
         chatListArr[curentChatIndex].messages.push({
-            message: input.value,
+            message: input.value.trim(),
             createdAt: date,
             author: USER,
         });
@@ -100,4 +108,3 @@ function render() {
 }
 
 render();
-// localStorage.clear();
