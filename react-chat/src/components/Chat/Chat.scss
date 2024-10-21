@@ -1,0 +1,414 @@
+@use "../../variables.scss" as *;
+
+.bg {
+    position: fixed;
+    bottom: 10px;
+    width: 100%;
+    max-width: 768px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    border-radius: 28px;
+    padding: 0;
+    z-index: -1;
+    transition: all 0.2s ease;
+}
+
+.content_chat {
+    padding: 0 14px 14px;
+    margin: 0;
+    max-height: calc(100% - 80px);
+}
+
+.test-button {
+    position: absolute;
+    top: calc(160px - 100vh);
+    left: 12px;
+    border-radius: 22px;
+    font-size: 12px;
+    width: 200px;
+    height: 50px;
+    cursor: pointer;
+    border: none;
+    background-color: greenyellow;
+    box-shadow: 0 0 10px black;
+    z-index: 9999;
+}
+
+.form {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    max-width: 768px;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    border-radius: 28px;
+    padding: 0;
+    z-index: 2;
+
+    &__input {
+        border: none;
+        outline: none;
+        width: 100%;
+        padding: 0 60px 0 20px;
+        min-height: 58px;
+        border-radius: 0 0 22px 22px;
+        font-size: 16px;
+
+        &::placeholder {
+            opacity: 0.5;
+        }
+    }
+
+    &__bottom-spacer {
+        height: 10px;
+        width: 100%;
+        position: relative;
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: -28px;
+            left: 0;
+            width: 28px;
+            height: 28px;
+            background-repeat: no-repeat;
+            transform: rotate(-90deg);
+        }
+
+        &::after {
+            content: "";
+            position: absolute;
+            top: -28px;
+            right: 0;
+            width: 28px;
+            height: 28px;
+            background-repeat: no-repeat;
+            transform: rotate(90deg);
+        }
+    }
+
+    &__input-container {
+        position: relative;
+    }
+
+    &__send-btn {
+        position: absolute;
+        top: 8px;
+        right: 16px;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: transparent;
+        padding: 8px 6px;
+        border-radius: 100%;
+        font-size: 12px;
+        border: none;
+        outline: none;
+        transition: all 0.2s ease;
+
+        &::before {
+            content: "\00a0";
+        }
+
+        &:hover {
+            background: #1512195b;
+        }
+    }
+}
+
+.messages {
+    display: flex;
+    flex-direction: column-reverse;
+    padding: 0px 10px 80px;
+    border-radius: 28px 28px 0 0;
+    margin-top: 90px;
+    width: 100%;
+    max-width: 768px;
+    z-index: 1;
+    flex-grow: 1;
+}
+
+.message {
+    border-radius: 16px;
+    margin: 4px 0;
+    padding: 6px 10px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: relative;
+    max-width: 90%;
+    align-self: end;
+    animation: slideUp 0.3s ease-in-out;
+
+    &::before {
+        position: absolute;
+        content: "";
+        display: block;
+        width: 25px;
+        height: 14px;
+        bottom: 0;
+        right: -8px;
+        border-radius: 100% 100% 0 0 / 100% 100% 0 0;
+        z-index: 1;
+    }
+
+    &::after {
+        content: "";
+        position: absolute;
+        right: -10px;
+        bottom: 0;
+        width: 10px;
+        height: 16px;
+        border-radius: 0 100%;
+        z-index: 3;
+    }
+
+    &_incoming {
+        align-self: flex-start;
+
+        .tooltip .tooltiptext {
+            margin: 0 0 0 30px;
+        }
+
+        &::before {
+            left: -8px;
+        }
+
+        &::after {
+            left: -10px;
+            border-radius: 100% 0;
+        }
+    }
+
+    &__text {
+        overflow-wrap: break-word;
+    }
+
+    &__info {
+        align-self: flex-end;
+        display: flex;
+        gap: 3px;
+    }
+
+    &__time {
+        font-size: 12px;
+        text-align: end;
+        z-index: 5;
+    }
+
+    &__arrows {
+        font-size: 18px;
+        z-index: 2;
+
+        &_incoming {
+            font-size: 18px;
+            z-index: 2;
+        }
+    }
+}
+
+.tooltip {
+    position: relative;
+
+    .tooltiptext {
+        visibility: hidden;
+        width: 160px;
+        background-color: #555;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        position: absolute;
+        z-index: 1;
+        bottom: -17px;
+        left: -80%;
+        margin-left: -60px;
+        opacity: 0;
+        transition: opacity 0.3s;
+        font-size: 11px;
+    }
+
+    &:hover {
+        .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    }
+}
+
+@media screen and (min-width: 380px) {
+    .info__user {
+        margin-left: 8px;
+    }
+
+    .info__back,
+    .info__search,
+    .info__more {
+        font-size: 32px;
+    }
+
+    .info__avatar-container {
+        width: 50px;
+        height: 50px;
+    }
+
+    .info__name-container {
+        max-width: calc(100vw - 230px);
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .content_chat {
+        padding: 0 0 14px;
+    }
+
+    .info {
+        max-width: 768px;
+        padding: 0;
+    }
+
+    .info__name-container {
+        max-width: 520px;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dark {
+    .bg {
+        background-color: $contentarea-dark;
+    }
+
+    .form {
+        &__input {
+            color: $text-dark;
+            background-color: $secondary-dark;
+
+            &::placeholder {
+                color: $text-dark;
+            }
+        }
+
+        &__bottom-spacer {
+            background-color: $mainbg-dark;
+
+            &::before {
+                background-image: url(../../assets/border-left.svg);
+            }
+
+            &::after {
+                background-image: url(../../assets/border-right.svg);
+            }
+        }
+
+        &__send-btn {
+            color: $primary-dark;
+        }
+        
+    }
+
+    .message {
+        background-color: $primary-dark;
+        color: $contentarea-dark;
+
+        &::before {
+            background-color: $primary-dark;
+        }
+
+        &::after {
+            background-color: $contentarea-dark;
+        }
+
+        &_incoming {
+            background-color: $secondary-dark;
+            color: $text-dark;
+
+            &::before {
+                background-color: $secondary-dark;
+            }
+        }
+
+        &__arrows {
+            color: $contentarea-dark;
+    
+            &_incoming {
+                color:  $text-dark;
+            }
+        }
+    }
+}
+
+.light {
+    .bg {
+        background-color: $contentarea-light;
+    }
+
+    .form {
+        &__input {
+            color: $text-light;
+            background-color: $secondary-light;
+
+            &::placeholder {
+                color: $text-light;
+            }
+        }
+
+        &__bottom-spacer {
+            background-color: $mainbg-light;
+
+            &::before {
+                background-image: url(../../assets/border-left-light.svg);
+            }
+
+            &::after {
+                background-image: url(../../assets/border-right-light.svg);
+            }
+        }
+
+        &__send-btn {
+            color: $primary-light;
+        }
+    }
+
+    .message {
+        background-color: $primary-light;
+        color: $contentarea-light;
+
+        &::before {
+            background-color: $primary-light;
+        }
+
+        &::after {
+            background-color: $contentarea-light;
+        }
+
+        &_incoming {
+            background-color: $secondary-light;
+            color: $text-light;
+
+            &::before {
+                background-color: $secondary-light;
+            }
+        }
+
+        &__arrows {
+            color: $contentarea-light;
+    
+            &_incoming {
+                color:  $text-light;
+            }
+        }
+    }
+}

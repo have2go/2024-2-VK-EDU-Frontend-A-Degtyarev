@@ -1,0 +1,113 @@
+@use "../../variables.scss" as *;
+
+.newchat {
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    opacity: 0;
+    z-index: -1;
+    transition: all 0.2s ease-in;
+
+    &_active {
+        opacity: 1;
+        z-index: 9999;
+    }
+
+    &__form {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        border-radius: 28px;
+        padding: 18px;
+        gap: 20px;
+    }
+
+    &__title {
+        margin: 0;
+    }
+
+    &__name {
+        outline: none;
+        border: none;
+        border-radius: 10px;
+        padding: 0 8px;
+        height: 30px;
+        background-color: rgb(239, 235, 248);
+
+        &::placeholder {
+            color: #4b445394;
+        }
+    }
+
+    &__submit-btn {
+        height: 40px;
+        border-radius: 12px;
+        border: none;
+        cursor: pointer;
+
+        font-weight: 500;
+        font-size: 16px;
+        transition: all 0.2s ease;
+
+        &:hover {
+            transform: scale(1.02);
+        }
+    }
+
+    &__close-btn {
+        position: absolute;
+        top: -25px;
+        right: -25px;
+        padding: 0;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+            transform: scale(1.1);
+        }
+    }
+}
+
+.dark {
+    .newchat {
+        color: $primary-dark;
+
+        &__form {
+            background-color: $secondary-dark;
+        }
+
+        &__submit-btn {
+            background-color: $primary-dark;
+            color: $contentarea-dark;
+        }
+
+        &__close-btn {
+            color: $primary-dark;
+        }
+    }
+}
+
+.light {
+    .newchat {
+        color: $primary-light;
+
+        &__form {
+            background-color: $secondary-light;
+        }
+
+        &__submit-btn {
+            background-color: $primary-light;
+            color: $contentarea-light;
+        }
+
+        &__close-btn {
+            color: $contentarea-light;
+        }
+    }
+}

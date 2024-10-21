@@ -1,0 +1,44 @@
+@use "../../variables.scss" as *;
+
+.chatstatus {
+    &__quantity {
+        color: black;
+        height: 25px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 9999px;
+        font-size: 12px;
+        padding: 0 9px;
+        gap: 2px;
+    }
+
+}
+
+.dark {
+    .chatstatus {
+        &__quantity {
+            color: $contentarea-dark;
+            background-color: $primary-dark;
+        }
+    
+        &__icon {
+            color: $primary-dark;
+            background: none;
+        }
+    }
+}
+
+.light {
+    .chatstatus {
+        &__quantity {
+            color: $contentarea-light;
+            background-color: $primary-light;
+        }
+    
+        &__icon {
+            color: $primary-light;
+            background: none;
+        }
+    }
+}

@@ -1,0 +1,264 @@
+@use "../../variables.scss" as *;
+
+.header {
+    position: fixed;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80px;
+    width: 100vw;
+    padding: 15px;
+    z-index: 5;
+
+    &::before {
+        content: "";
+        position: absolute;
+        bottom: -28px;
+        left: 0;
+        width: 28px;
+        height: 28px;
+        background-repeat: no-repeat;
+    }
+
+    &::after {
+        content: "";
+        position: absolute;
+        bottom: -28px;
+        right: 0;
+        width: 28px;
+        height: 28px;
+        background-repeat: no-repeat;
+    }
+
+    &__search {
+        margin-left: auto;
+    }
+
+    &__search,
+    &__menu {
+        padding: 6px;
+        border-radius: 100%;
+        transition: all 0.2s ease;
+        font-size: 32px;
+
+        &:hover {
+            background: #1512195b;
+            cursor: pointer;
+        }
+    }
+
+    &__title {
+        margin-left: 20px;
+        font-size: 24px;
+        font-weight: 400;
+    }
+
+    &__user {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        margin-left: 10px;
+    }
+
+    &__avatar-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 45px;
+        height: 45px;
+        border-radius: 9999px;
+    }
+
+    &__name-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: end;
+        height: 50px;
+        min-width: 70px;
+        width: 100%;
+        margin-left: 10px;
+        max-width: calc(100vw - 220px);
+    }
+
+    &__name {
+        font-size: 20px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    &__last-seen {
+        opacity: 0.7;
+        font-size: 12px;
+    }
+
+    &__utils-container {
+        display: flex;
+        align-items: center;
+        height: 100%;
+    }
+
+    &__back-btn {
+        padding: 0;
+        border-radius: 100%;
+        border: none;
+        background-color: transparent;
+    }
+
+    &__back,
+    &__search,
+    &__more {
+        padding: 6px;
+        border-radius: 100%;
+        transition: all 0.2s ease;
+        font-size: 28px;
+
+        &:hover {
+            background-color: #1512195b;
+            cursor: pointer;
+        }
+    }
+
+    @media screen and (min-width: 380px) {
+        &__user {
+            margin-left: 8px;
+        }
+
+        &__back,
+        &__search,
+        &__more {
+            font-size: 32px;
+        }
+
+        &__avatar-container {
+            width: 50px;
+            height: 50px;
+        }
+
+        &__name-container {
+            max-width: calc(100vw - 230px);
+        }
+
+        &__title {
+            margin-left: 40px;
+        }
+    }
+
+    @media screen and (min-width: 768px) {
+        max-width: 768px;
+        padding: 15px;
+
+        &__name-container {
+            max-width: 520px;
+        }
+    }
+}
+
+.new-msg {
+    position: absolute;
+    right: 20px;
+    bottom: calc(-100vh + 100px);
+    cursor: pointer;
+    border: none;
+    outline: none;
+    height: 60px;
+    width: 60px;
+    border-radius: 16px;
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.7);
+    z-index: 5;
+    transition: all 0.2s ease;
+
+    &:hover {
+        transform: scale(1.06);
+    }
+
+    &__symbol {
+        font-size: 32px;
+    }
+
+    @media screen and (min-width: 1024px) {
+        bottom: -61px;
+        right: -80px;
+    }
+
+    @media screen and (min-width: 1280px) {
+        width: 160px;
+        height: 46px;
+        bottom: -48px;
+        right: -185px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        font-size: 16px;
+
+        &::after {
+            content: "Новый чат";
+        }
+
+        &__symbol {
+            font-size: 26px;
+        }
+    }
+}
+
+.dark {
+    background-color: $mainbg-dark;
+    color: $primary-dark;
+
+    &::before {
+        background-image: url(../../assets/border-left.svg);
+    }
+
+    &::after {
+        background-image: url(../../assets/border-right.svg);
+    }
+
+    .header__avatar-container {
+        background-color: $contentarea-dark;
+    }
+
+    .header__back-btn {
+        color: $primary-dark;
+    }
+
+    .new-msg {
+        background-color: $primary-dark;
+        color: $contentarea-dark;
+
+        &__symbol {
+            color: $contentarea-dark;
+        }
+    }
+}
+
+.light {
+    background-color: $mainbg-light;
+    color: $primary-light;
+
+    &::before {
+        background-image: url(../../assets/border-left-light.svg);
+    }
+
+    &::after {
+        background-image: url(../../assets/border-right-light.svg);
+    }
+
+    .header__avatar-container {
+        background-color: $contentarea-light;
+    }
+
+    .header__back-btn {
+        color: $primary-light;
+    }
+
+    .new-msg {
+        background-color: $mainbg-light;
+        color: $primary-light;
+
+        &__symbol {
+            color: $primary-light;
+        }
+    }
+}
