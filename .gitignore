@@ -2,3 +2,5 @@
 /dz1/node_modules
 /simple-chat/node_modules
 /simple-chat/build
+/react-chat/dist
+/react-chat/node_modules
