@@ -4,7 +4,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PersonIcon from "@mui/icons-material/Person";
 import SearchIcon from "@mui/icons-material/Search";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import './HeaderChat.scss'
+import "./HeaderChat.scss";
 
 export const HeaderChat = ({ chatListArr, currentChat, setCurrentPage, setChatListArr }) => {
     const { theme } = useContext(ThemeContext);
@@ -14,6 +14,7 @@ export const HeaderChat = ({ chatListArr, currentChat, setCurrentPage, setChatLi
             const updatedArr = [...chatListArr];
             updatedArr.pop();
             setChatListArr(updatedArr);
+            localStorage.setItem("chatListArr", JSON.stringify(updatedArr));
         }
         setCurrentPage("chatlist");
     };
