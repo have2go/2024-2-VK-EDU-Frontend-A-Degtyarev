@@ -52,9 +52,10 @@ function App() {
 
     useEffect(() => {
         const savedChats = localStorage.getItem(CHAT_LIST_KEY);
-        if (savedChats) {
+        if (savedChats && savedChats !== "[]" && JSON.parse(savedChats).at(-1).messages.length !== 0) {
             setChatListArr(JSON.parse(savedChats));
         }
+        console.log(localStorage.getItem(CHAT_LIST_KEY))
     }, []);
 
     useEffect(() => {
