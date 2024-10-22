@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState, useContext } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
 import { months } from "../../utils/constants";
-import "./Chat.scss";
+import { HeaderChat } from "../../components/HeaderChat";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import SendIcon from "@mui/icons-material/Send";
+import "./Chat.scss";
 
-const Chat = ({ currentChat, chatListArr, setChatListArr }) => {
+export const Chat = ({ currentChat, chatListArr, setChatListArr, setCurrentPage }) => {
     const { theme } = useContext(ThemeContext);
-    
+
     const USER = "Alex";
     const [inputValue, setInputValue] = useState("");
     const [currentChatIndex, setCurrentChatIndex] = useState(0);
@@ -74,6 +75,12 @@ const Chat = ({ currentChat, chatListArr, setChatListArr }) => {
 
     return (
         <>
+            <HeaderChat
+                chatListArr={chatListArr}
+                currentChat={currentChat}
+                setCurrentPage={setCurrentPage}
+                setChatListArr={setChatListArr}
+            />
             <form className={`form ${theme}`} action="/">
                 <div className="form__input-container">
                     <input
@@ -131,5 +138,3 @@ const Chat = ({ currentChat, chatListArr, setChatListArr }) => {
         </>
     );
 };
-
-export default Chat;

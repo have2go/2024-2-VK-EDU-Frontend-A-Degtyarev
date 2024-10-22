@@ -1,10 +1,9 @@
 import React, { useEffect, useState, useContext } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
-
 import CloseIcon from "@mui/icons-material/Close";
 import "./NewChatModal.scss";
 
-const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) => {
+export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) => {
     const { theme } = useContext(ThemeContext);
     const [newChatName, setNewChatName] = useState("");
 
@@ -61,5 +60,3 @@ const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) => {
         </div>
     );
 };
-
-export default NewChatModal;

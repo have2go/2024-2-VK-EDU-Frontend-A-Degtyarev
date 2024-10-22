@@ -7,7 +7,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.7);
     opacity: 0;
     z-index: -1;
     transition: all 0.2s ease-in;
@@ -77,6 +76,7 @@
 .dark {
     .newchat {
         color: $primary-dark;
+        background-color: #000000b3;
 
         &__form {
             background-color: $secondary-dark;
@@ -96,6 +96,7 @@
 .light {
     .newchat {
         color: $primary-light;
+        background-color: #000000b3;
 
         &__form {
             background-color: $secondary-light;

@@ -1,14 +1,17 @@
 import React, { useContext } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
-
-import "./Chatlist.scss";
+import { NewChatModal } from "../../components/NewChatModal";
+import { ChatStatus } from "../../components/ChatStatus";
+import { HeaderChatlist } from "../../components/HeaderChatlist";
 import PersonIcon from "@mui/icons-material/Person";
-import ChatStatus from "../ChatStatus/ChatStatus";
+import "./Chatlist.scss";
 
-const Chatlist = ({ chatListArr, handleChatChoosing }) => {
-    const { theme, setTheme } = useContext(ThemeContext);
+export const Chatlist = ({ chatListArr, handleChatChoosing, handleToggleModal, isModalOpen, createNewChat }) => {
+    const { theme } = useContext(ThemeContext);
+
     return (
         <>
+            <HeaderChatlist handleToggleModal={handleToggleModal} />
             <div className={`content content_chatlist ${theme}`}>
                 <div className="chatlist">
                     {chatListArr.map(obj => {
@@ -40,8 +43,11 @@ const Chatlist = ({ chatListArr, handleChatChoosing }) => {
                     })}
                 </div>
             </div>
+            <NewChatModal
+                isModalOpen={isModalOpen}
+                handleToggleModal={handleToggleModal}
+                createNewChat={createNewChat}
+            />
         </>
     );
 };
-
-export default Chatlist;

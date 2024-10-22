@@ -1,10 +1,8 @@
 import { useEffect, useState, useContext } from "react";
 import { ThemeContext } from "./context/ThemeContext";
+import { ChatList } from "./pages/Chatlist";
+import { Chat } from "./pages/Chat";
 import "./App.scss";
-import Chatlist from "./components/Chatlist/Chatlist";
-import Chat from "./components/Chat/Chat";
-import Header from "./components/Header/Header";
-import NewChatModal from "./components/NewChatModal/NewChatModal";
 
 function App() {
     const { theme, setTheme } = useContext(ThemeContext);
@@ -79,25 +77,23 @@ function App() {
             >
                 CHANGE THEME
             </button>
-            <Header
-                chatListArr={chatListArr}
-                handleToggleModal={handleToggleModal}
-                currentPage={currentPage}
-                currentChat={currentChat}
-                setCurrentPage={setCurrentPage}
-                setChatListArr={setChatListArr}
-            />
             {currentPage === "chatlist" && (
-                <Chatlist chatListArr={chatListArr} handleChatChoosing={handleChatChoosing} />
+                <ChatList
+                    chatListArr={chatListArr}
+                    handleChatChoosing={handleChatChoosing}
+                    handleToggleModal={handleToggleModal}
+                    isModalOpen={isModalOpen}
+                    createNewChat={createNewChat}
+                />
             )}
             {currentPage === "chat" && (
-                <Chat currentChat={currentChat} chatListArr={chatListArr} setChatListArr={setChatListArr} />
+                <Chat
+                    currentChat={currentChat}
+                    chatListArr={chatListArr}
+                    setChatListArr={setChatListArr}
+                    setCurrentPage={setCurrentPage}
+                />
             )}
-            <NewChatModal
-                isModalOpen={isModalOpen}
-                handleToggleModal={handleToggleModal}
-                createNewChat={createNewChat}
-            />
         </div>
     );
 }
