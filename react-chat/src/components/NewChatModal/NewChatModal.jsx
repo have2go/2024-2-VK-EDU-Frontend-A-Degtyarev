@@ -30,7 +30,7 @@ export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) 
 
     useEffect(() => {
         window.addEventListener("keydown", handleKeyDown);
-        
+
         if (isModalOpen) {
             document.body.classList.add("modal-open");
         } else {
