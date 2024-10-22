@@ -31,6 +31,10 @@ body {
     overflow-y: auto;
     height: 100%;
     background-color: $mainbg-dark;
+
+    &.modal-open {
+        overflow: hidden;
+      }
 }
 
 p {

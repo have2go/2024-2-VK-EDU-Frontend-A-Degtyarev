@@ -30,7 +30,7 @@
         height: 28px;
         background-repeat: no-repeat;
     }
-    
+
     &__user {
         display: flex;
         align-items: center;
@@ -92,7 +92,6 @@
         font-size: 28px;
 
         &:hover {
-            background-color: #1512195b;
             cursor: pointer;
         }
     }
@@ -133,43 +132,66 @@
 }
 
 .dark {
-    background-color: $mainbg-dark;
-    color: $primary-dark;
+    .header {
+        
+        &::before {
+            background-image: url(../../assets/border-left.svg);
+        }
 
-    &::before {
-        background-image: url(../../assets/border-left.svg);
-    }
+        &::after {
+            background-image: url(../../assets/border-right.svg);
+        }
 
-    &::after {
-        background-image: url(../../assets/border-right.svg);
-    }
+        &__avatar-container {
+            background-color: $contentarea-dark;
+        }
 
-    .header__avatar-container {
-        background-color: $contentarea-dark;
-    }
+        &__back-btn {
+            color: $primary-dark;
+        }
 
-    .header__back-btn {
-        color: $primary-dark;
+        &__last-seen {
+            color: $text-dark;
+        }
+
+        &__back,
+        &__search,
+        &__more {
+            &:hover {
+                background: $contentarea-dark;
+            }
+        }
     }
 }
 
 .light {
-    background-color: $mainbg-light;
-    color: $primary-light;
+    .header {
+        &::before {
+            background-image: url(../../assets/border-left-light.svg);
+        }
 
-    &::before {
-        background-image: url(../../assets/border-left-light.svg);
-    }
+        &::after {
+            background-image: url(../../assets/border-right-light.svg);
+        }
 
-    &::after {
-        background-image: url(../../assets/border-right-light.svg);
-    }
+        &__avatar-container {
+            background-color: $contentarea-light;
+        }
 
-    .header__avatar-container {
-        background-color: $contentarea-light;
-    }
+        &__back-btn {
+            color: $primary-light;
+        }
 
-    .header__back-btn {
-        color: $primary-light;
+        &__last-seen {
+            color: $text-light;
+        }
+
+        &__back,
+        &__search,
+        &__more {
+            &:hover {
+                background: $onhover-dark;
+            }
+        }
     }
 }

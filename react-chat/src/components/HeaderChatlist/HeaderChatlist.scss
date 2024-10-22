@@ -43,7 +43,6 @@
         font-size: 32px;
 
         &:hover {
-            background: #1512195b;
             cursor: pointer;
         }
     }
@@ -80,7 +79,6 @@
     height: 60px;
     width: 60px;
     border-radius: 16px;
-    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.7);
     z-index: 5;
     transition: all 0.2s ease;
 
@@ -119,20 +117,27 @@
 }
 
 .dark {
-    background-color: $mainbg-dark;
-    color: $primary-dark;
+    .header {
+        color: $primary-dark;
 
-    &::before {
-        background-image: url(../../assets/border-left.svg);
-    }
+        &::before {
+            background-image: url(../../assets/border-left.svg);
+        }
 
-    &::after {
-        background-image: url(../../assets/border-right.svg);
+        &::after {
+            background-image: url(../../assets/border-right.svg);
+        }
+
+        &__search:hover,
+        &__menu:hover {
+            background: $contentarea-dark;
+        }
     }
 
     .new-msg {
         background-color: $primary-dark;
         color: $contentarea-dark;
+        box-shadow: 0px 0px 10px $onhover-dark;
 
         &__symbol {
             color: $contentarea-dark;
@@ -141,20 +146,27 @@
 }
 
 .light {
-    background-color: $mainbg-light;
-    color: $primary-light;
+    .header {
+        color: $primary-light;
 
-    &::before {
-        background-image: url(../../assets/border-left-light.svg);
-    }
+        &::before {
+            background-image: url(../../assets/border-left-light.svg);
+        }
 
-    &::after {
-        background-image: url(../../assets/border-right-light.svg);
+        &::after {
+            background-image: url(../../assets/border-right-light.svg);
+        }
+
+        &__search:hover,
+        &__menu:hover {
+            background: $onhover-dark;
+        }
     }
 
     .new-msg {
         background-color: $mainbg-light;
         color: $primary-light;
+        box-shadow: 0px 0px 10px $onhover-light;
 
         &__symbol {
             color: $primary-light;

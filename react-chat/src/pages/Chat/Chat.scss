@@ -379,6 +379,10 @@
 
         &__send-btn {
             color: $primary-light;
+
+            &:hover {
+                background: $onhover-dark;
+            }
         }
     }
 

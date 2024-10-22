@@ -89,8 +89,12 @@
             background-color: $secondary-dark;
 
             &:hover {
-                background-color: $primary-dark;
+                background-color: $onhover-dark;
             }
+        }
+
+        &__name {
+            color: $primary-dark;
         }
 
         &__avatar {
@@ -108,8 +112,12 @@
             background-color: $secondary-light;
 
             &:hover {
-                background-color: $contentarea-light;
+                background-color: $onhover-light;
             }
+        }
+
+        &__name {
+            color: $primary-light;
         }
 
         &__avatar {
