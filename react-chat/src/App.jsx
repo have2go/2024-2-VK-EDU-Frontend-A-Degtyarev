@@ -7,7 +7,6 @@ import "./App.scss";
 function App() {
     const { theme, setTheme } = useContext(ThemeContext);
 
-    const THEME_KEY = "theme";
     const CHAT_LIST_KEY = "chatListArr";
     const [currentPage, setCurrentPage] = useState("chatlist");
     const [chatListArr, setChatListArr] = useState([]);
@@ -53,12 +52,8 @@ function App() {
 
     useEffect(() => {
         const savedChats = localStorage.getItem(CHAT_LIST_KEY);
-        const savedTheme = localStorage.getItem(THEME_KEY);
         if (savedChats) {
             setChatListArr(JSON.parse(savedChats));
-        }
-        if (savedTheme && savedTheme !== theme) {
-            setTheme(savedTheme);
         }
     }, []);
 
@@ -67,13 +62,6 @@ function App() {
             localStorage.setItem(CHAT_LIST_KEY, JSON.stringify(chatListArr));
         }
     }, [chatListArr]);
-
-    useEffect(() => {
-        const body = document.querySelector("body");
-        if (body.className !== "") body.className = "";
-        body.classList.add(theme);
-        localStorage.setItem(THEME_KEY, theme);
-    }, [theme]);
 
     return (
         <div className={`container`}>
