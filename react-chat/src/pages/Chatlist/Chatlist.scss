@@ -1,0 +1,127 @@
+@use "../../variables.scss" as *;
+
+.material-icon {
+    height: 32px;
+    width: 32px;
+}
+
+.chatlist {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 12px 12px 12px;
+
+    flex-grow: 1;
+
+    &__element {
+        display: flex;
+        padding: 10px;
+        border-radius: 28px;
+        transition: all 0.2s ease;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+
+    &__avatar {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 60px;
+        height: 60px;
+        border-radius: 9999px;
+    }
+
+    &__photo {
+        font-size: 32px;
+    }
+
+    &__text-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-left: 10px;
+        gap: 3px;
+        max-width: calc(100% - 140px);
+    }
+
+    &__name {
+        font-size: 18px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    &__last-msg {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    &__info {
+        margin-left: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: end;
+        min-width: 40px;
+        gap: 5px;
+    }
+
+    &__sent-at {
+        font-size: 12px;
+    }
+
+    &__link {
+        text-decoration: none;
+    }
+}
+
+
+.dark {
+    .chatlist {
+        background-color: $contentarea-dark;
+        color: $text-dark;
+
+        &__element {
+            background-color: $secondary-dark;
+
+            &:hover {
+                background-color: $onhover-dark;
+            }
+        }
+
+        &__name {
+            color: $primary-dark;
+        }
+
+        &__avatar {
+            background-color: $contentarea-dark;
+        }
+    }
+}
+
+.light {
+    .chatlist {
+        background-color: $contentarea-light;
+        color: $text-light;
+
+        &__element {
+            background-color: $secondary-light;
+
+            &:hover {
+                background-color: $onhover-light;
+            }
+        }
+
+        &__name {
+            color: $primary-light;
+        }
+
+        &__avatar {
+            background-color: $contentarea-light;
+        }
+    }
+}
