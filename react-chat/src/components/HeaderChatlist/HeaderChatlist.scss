@@ -53,7 +53,7 @@
         font-weight: 400;
     }
 
-    @media screen and (min-width: 380px) {
+    @media screen and (width >= 380px) {
         &__search {
             font-size: 32px;
         }
@@ -63,55 +63,18 @@
         }
     }
 
-    @media screen and (min-width: 768px) {
+    @media screen and (width >= 768px) {
         max-width: 768px;
         padding: 15px;
     }
-}
 
-.new-msg {
-    position: absolute;
-    right: 20px;
-    bottom: calc(-100dvh + 100px);
-    cursor: pointer;
-    border: none;
-    outline: none;
-    height: 60px;
-    width: 60px;
-    border-radius: 16px;
-    z-index: 5;
-    transition: all 0.2s ease;
-
-    &:hover {
-        transform: scale(1.06);
-    }
-
-    &__symbol {
-        font-size: 32px;
-    }
-
-    @media screen and (min-width: 1024px) {
-        bottom: -61px;
-        right: -80px;
-    }
-
-    @media screen and (min-width: 1280px) {
-        width: 160px;
-        height: 46px;
-        bottom: -48px;
-        right: -185px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 12px;
-        font-size: 16px;
-
-        &::after {
-            content: "Новый чат";
+    @media screen and (width >= 1024px) {
+        &__menu {
+            display: none;
         }
 
-        &__symbol {
-            font-size: 26px;
+        &__title {
+            margin-left: 10px;
         }
     }
 }
@@ -132,15 +95,9 @@
         &__menu:hover {
             background: $contentarea-dark;
         }
-    }
 
-    .new-msg {
-        background-color: $primary-dark;
-        color: $contentarea-dark;
-        box-shadow: 0px 0px 10px $onhover-dark;
-
-        &__symbol {
-            color: $contentarea-dark;
+        &__sidebar {
+            background-color: $mainbg-dark;
         }
     }
 }
@@ -161,15 +118,9 @@
         &__menu:hover {
             background: $onhover-dark;
         }
-    }
 
-    .new-msg {
-        background-color: $mainbg-light;
-        color: $primary-light;
-        box-shadow: 0px 0px 10px $onhover-light;
-
-        &__symbol {
-            color: $primary-light;
+        &__sidebar {
+            background-color: $mainbg-light;
         }
     }
 }

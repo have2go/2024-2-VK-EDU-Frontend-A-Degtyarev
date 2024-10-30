@@ -79,7 +79,6 @@
     }
 }
 
-
 .dark {
     .chatlist {
         background-color: $contentarea-dark;
@@ -99,6 +98,10 @@
 
         &__avatar {
             background-color: $contentarea-dark;
+        }
+
+        &__link {
+            color: $text-dark;
         }
     }
 }
@@ -122,6 +125,10 @@
 
         &__avatar {
             background-color: $contentarea-light;
+        }
+
+        &__link {
+            color: $text-light; 
         }
     }
 }

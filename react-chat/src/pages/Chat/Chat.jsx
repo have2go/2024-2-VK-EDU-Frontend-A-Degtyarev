@@ -5,14 +5,25 @@ import { HeaderChat } from "../../components/HeaderChat";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import SendIcon from "@mui/icons-material/Send";
 import "./Chat.scss";
+import { useParams, useNavigate } from "react-router-dom";
 
 export const Chat = ({ currentChat, chatListArr, setChatListArr, setCurrentPage }) => {
     const { theme } = useContext(ThemeContext);
+    const navigate = useNavigate();
+    const { id } = useParams();
 
-    const USER = "Alex";
+    const chat =
+        chatListArr.length === 0
+            ? JSON.parse(localStorage.getItem("chatListArr")).find(chat => chat.id.toString() === id)
+            : chatListArr.find(chat => chat.id.toString() === id);
+
+    const USER =
+        (JSON.parse(localStorage.getItem("currentUser")) && JSON.parse(localStorage.getItem("currentUser")).username) ||
+        "Alex";
+
     const [inputValue, setInputValue] = useState("");
-    const [currentChatIndex, setCurrentChatIndex] = useState(0);
     const chatEndRef = useRef(null);
+    const inputRef = useRef(null);
 
     const handleInputChange = e => {
         setInputValue(e.target.value);
@@ -32,9 +43,11 @@ export const Chat = ({ currentChat, chatListArr, setChatListArr, setCurrentPage 
                 author: USER,
             };
             const updatedArr = [...chatListArr];
-            updatedArr[currentChatIndex].messages.push(newMessage);
+            const currChat = updatedArr.find(chat => chat.id.toString() === id);
+            currChat.messages.push(newMessage);
             setChatListArr(updatedArr);
             setInputValue("");
+            inputRef.current.focus();
             // таймер для того, чтобы последнее сообщение успело создаться
             // и прокрутило именно в самый низ
             setTimeout(() => {
@@ -53,11 +66,12 @@ export const Chat = ({ currentChat, chatListArr, setChatListArr, setCurrentPage 
         const newMessage = {
             message: "Тестовое сообщение",
             createdAt: date,
-            author: chatListArr[currentChatIndex].companionName,
+            author: chat.companionName,
         };
         const updatedArr = [...chatListArr];
-        updatedArr[currentChatIndex].messages.push(newMessage);
-        updatedArr[currentChatIndex].quantityNew += 1;
+        const currChat = updatedArr.find(chat => chat.id.toString() === id);
+        currChat.messages.push(newMessage);
+        currChat.quantityNew += 1;
         setChatListArr(updatedArr);
         setTimeout(() => {
             scrollToBottom();
@@ -69,9 +83,16 @@ export const Chat = ({ currentChat, chatListArr, setChatListArr, setCurrentPage 
     };
 
     useEffect(() => {
-        setCurrentChatIndex(chatListArr.findIndex(chat => chat.id === currentChat.id));
         scrollToBottom();
     }, []);
+
+    useEffect(() => {
+        if (!chat) {
+            navigate("/404");
+        }
+    }, [id]);
+
+    if (!chat) return null;
 
     return (
         <>
@@ -90,6 +111,7 @@ export const Chat = ({ currentChat, chatListArr, setChatListArr, setCurrentPage 
                         autoComplete="off"
                         value={inputValue}
                         onChange={handleInputChange}
+                        ref={inputRef}
                     />
                     <button className="form__send-btn icon" onClick={handleSending}>
                         <SendIcon />
@@ -102,7 +124,7 @@ export const Chat = ({ currentChat, chatListArr, setChatListArr, setCurrentPage 
             </form>
             <div className="messages">
                 <div ref={chatEndRef} />
-                {chatListArr[currentChatIndex].messages
+                {chat.messages
                     .map((obj, i) => {
                         const creationDate = new Date(obj.createdAt);
 

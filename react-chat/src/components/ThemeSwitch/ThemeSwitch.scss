@@ -1,0 +1,95 @@
+@use "../../variables.scss" as *;
+
+.theme-switch {
+    height: 35px;
+    width: 120px;
+    margin: 0 auto;
+    justify-self: end;
+    border-radius: 999px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+
+    &__cell {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: all 0.2s ease;
+
+        &:hover {
+            cursor: pointer;
+        }
+
+        &:first-of-type {
+            border-radius: 999px 0 0 999px;
+        }
+
+        &:last-of-type {
+            border-radius: 0 999px 999px 0;
+        }
+    }
+
+    @media screen and (width >= 1024px) {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+        width: 35px;
+        height: 120px;
+        margin: 0 0 0 auto;
+
+        &__cell {
+            
+    
+            &:first-of-type {
+                border-radius: 999px 999px 0 0;
+            }
+    
+            &:last-of-type {
+                border-radius: 0 0 999px 999px;
+            }
+        }
+    }
+}
+
+.dark {
+    .theme-switch {
+        border: 1px solid $primary-dark;
+
+        &__cell {
+            &:hover {
+                background-color: $secondary-dark;
+            }
+
+            &_active {
+                background-color: $primary-dark;
+                color: $contentarea-dark;
+
+                &:hover {
+                    background-color: $primary-dark;
+                }
+            }
+        }
+    }
+}
+
+.light {
+    .theme-switch {
+        border: 1px solid $primary-light;
+
+        &__cell {
+            &:hover {
+                background-color: $secondary-light;
+            }
+
+            &_active {
+                background-color: $primary-light;
+                color: $contentarea-light;
+
+                &:hover {
+                    background-color: $primary-light;
+                }
+            }
+        }
+    }
+}

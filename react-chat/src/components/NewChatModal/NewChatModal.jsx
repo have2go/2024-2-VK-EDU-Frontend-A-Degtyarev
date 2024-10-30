@@ -43,8 +43,8 @@ export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) 
     });
 
     return (
-        <div className={`${theme} newchat ${isModalOpen ? "newchat_active" : ""}`}>
-            <form className="newchat__form" onSubmit={submitCreation}>
+        <div className={`${theme} newchat ${isModalOpen ? "newchat_active" : ""}`} onClick={handleToggleModal}>
+            <form className="newchat__form" onSubmit={submitCreation} onClick={e => e.stopPropagation()}>
                 <h3 className="newchat__title">Кому вы хотите написать?</h3>
                 <input
                     type="text"
