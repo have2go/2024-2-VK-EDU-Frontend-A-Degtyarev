@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
 import CloseIcon from "@mui/icons-material/Close";
 import "./NewChatModal.scss";
@@ -6,6 +6,7 @@ import "./NewChatModal.scss";
 export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) => {
     const { theme } = useContext(ThemeContext);
     const [newChatName, setNewChatName] = useState("");
+    const inputRef = useRef(null);
 
     const submitCreation = e => {
         e.preventDefault();
@@ -33,6 +34,9 @@ export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) 
 
         if (isModalOpen) {
             document.body.classList.add("modal-open");
+            if (inputRef.current) {
+                inputRef.current.focus();
+            }
         } else {
             document.body.classList.remove("modal-open");
         }
@@ -43,7 +47,11 @@ export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) 
     });
 
     return (
-        <div className={`${theme} newchat ${isModalOpen ? "newchat_active" : ""}`} onClick={handleToggleModal}>
+        <div
+            className={`${theme} newchat ${isModalOpen ? "newchat_active" : ""}`}
+            onClick={handleToggleModal}
+            inert="true"
+        >
             <form className="newchat__form" onSubmit={submitCreation} onClick={e => e.stopPropagation()}>
                 <h3 className="newchat__title">Кому вы хотите написать?</h3>
                 <input
@@ -53,6 +61,7 @@ export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) 
                     autoComplete="off"
                     value={newChatName}
                     onChange={handleNameChange}
+                    ref={inputRef}
                 />
                 <button className="newchat__submit-btn" type="submit">
                     Создать чат

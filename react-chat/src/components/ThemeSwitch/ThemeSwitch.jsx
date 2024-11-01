@@ -10,22 +10,22 @@ export const ThemeSwitch = () => {
 
     return (
         <div className="theme-switch">
-            <div
+            <button
                 className={`theme-switch__cell ${theme === "dark" ? "theme-switch__cell_active" : ""}`}
                 onClick={() => {
                     setTheme("dark");
                 }}
             >
                 <DarkModeIcon sx={{ fontSize: 18 }} />
-            </div>
-            <div
+            </button>
+            <button
                 className={`theme-switch__cell ${theme === "light" ? "theme-switch__cell_active" : ""}`}
                 onClick={() => {
                     setTheme("light");
                 }}
             >
                 <LightModeIcon sx={{ fontSize: 18 }} />
-            </div>
+            </button>
         </div>
     );
 };

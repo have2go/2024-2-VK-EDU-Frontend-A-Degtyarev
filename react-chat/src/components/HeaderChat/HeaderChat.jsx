@@ -35,12 +35,12 @@ export const HeaderChat = ({ chatListArr }) => {
                 </div>
             </div>
             <div className="header__utils-container">
-                <span className="icon header__search">
+                <button className="icon header__search">
                     <SearchIcon sx={{ fontSize: 30 }} />
-                </span>
-                <span className="icon header__more">
+                </button>
+                <button className="icon header__more">
                     <MoreVertIcon sx={{ fontSize: 30 }} />
-                </span>
+                </button>
             </div>
         </header>
     );

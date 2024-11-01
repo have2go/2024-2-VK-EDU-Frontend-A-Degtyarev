@@ -23,6 +23,8 @@
         &:hover {
             cursor: pointer;
         }
+
+        
     }
 
     &__avatar {
@@ -76,6 +78,7 @@
 
     &__link {
         text-decoration: none;
+        border-radius: 28px;
     }
 }
 
@@ -102,6 +105,10 @@
 
         &__link {
             color: $text-dark;
+
+            &:focus-visible {
+                outline: 2px solid $primary-dark;
+            }  
         }
     }
 }
@@ -128,7 +135,11 @@
         }
 
         &__link {
-            color: $text-light; 
+            color: $text-light;
+
+            &:focus-visible {
+                outline: 2px solid $primary-light;
+            }  
         }
     }
 }

@@ -16,7 +16,9 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        transition: all 0.2s ease;
+        background-color: transparent;
+        border: none;
+        transition: background-color 0.2s ease;
 
         &:hover {
             cursor: pointer;
@@ -57,6 +59,8 @@
         border: 1px solid $primary-dark;
 
         &__cell {
+            color: $primary-dark;
+
             &:hover {
                 background-color: $secondary-dark;
             }
@@ -69,6 +73,11 @@
                     background-color: $primary-dark;
                 }
             }
+
+            &:focus-visible {
+                border: 2px solid $contentarea-dark;
+                outline: 2px solid $primary-dark;
+            }
         }
     }
 }
@@ -78,6 +87,8 @@
         border: 1px solid $primary-light;
 
         &__cell {
+            color: $primary-light;
+
             &:hover {
                 background-color: $secondary-light;
             }
@@ -89,6 +100,11 @@
                 &:hover {
                     background-color: $primary-light;
                 }
+            }
+
+            &:focus-visible {
+                border: 2px solid $contentarea-light;
+                outline: 2px solid $primary-light;
             }
         }
     }

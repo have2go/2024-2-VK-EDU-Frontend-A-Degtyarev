@@ -12,19 +12,20 @@ export const HeaderChatlist = ({ handleToggleModal }) => {
     const { theme } = useContext(ThemeContext);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-    const toggleMenu = () => {
+    const toggleMenu = e => {
+        e.preventDefault();
         setIsMenuOpen(!isMenuOpen);
     };
 
     return (
         <header className={`header ${theme}`}>
-            <span className="header__menu" onClick={toggleMenu}>
+            <button className="header__menu" onClick={toggleMenu}>
                 {isMenuOpen ? <MenuOpenIcon sx={{ fontSize: 32 }} /> : <MenuIcon sx={{ fontSize: 32 }} />}
-            </span>
+            </button>
             <h1 className="header__title">Список чатов</h1>
-            <span className="icon header__search">
+            <button className="icon header__search">
                 <SearchIcon sx={{ fontSize: 32 }} />
-            </span>
+            </button>
             <NewChatBtn handleToggleModal={handleToggleModal} />
             <Sidebar />
             <SidebarBurger toggleMenu={toggleMenu} isMenuOpen={isMenuOpen} />

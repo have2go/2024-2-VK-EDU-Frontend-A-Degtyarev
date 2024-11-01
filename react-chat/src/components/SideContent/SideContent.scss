@@ -20,7 +20,7 @@
         align-items: center;
         font-size: 16px;
         border-radius: 28px;
-        transition: all 0.2s ease;
+        transition: background-color 0.2s ease, transform 0.2s ease;
         text-decoration: none;
         padding: 0 20px;
 
@@ -87,6 +87,10 @@
             &:hover {
                 background-color: $secondary-dark;
             }
+
+            &:focus-visible {
+                outline: 2px solid $primary-dark;
+            }
         }
 
         &__avatar {
@@ -116,7 +120,7 @@
             &__profile-link {
                 &::after {
                     color: $contentarea-dark;
-                }
+                }  
             }
         }
     }
@@ -129,6 +133,10 @@
 
             &:hover {
                 background-color: $secondary-light;
+            }
+
+            &:focus-visible {
+                outline: 2px solid $primary-light;
             }
         }
 

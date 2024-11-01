@@ -2,15 +2,20 @@ import React, { useEffect, useRef, useState, useContext } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
 import { months } from "../../utils/constants";
 import { HeaderChat } from "../../components/HeaderChat";
+import { Helmet } from "react-helmet-async";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import SendIcon from "@mui/icons-material/Send";
 import "./Chat.scss";
 import { useParams, useNavigate } from "react-router-dom";
 
-export const Chat = ({ currentChat, chatListArr, setChatListArr, setCurrentPage }) => {
+export const Chat = ({ chatListArr, setChatListArr }) => {
+    const [inputValue, setInputValue] = useState("");
+    const [isEmpty, setIsempty] = useState(false);
     const { theme } = useContext(ThemeContext);
-    const navigate = useNavigate();
     const { id } = useParams();
+    const chatEndRef = useRef(null);
+    const inputRef = useRef(null);
+    const navigate = useNavigate();
 
     const chat =
         chatListArr.length === 0
@@ -20,10 +25,6 @@ export const Chat = ({ currentChat, chatListArr, setChatListArr, setCurrentPage 
     const USER =
         (JSON.parse(localStorage.getItem("currentUser")) && JSON.parse(localStorage.getItem("currentUser")).username) ||
         "Alex";
-
-    const [inputValue, setInputValue] = useState("");
-    const chatEndRef = useRef(null);
-    const inputRef = useRef(null);
 
     const handleInputChange = e => {
         setInputValue(e.target.value);
@@ -42,6 +43,7 @@ export const Chat = ({ currentChat, chatListArr, setChatListArr, setCurrentPage 
                 createdAt: date,
                 author: USER,
             };
+            console.log(newMessage);
             const updatedArr = [...chatListArr];
             const currChat = updatedArr.find(chat => chat.id.toString() === id);
             currChat.messages.push(newMessage);
@@ -96,12 +98,10 @@ export const Chat = ({ currentChat, chatListArr, setChatListArr, setCurrentPage 
 
     return (
         <>
-            <HeaderChat
-                chatListArr={chatListArr}
-                currentChat={currentChat}
-                setCurrentPage={setCurrentPage}
-                setChatListArr={setChatListArr}
-            />
+            <Helmet>
+                <title>{chat.companionName}</title>
+            </Helmet>
+            <HeaderChat chatListArr={chatListArr} />
             <form className={`form ${theme}`} action="/">
                 <div className="form__input-container">
                     <input
@@ -136,7 +136,10 @@ export const Chat = ({ currentChat, chatListArr, setChatListArr, setCurrentPage 
                         const seconds = String(creationDate.getSeconds()).padStart(2, "0");
 
                         return (
-                            <div key={i} className={`message ${obj.author === USER ? "" : "message_incoming"}`}>
+                            <div
+                                key={i}
+                                className={`message ${obj.author === chat.companionName ? "message_incoming" : ""}`}
+                            >
                                 <p className="message__text">{obj.message}</p>
                                 <div className="message__info tooltip">
                                     <span className="tooltiptext">
@@ -145,7 +148,7 @@ export const Chat = ({ currentChat, chatListArr, setChatListArr, setCurrentPage 
                                     <p className="message__time">{hours + ":" + minutes}</p>
                                     <span
                                         className={`material-symbols-outlined message__arrows ${
-                                            obj.author === USER ? "" : "message__arrows_incoming"
+                                            obj.author === chat.companionName ? "message__arrows_incoming" : ""
                                         }`}
                                     >
                                         <DoneAllIcon sx={{ fontSize: 14 }} />
@@ -157,6 +160,7 @@ export const Chat = ({ currentChat, chatListArr, setChatListArr, setCurrentPage 
                     .reverse()}
             </div>
             <div className="bg"></div>
+            {chat.messages.length === 0 && <div className="empty-chat">Нет сообщений</div>}
         </>
     );
 };

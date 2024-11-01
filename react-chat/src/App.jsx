@@ -11,9 +11,7 @@ function App() {
     const navigate = useNavigate();
 
     const CHAT_LIST_KEY = "chatListArr";
-    const [currentPage, setCurrentPage] = useState("chatlist");
     const [chatListArr, setChatListArr] = useState([]);
-    const [currentChat, setCurrentChat] = useState({});
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const createNewChat = name => {
@@ -45,6 +43,20 @@ function App() {
 
     const handleToggleModal = e => {
         setIsModalOpen(!isModalOpen);
+
+        const header = document.querySelector(".header");
+        const content = document.querySelector(".content");
+        const modal = document.querySelector(".newchat");
+
+        if (!isModalOpen) {
+            header.setAttribute("inert", "true");
+            content.setAttribute("inert", "true");
+            modal.removeAttribute("inert");
+        } else {
+            header.removeAttribute("inert");
+            content.removeAttribute("inert");
+            modal.setAttribute("inert", "true");
+        }
     };
 
     useEffect(() => {
@@ -78,12 +90,7 @@ function App() {
                     path="/chat/:id"
                     element={
                         <ProtectedRoute chatListArr={chatListArr}>
-                            <Chat
-                                currentChat={currentChat}
-                                chatListArr={chatListArr}
-                                setChatListArr={setChatListArr}
-                                setCurrentPage={setCurrentPage}
-                            />
+                            <Chat chatListArr={chatListArr} setChatListArr={setChatListArr} />
                         </ProtectedRoute>
                     }
                 />

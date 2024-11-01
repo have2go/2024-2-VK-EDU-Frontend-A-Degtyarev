@@ -3,15 +3,19 @@ import { ThemeContext } from "../../context/ThemeContext";
 import { NewChatModal } from "../../components/NewChatModal";
 import { ChatStatus } from "../../components/ChatStatus";
 import { HeaderChatlist } from "../../components/HeaderChatlist";
+import { Helmet } from "react-helmet-async";
 import PersonIcon from "@mui/icons-material/Person";
 import "./Chatlist.scss";
 import { Link } from "react-router-dom";
 
-export const Chatlist = ({ chatListArr, handleChatChoosing, handleToggleModal, isModalOpen, createNewChat }) => {
+export const Chatlist = ({ chatListArr, handleToggleModal, isModalOpen, createNewChat }) => {
     const { theme } = useContext(ThemeContext);
 
     return (
         <>
+            <Helmet>
+                <title>Список чатов</title>
+            </Helmet>
             <HeaderChatlist handleToggleModal={handleToggleModal} />
             <div className={`content content_chatlist ${theme}`}>
                 <div className="chatlist">

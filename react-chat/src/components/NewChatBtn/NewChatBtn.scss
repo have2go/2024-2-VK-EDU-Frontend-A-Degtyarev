@@ -11,7 +11,7 @@
     width: 60px;
     border-radius: 16px;
     z-index: 5;
-    transition: all 0.2s ease;
+    transition: transform 0.2s ease;
 
     &:hover {
         transform: scale(1.06);
@@ -53,6 +53,11 @@
         color: $contentarea-dark;
         box-shadow: 0px 0px 10px $onhover-dark;
 
+        &:focus-visible {
+            outline: 2px solid $primary-dark;
+            border: 2px solid $primary-light;
+        }
+
         &__symbol {
             color: $contentarea-dark;
         }
@@ -67,6 +72,10 @@
 
         &__symbol {
             color: $primary-light;
+        }
+
+        &:focus-visible {
+            outline: 2px solid $primary-light;
         }
 
         @media screen and (width >= 1024px) {

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PersonIcon from "@mui/icons-material/Person";
 
@@ -9,10 +10,12 @@ export const Profile = () => {
     const CURRENT_USER = "currentUser";
     const inputRefs = useRef([]);
     const [focusedInputIndex, setFocusedInputIndex] = useState(null);
-    const [name, setName] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
     const [username, setUsername] = useState("");
     const [bio, setBio] = useState("");
     const [isChanged, setIsChanged] = useState(false);
+    const [buttonText, setButtontext] = useState("Сохранить");
 
     const handleFocusInput = index => {
         setFocusedInputIndex(index);
@@ -29,19 +32,26 @@ export const Profile = () => {
         localStorage.setItem(
             CURRENT_USER,
             JSON.stringify({
-                name: name,
+                firstName: firstName,
+                lastName: lastName,
                 username: username,
                 bio: bio,
             })
         );
 
         setIsChanged(false);
+        setButtontext("Сохранено!");
+
+        setTimeout(() => {
+            setButtontext("Сохранить");
+        }, 3000);
     };
 
     useEffect(() => {
         const currentUser = JSON.parse(localStorage.getItem(CURRENT_USER));
         if (currentUser) {
-            setName(currentUser.name);
+            setFirstName(currentUser.firstName);
+            setLastName(currentUser.lastName);
             setUsername(currentUser.username);
             setBio(currentUser.bio);
         }
@@ -50,22 +60,30 @@ export const Profile = () => {
     useEffect(() => {
         const currentUser = JSON.parse(localStorage.getItem(CURRENT_USER));
         if (currentUser) {
-            if (currentUser.name !== name || currentUser.username !== username || currentUser.bio !== bio) {
+            if (
+                currentUser.firstName !== firstName ||
+                currentUser.lastName !== lastName ||
+                currentUser.username !== username ||
+                currentUser.bio !== bio
+            ) {
                 setIsChanged(true);
             } else {
                 setIsChanged(false);
             }
         } else {
-            if ("" !== name || "" !== username || "" !== bio) {
+            if ("" !== firstName || "" !== lastName || "" !== username || "" !== bio) {
                 setIsChanged(true);
             } else {
                 setIsChanged(false);
             }
         }
-    }, [name, username, bio]);
+    }, [firstName, lastName, username, bio]);
 
     return (
         <>
+            <Helmet>
+                <title>Профиль</title>
+            </Helmet>
             <header className="header header_profile">
                 <Link to={"/"} className="header__back-btn">
                     <span className="icon header__back">
@@ -82,60 +100,58 @@ export const Profile = () => {
                                 <PersonIcon sx={{ fontSize: 38 }} />
                             </span>
                         </div>
-                        <div
-                            className={`profile__input-group ${
-                                focusedInputIndex === 0 ? "profile__input-group_focused" : ""
-                            }`}
-                            onClick={() => handleFocusInput(0)}
-                        >
+                        <div className={`profile__input-group`} onClick={() => handleFocusInput(0)}>
                             <label className="profile__label">Имя</label>
                             <input
                                 type="text"
                                 className="profile__input"
                                 ref={el => (inputRefs.current[0] = el)}
-                                value={name}
-                                onChange={e => setName(e.target.value)}
+                                value={firstName}
+                                onChange={e => setFirstName(e.target.value)}
                                 onBlur={handleBlur}
                             />
                         </div>
-                        <div
-                            className={`profile__input-group ${
-                                focusedInputIndex === 1 ? "profile__input-group_focused" : ""
-                            }`}
-                            onClick={() => handleFocusInput(1)}
-                        >
-                            <label className="profile__label">Имя пользователя</label>
+                        <div className={`profile__input-group`} onClick={() => handleFocusInput(1)}>
+                            <label className="profile__label">Фамилия</label>
                             <input
                                 type="text"
                                 className="profile__input"
                                 ref={el => (inputRefs.current[1] = el)}
+                                value={lastName}
+                                onChange={e => setLastName(e.target.value)}
+                                onBlur={handleBlur}
+                            />
+                        </div>
+                        <div className={`profile__input-group`} onClick={() => handleFocusInput(2)}>
+                            <label className="profile__label">Имя пользователя</label>
+                            <input
+                                type="text"
+                                className="profile__input"
+                                ref={el => (inputRefs.current[2] = el)}
                                 value={username}
                                 onChange={e => setUsername(e.target.value)}
                                 onBlur={handleBlur}
                             />
                         </div>
-                        <div
-                            className={`profile__input-group ${
-                                focusedInputIndex === 2 ? "profile__input-group_focused" : ""
-                            }`}
-                            onClick={() => handleFocusInput(2)}
-                        >
+                        <div className={`profile__input-group`} onClick={() => handleFocusInput(3)}>
                             <label className="profile__label">О себе</label>
                             <textarea
                                 type="text"
                                 className="profile__input profile__textarea"
-                                ref={el => (inputRefs.current[2] = el)}
+                                ref={el => (inputRefs.current[3] = el)}
                                 value={bio}
                                 onChange={e => setBio(e.target.value)}
                                 onBlur={handleBlur}
                             />
                         </div>
                         <button
-                            className={`profile__save-btn ${isChanged ? "profile__save-btn_active" : ""}`}
-                            // disabled={!isChanged}
+                            className={`profile__save-btn ${isChanged ? "profile__save-btn_active" : ""} ${
+                                buttonText === "Сохранено!" ? "profile__save-btn_saved" : ""
+                            }`}
+                            disabled={!isChanged}
                             onClick={handleSave}
                         >
-                            Сохранить
+                            {buttonText}
                         </button>
                     </div>
                 </div>

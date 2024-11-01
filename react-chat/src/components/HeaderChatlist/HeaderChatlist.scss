@@ -37,9 +37,13 @@
 
     &__search,
     &__menu {
+        background-color: transparent;
+        border: none;
+        height: 44px;
+        width: 44px;
         padding: 6px;
         border-radius: 100%;
-        transition: all 0.2s ease;
+        transition: background-color 0.2s ease;
         font-size: 32px;
 
         &:hover {
@@ -91,10 +95,19 @@
             background-image: url(../../assets/border-right.svg);
         }
 
-        &__search:hover,
-        &__menu:hover {
-            background: $contentarea-dark;
-        }
+
+        &__search,
+        &__menu {
+            color: $primary-dark;
+
+            &:hover {
+                background: $contentarea-dark;
+            }
+            
+            &:focus-visible {
+                outline: 2px solid $primary-dark;
+            }
+        }        
 
         &__sidebar {
             background-color: $mainbg-dark;
@@ -114,10 +127,18 @@
             background-image: url(../../assets/border-right-light.svg);
         }
 
-        &__search:hover,
-        &__menu:hover {
-            background: $onhover-dark;
-        }
+        &__search,
+        &__menu {
+            color: $primary-light;
+
+            &:hover {
+                background: $onhover-dark;
+            }
+
+            &:focus-visible {
+                outline: 2px solid $primary-light;
+            }
+        }    
 
         &__sidebar {
             background-color: $mainbg-light;
