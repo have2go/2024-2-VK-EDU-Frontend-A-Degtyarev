@@ -2,17 +2,29 @@ import React, { useEffect, useRef, useState, useContext } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
 import { months } from "../../utils/constants";
 import { HeaderChat } from "../../components/HeaderChat";
+import { Helmet } from "react-helmet-async";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import SendIcon from "@mui/icons-material/Send";
 import "./Chat.scss";
+import { useParams, useNavigate } from "react-router-dom";
 
-export const Chat = ({ currentChat, chatListArr, setChatListArr, setCurrentPage }) => {
-    const { theme } = useContext(ThemeContext);
-
-    const USER = "Alex";
+export const Chat = ({ chatListArr, setChatListArr }) => {
     const [inputValue, setInputValue] = useState("");
-    const [currentChatIndex, setCurrentChatIndex] = useState(0);
+    const [isEmpty, setIsempty] = useState(false);
+    const { theme } = useContext(ThemeContext);
+    const { id } = useParams();
     const chatEndRef = useRef(null);
+    const inputRef = useRef(null);
+    const navigate = useNavigate();
+
+    const chat =
+        chatListArr.length === 0
+            ? JSON.parse(localStorage.getItem("chatListArr")).find(chat => chat.id.toString() === id)
+            : chatListArr.find(chat => chat.id.toString() === id);
+
+    const USER =
+        (JSON.parse(localStorage.getItem("currentUser")) && JSON.parse(localStorage.getItem("currentUser")).username) ||
+        "Alex";
 
     const handleInputChange = e => {
         setInputValue(e.target.value);
@@ -31,10 +43,13 @@ export const Chat = ({ currentChat, chatListArr, setChatListArr, setCurrentPage 
                 createdAt: date,
                 author: USER,
             };
+            console.log(newMessage);
             const updatedArr = [...chatListArr];
-            updatedArr[currentChatIndex].messages.push(newMessage);
+            const currChat = updatedArr.find(chat => chat.id.toString() === id);
+            currChat.messages.push(newMessage);
             setChatListArr(updatedArr);
             setInputValue("");
+            inputRef.current.focus();
             // таймер для того, чтобы последнее сообщение успело создаться
             // и прокрутило именно в самый низ
             setTimeout(() => {
@@ -53,11 +68,12 @@ export const Chat = ({ currentChat, chatListArr, setChatListArr, setCurrentPage 
         const newMessage = {
             message: "Тестовое сообщение",
             createdAt: date,
-            author: chatListArr[currentChatIndex].companionName,
+            author: chat.companionName,
         };
         const updatedArr = [...chatListArr];
-        updatedArr[currentChatIndex].messages.push(newMessage);
-        updatedArr[currentChatIndex].quantityNew += 1;
+        const currChat = updatedArr.find(chat => chat.id.toString() === id);
+        currChat.messages.push(newMessage);
+        currChat.quantityNew += 1;
         setChatListArr(updatedArr);
         setTimeout(() => {
             scrollToBottom();
@@ -69,18 +85,23 @@ export const Chat = ({ currentChat, chatListArr, setChatListArr, setCurrentPage 
     };
 
     useEffect(() => {
-        setCurrentChatIndex(chatListArr.findIndex(chat => chat.id === currentChat.id));
         scrollToBottom();
     }, []);
 
+    useEffect(() => {
+        if (!chat) {
+            navigate("/404");
+        }
+    }, [id]);
+
+    if (!chat) return null;
+
     return (
         <>
-            <HeaderChat
-                chatListArr={chatListArr}
-                currentChat={currentChat}
-                setCurrentPage={setCurrentPage}
-                setChatListArr={setChatListArr}
-            />
+            <Helmet>
+                <title>{chat.companionName}</title>
+            </Helmet>
+            <HeaderChat chatListArr={chatListArr} />
             <form className={`form ${theme}`} action="/">
                 <div className="form__input-container">
                     <input
@@ -90,6 +111,7 @@ export const Chat = ({ currentChat, chatListArr, setChatListArr, setCurrentPage 
                         autoComplete="off"
                         value={inputValue}
                         onChange={handleInputChange}
+                        ref={inputRef}
                     />
                     <button className="form__send-btn icon" onClick={handleSending}>
                         <SendIcon />
@@ -102,7 +124,7 @@ export const Chat = ({ currentChat, chatListArr, setChatListArr, setCurrentPage 
             </form>
             <div className="messages">
                 <div ref={chatEndRef} />
-                {chatListArr[currentChatIndex].messages
+                {chat.messages
                     .map((obj, i) => {
                         const creationDate = new Date(obj.createdAt);
 
@@ -114,7 +136,10 @@ export const Chat = ({ currentChat, chatListArr, setChatListArr, setCurrentPage 
                         const seconds = String(creationDate.getSeconds()).padStart(2, "0");
 
                         return (
-                            <div key={i} className={`message ${obj.author === USER ? "" : "message_incoming"}`}>
+                            <div
+                                key={i}
+                                className={`message ${obj.author === chat.companionName ? "message_incoming" : ""}`}
+                            >
                                 <p className="message__text">{obj.message}</p>
                                 <div className="message__info tooltip">
                                     <span className="tooltiptext">
@@ -123,7 +148,7 @@ export const Chat = ({ currentChat, chatListArr, setChatListArr, setCurrentPage 
                                     <p className="message__time">{hours + ":" + minutes}</p>
                                     <span
                                         className={`material-symbols-outlined message__arrows ${
-                                            obj.author === USER ? "" : "message__arrows_incoming"
+                                            obj.author === chat.companionName ? "message__arrows_incoming" : ""
                                         }`}
                                     >
                                         <DoneAllIcon sx={{ fontSize: 14 }} />
@@ -135,6 +160,7 @@ export const Chat = ({ currentChat, chatListArr, setChatListArr, setCurrentPage 
                     .reverse()}
             </div>
             <div className="bg"></div>
+            {chat.messages.length === 0 && <div className="empty-chat">Нет сообщений</div>}
         </>
     );
 };

@@ -15,6 +15,18 @@
     transition: all 0.2s ease;
 }
 
+.empty-chat {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+}
+
 .content_chat {
     padding: 0 14px 14px;
     margin: 0;
@@ -44,7 +56,6 @@
     display: flex;
     flex-direction: column;
     justify-content: end;
-    border-radius: 28px;
     padding: 0;
     z-index: 2;
 
@@ -54,18 +65,19 @@
         width: 100%;
         padding: 0 60px 0 20px;
         min-height: 58px;
-        border-radius: 0 0 22px 22px;
         font-size: 16px;
 
         &::placeholder {
             opacity: 0.5;
         }
+
+        @media screen and (width >= 768px) {
+            border-radius: 0 0 28px 28px;
+        }
     }
 
     &__bottom-spacer {
-        height: 10px;
-        width: 100%;
-        position: relative;
+        display: none;
 
         &::before {
             content: "";
@@ -88,6 +100,13 @@
             background-repeat: no-repeat;
             transform: rotate(90deg);
         }
+
+        @media screen and (width >= 768px) {
+            display: block;
+            height: 10px;
+            width: 100%;
+            position: relative;
+        }
     }
 
     &__input-container {
@@ -108,7 +127,7 @@
         font-size: 12px;
         border: none;
         outline: none;
-        transition: all 0.2s ease;
+        transition: background-color 0.2s ease;
 
         &::before {
             content: "\00a0";
@@ -123,13 +142,17 @@
 .messages {
     display: flex;
     flex-direction: column-reverse;
-    padding: 0px 10px 80px;
+    padding: 0px 10px 70px;
     border-radius: 28px 28px 0 0;
     margin-top: 90px;
     width: 100%;
     max-width: 768px;
     z-index: 1;
     flex-grow: 1;
+
+    @media screen and (width >= 768px) {
+        padding-bottom: 80px;
+    }
 }
 
 .message {
@@ -315,8 +338,11 @@
 
         &__send-btn {
             color: $primary-dark;
+
+            &:focus-visible {
+                outline: 2px solid $primary-dark;
+            }
         }
-        
     }
 
     .message {
@@ -342,9 +368,9 @@
 
         &__arrows {
             color: $contentarea-dark;
-    
+
             &_incoming {
-                color:  $text-dark;
+                color: $text-dark;
             }
         }
     }
@@ -383,6 +409,10 @@
             &:hover {
                 background: $onhover-dark;
             }
+
+            &:focus-visible {
+                outline: 2px solid $primary-light;
+            }
         }
     }
 
@@ -409,9 +439,9 @@
 
         &__arrows {
             color: $contentarea-light;
-    
+
             &_incoming {
-                color:  $text-light;
+                color: $text-light;
             }
         }
     }

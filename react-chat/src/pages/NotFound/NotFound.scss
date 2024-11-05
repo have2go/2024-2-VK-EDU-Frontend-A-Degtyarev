@@ -1,0 +1,64 @@
+@use "../../variables.scss" as *;
+
+.not-found {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 100%;
+
+    &__title {
+        font-size: 24px;
+    }
+
+    &__link {
+        text-decoration: none;
+        padding: 5px 12px;
+        border-radius: 10px;
+        background: transparent;
+        transition: all 0.2s ease;
+    }
+
+    @media screen and (min-width: 480px) {
+        &__title {
+            font-size: 32px;
+        }
+    }
+}
+
+.dark {
+    .not-found {
+        &__title {
+            color: $primary-dark;
+        }
+
+        &__link {
+            border: 1px solid $primary-dark;
+            color: $primary-dark;
+
+            &:hover {
+                background-color: $primary-dark;
+                color: $contentarea-dark;
+            }
+        }
+    }
+}
+
+.light {
+    .not-found {
+        &__title {
+            color: $primary-light;
+        }
+
+        &__link {
+            border: 1px solid $primary-light;
+            color: $primary-light;
+
+            &:hover {
+                background-color: $primary-light;
+                color: $contentarea-light;
+            }
+        }
+    }
+}

@@ -23,6 +23,8 @@
         &:hover {
             cursor: pointer;
         }
+
+        
     }
 
     &__avatar {
@@ -76,9 +78,9 @@
 
     &__link {
         text-decoration: none;
+        border-radius: 28px;
     }
 }
-
 
 .dark {
     .chatlist {
@@ -99,6 +101,14 @@
 
         &__avatar {
             background-color: $contentarea-dark;
+        }
+
+        &__link {
+            color: $text-dark;
+
+            &:focus-visible {
+                outline: 2px solid $primary-dark;
+            }  
         }
     }
 }
@@ -122,6 +132,14 @@
 
         &__avatar {
             background-color: $contentarea-light;
+        }
+
+        &__link {
+            color: $text-light;
+
+            &:focus-visible {
+                outline: 2px solid $primary-light;
+            }  
         }
     }
 }

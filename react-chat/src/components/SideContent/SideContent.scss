@@ -1,0 +1,178 @@
+@use "../../variables.scss" as *;
+
+.sidecontent {
+    border-radius: 28px;
+    height: 100%;
+    padding: 12px 15px 20px 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 20px;
+
+    &__profile-link {
+        width: 100%;
+        height: 66px;
+        bottom: -68px;
+        right: -185px;
+        display: flex;
+        gap: 15px;
+        justify-content: start;
+        align-items: center;
+        font-size: 16px;
+        border-radius: 28px;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+        text-decoration: none;
+        padding: 0 20px;
+
+        &::after {
+            content: "Мой профиль";
+        }
+    }
+
+    &__avatar {
+        padding: 10px;
+        border-radius: 999px;
+        width: 46px;
+        height: 46px;
+    }
+
+    @media screen and (width >= 810px) {
+        padding: 12px 15px 12px 0;
+    }
+
+    @media screen and (width >= 1024px) {
+        padding: 0;
+        border-radius: 0;
+
+        &__profile-link {
+            width: 60px;
+            height: 60px;
+            padding: 0;
+            border-radius: 16px;
+            justify-content: center;
+
+            &::after {
+                content: none;
+            }
+        }
+
+        &__avatar {
+            width: 40px;
+            height: 40px;
+        }
+    }
+
+    @media screen and (min-width: 1280px) {
+        &__profile-link {
+            width: 160px;
+            height: 46px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            font-size: 16px;
+
+            &::after {
+                content: "Профиль";
+            }
+        }
+    }
+}
+
+.dark {
+    .sidecontent {
+        &__profile-link {
+            color: $text-dark;
+
+            &:hover {
+                background-color: $secondary-dark;
+            }
+
+            &:focus-visible {
+                outline: 2px solid $primary-dark;
+            }
+        }
+
+        &__avatar {
+            background-color: $contentarea-dark;
+        }
+
+        @media screen and (width >= 1024px) {
+            &__profile-link {
+                color: $primary-dark;
+                background-color: $primary-dark;
+                box-shadow: 0px 0px 10px $onhover-dark;
+
+                &:hover {
+                    background-color: $primary-dark;
+                    transform: scale(1.06);
+                }
+            }
+        }
+
+        @media screen and (min-width: 1280px) {
+            &__avatar {
+                background-color: transparent;
+                padding: 0;
+                color: $contentarea-dark;
+            }
+
+            &__profile-link {
+                &::after {
+                    color: $contentarea-dark;
+                }  
+            }
+        }
+    }
+}
+
+.light {
+    .sidecontent {
+        &__profile-link {
+            color: $text-light;
+
+            &:hover {
+                background-color: $secondary-light;
+            }
+
+            &:focus-visible {
+                outline: 2px solid $primary-light;
+            }
+        }
+
+        &__avatar {
+            background-color: $contentarea-light;
+        }
+
+        @media screen and (width >= 1024px) {
+            &__profile-link {
+                color: $contentarea-light;
+                background-color: $contentarea-light;
+                box-shadow: none;
+
+                &:hover {
+                    background-color: $contentarea-light;
+                    transform: scale(1.06);
+                }
+            }
+
+            &__avatar {
+                background-color: $primary-light;
+            }
+        }
+
+        @media screen and (min-width: 1280px) {
+            &__avatar {
+                background-color: transparent;
+                padding: 0;
+                color: $primary-light;
+            }
+
+            &__profile-link {
+                &::after {
+                    color: $text-light;
+                }
+            }
+        }
+    }
+}

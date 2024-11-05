@@ -1,0 +1,17 @@
+@use "../../variables.scss" as *;
+
+.sidebar {
+    display: none;
+
+    @media screen and (width >= 1024px) {
+        display: block;
+        position: absolute;
+        top: 105px;
+        height: calc(100vh - 120px);
+        left: -80px;
+    }
+
+    @media screen and (width >= 1280px) {
+        left: -185px;
+    }
+}

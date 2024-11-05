@@ -1,0 +1,187 @@
+@use "../../variables.scss" as *;
+
+.header_profile {
+    justify-content: start;
+}
+
+.profile {
+    &__content {
+        display: flex;
+        flex-grow: 1;
+    }
+
+    &__avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 999px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 30px 0 10px;
+    }
+
+    &__container {
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 300px;
+        width: 100%;
+        gap: 20px;
+    }
+
+    &__input-group {
+        position: relative;
+        width: 100%;
+        height: 56px;
+        border-radius: 16px;
+        padding: 0 5px;
+
+        &:last-of-type {
+            height: 120px;
+        }
+    }
+
+    &__label {
+        position: absolute;
+        top: 5px;
+        left: 10px;
+        font-size: 12px;
+    }
+
+    &__input {
+        position: absolute;
+        top: 27px;
+        left: 8px;
+        width: 90%;
+        background-color: transparent;
+        border: none;
+        font-size: 16px;
+        outline: none;
+    }
+
+    &__textarea {
+        resize: none;
+        height: 100px;
+    }
+
+    &__save-btn {
+        width: 100%;
+        height: 36px;
+        border-radius: 16px;
+        border: none;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+}
+
+.dark {
+    .header_profile {
+        background-color: $mainbg-dark;
+    }
+
+    .profile {
+        &__content {
+            background-color: $contentarea-dark;
+        }
+
+        &__avatar {
+            background-color: $primary-dark;
+            color: $contentarea-dark;
+        }
+
+        &__label {
+            color: $primary-dark;
+        }
+
+        &__input-group {
+            background-color: $secondary-dark;
+
+            &:focus-within {
+                outline: 2px solid $primary-dark;
+            }
+        }
+
+        &__input {
+            color: $text-dark;
+        }
+
+        &__save-btn {
+            background-color: $secondary-dark;
+
+            &_active {
+                background-color: $primary-dark;
+                // color: $text-dark;
+
+                &:hover {
+                    cursor: pointer;
+                    transform: scale(1.06);
+                }
+            }
+
+            &_saved {
+                background-color: green;
+                color: white;
+            }
+
+            &:focus-visible {
+                border: 2px solid $contentarea-dark;
+                outline: 2px solid $primary-dark;
+            }
+        }
+    }
+}
+
+.light {
+    .profile {
+        &__content {
+            background-color: $contentarea-light;
+        }
+
+        &__avatar {
+            background-color: $primary-light;
+            color: $contentarea-light;
+        }
+
+        &__label {
+            color: $primary-light;
+        }
+
+        &__input-group {
+            background-color: $secondary-light;
+
+            &:focus-within {
+                outline: 2px solid $primary-light;
+            }
+        }
+
+        &__input {
+            color: $text-light;
+        }
+
+        &__save-btn {
+            background-color: $secondary-light;
+            opacity: 0.5;
+
+            &_active {
+                background-color: $primary-light;
+                opacity: 1;
+                color: $contentarea-light;
+
+                &:hover {
+                    cursor: pointer;
+                    transform: scale(1.06);
+                }
+            }
+
+            &_saved {
+                background-color: green;
+                color: white;
+            }
+
+            &:focus-visible {
+                border: 2px solid $contentarea-light;
+                outline: 2px solid $primary-light;
+            }
+        }
+    }
+}

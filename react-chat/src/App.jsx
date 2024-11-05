@@ -1,16 +1,17 @@
-import { useEffect, useState, useContext } from "react";
-import { ThemeContext } from "./context/ThemeContext";
+import { useEffect, useState } from "react";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import { ChatList } from "./pages/Chatlist";
 import { Chat } from "./pages/Chat";
 import "./App.scss";
+import { NotFound } from "./pages/NotFound";
+import { Profile } from "./pages/Profile";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
-    const { theme, setTheme } = useContext(ThemeContext);
+    const navigate = useNavigate();
 
     const CHAT_LIST_KEY = "chatListArr";
-    const [currentPage, setCurrentPage] = useState("chatlist");
     const [chatListArr, setChatListArr] = useState([]);
-    const [currentChat, setCurrentChat] = useState({});
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const createNewChat = name => {
@@ -22,10 +23,10 @@ function App() {
             isRead: false,
             isMentioned: false,
             messages: [],
+            creationDate: Date.now(),
         };
         setChatListArr([...chatListArr, newChat]);
-        setCurrentChat(newChat);
-        setCurrentPage("chat");
+        navigate(`/chat/${id}`);
     };
 
     const generateUniqueId = () => {
@@ -42,20 +43,27 @@ function App() {
 
     const handleToggleModal = e => {
         setIsModalOpen(!isModalOpen);
-    };
 
-    const handleChatChoosing = id => {
-        const index = chatListArr.findIndex(chat => chat.id === id);
-        setCurrentChat(chatListArr[index]);
-        setCurrentPage("chat");
+        const header = document.querySelector(".header");
+        const content = document.querySelector(".content");
+        const modal = document.querySelector(".newchat");
+
+        if (!isModalOpen) {
+            header.setAttribute("inert", "true");
+            content.setAttribute("inert", "true");
+            modal.removeAttribute("inert");
+        } else {
+            header.removeAttribute("inert");
+            content.removeAttribute("inert");
+            modal.setAttribute("inert", "true");
+        }
     };
 
     useEffect(() => {
         const savedChats = localStorage.getItem(CHAT_LIST_KEY);
-        if (savedChats && savedChats !== "[]" && JSON.parse(savedChats).at(-1).messages.length !== 0) {
+        if (savedChats && savedChats !== "[]") {
             setChatListArr(JSON.parse(savedChats));
         }
-        console.log(localStorage.getItem(CHAT_LIST_KEY))
     }, []);
 
     useEffect(() => {
@@ -66,29 +74,30 @@ function App() {
 
     return (
         <div className={`container`}>
-            <button
-                style={{ zIndex: 999, position: "fixed" }}
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            >
-                CHANGE THEME
-            </button>
-            {currentPage === "chatlist" && (
-                <ChatList
-                    chatListArr={chatListArr}
-                    handleChatChoosing={handleChatChoosing}
-                    handleToggleModal={handleToggleModal}
-                    isModalOpen={isModalOpen}
-                    createNewChat={createNewChat}
+            <Routes>
+                <Route
+                    path="/"
+                    element={
+                        <ChatList
+                            chatListArr={chatListArr}
+                            handleToggleModal={handleToggleModal}
+                            isModalOpen={isModalOpen}
+                            createNewChat={createNewChat}
+                        />
+                    }
                 />
-            )}
-            {currentPage === "chat" && (
-                <Chat
-                    currentChat={currentChat}
-                    chatListArr={chatListArr}
-                    setChatListArr={setChatListArr}
-                    setCurrentPage={setCurrentPage}
+                <Route
+                    path="/chat/:id"
+                    element={
+                        <ProtectedRoute chatListArr={chatListArr}>
+                            <Chat chatListArr={chatListArr} setChatListArr={setChatListArr} />
+                        </ProtectedRoute>
+                    }
                 />
-            )}
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/404" element={<NotFound />} />
+                <Route path="*" element={<NotFound />} />
+            </Routes>
         </div>
     );
 }

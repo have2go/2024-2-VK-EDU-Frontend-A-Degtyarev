@@ -88,7 +88,9 @@
     &__more {
         padding: 6px;
         border-radius: 100%;
-        transition: all 0.2s ease;
+        border: none;
+        background-color: transparent;
+        transition: background-color 0.2s ease;
         font-size: 28px;
 
         &:hover {
@@ -114,10 +116,6 @@
 
         &__name-container {
             max-width: calc(100vw - 230px);
-        }
-
-        &__title {
-            margin-left: 40px;
         }
     }
 
@@ -146,19 +144,21 @@
             background-color: $contentarea-dark;
         }
 
-        &__back-btn {
-            color: $primary-dark;
-        }
-
         &__last-seen {
             color: $text-dark;
         }
 
-        &__back,
+        &__back-btn,
         &__search,
         &__more {
+            color: $primary-dark;
+
             &:hover {
                 background: $contentarea-dark;
+            }
+
+            &:focus-visible {
+                outline: 2px solid $primary-dark;
             }
         }
     }
@@ -178,19 +178,21 @@
             background-color: $contentarea-light;
         }
 
-        &__back-btn {
-            color: $primary-light;
-        }
-
         &__last-seen {
             color: $text-light;
         }
 
-        &__back,
+        &__back-btn,
         &__search,
         &__more {
+            color: $primary-light;
+
             &:hover {
                 background: $onhover-dark;
+            }
+
+            &:focus-visible {
+                outline: 2px solid $primary-light;
             }
         }
     }

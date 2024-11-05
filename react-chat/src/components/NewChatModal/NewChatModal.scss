@@ -50,7 +50,7 @@
 
         font-weight: 500;
         font-size: 16px;
-        transition: all 0.2s ease;
+        transition: transform 0.2s ease;
 
         &:hover {
             transform: scale(1.02);
@@ -65,7 +65,8 @@
         background-color: transparent;
         border: none;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: transform 0.2s ease;
+        border-radius: 100%;
 
         &:hover {
             transform: scale(1.1);
@@ -85,10 +86,19 @@
         &__submit-btn {
             background-color: $primary-dark;
             color: $contentarea-dark;
+
+            &:focus-visible {
+                border: 2px solid $contentarea-dark;
+                outline: 2px solid $primary-dark;
+            }
         }
 
         &__close-btn {
             color: $primary-dark;
+
+            &:focus-visible {
+                outline: 2px solid $primary-dark;
+            }
         }
     }
 }
@@ -105,10 +115,19 @@
         &__submit-btn {
             background-color: $primary-light;
             color: $contentarea-light;
+
+            &:focus-visible {
+                border: 1px solid $contentarea-light;
+                outline: 2px solid $primary-light;
+            }
         }
 
         &__close-btn {
             color: $contentarea-light;
+
+            &:focus-visible {
+                outline: 2px solid $contentarea-light;
+            }
         }
     }
 }
