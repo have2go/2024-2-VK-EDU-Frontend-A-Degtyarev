@@ -1,0 +1,49 @@
+@use "../../variables.scss" as *;
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #00000057;
+    transition: all 0.2s ease;
+    visibility: hidden;
+    opacity: 0;
+
+    &_active {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    &__content {
+        width: 300px;
+        background: #000;
+        border-radius: 28px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    &__text {
+        font-size: 18px;
+    }
+
+    &__buttons {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        cursor: pointer;
+    }
+}
+// .dark {
+
+// }
+
+// .light {
+
+// }

@@ -5,18 +5,18 @@ const ProtectedRoute = ({ children, chatListArr }) => {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    const chat =
-        chatListArr.length === 0
-            ? JSON.parse(localStorage.getItem("chatListArr")).find(chat => chat.id.toString() === id)
-            : chatListArr.find(chat => chat.id.toString() === id);
+    // const chat =
+    //     chatListArr.length === 0
+    //         ? JSON.parse(localStorage.getItem("chatListArr")).find(chat => chat.id.toString() === id)
+    //         : chatListArr.find(chat => chat.id.toString() === id);
 
-    useEffect(() => {
-        if (!chat) {
-            navigate("/404");
-        }
-    }, [id]);
+    // useEffect(() => {
+    //     if (!chat) {
+    //         navigate("/404");
+    //     }
+    // }, [id]);
 
-    return chat ? children : null;
+    return true ? children : null; 
 };
 
 export default ProtectedRoute;
