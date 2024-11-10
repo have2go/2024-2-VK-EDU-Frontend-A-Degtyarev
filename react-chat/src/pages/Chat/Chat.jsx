@@ -5,7 +5,7 @@ import { HeaderChat } from "../../components/HeaderChat";
 import { Helmet } from "react-helmet-async";
 import SendIcon from "@mui/icons-material/Send";
 import "./Chat.scss";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Centrifuge } from "centrifuge";
 import { Message } from "../../components/Message";
 
@@ -14,6 +14,7 @@ export const Chat = () => {
     const { id } = useParams();
 
     const user = useContext(UserContext);
+    const navigate = useNavigate();
 
     const [chatInfo, setChatInfo] = useState(null);
     const [messages, setMessages] = useState([]);
@@ -101,74 +102,78 @@ export const Chat = () => {
     };
 
     useEffect(() => {
-        inputRef.current.focus();
-        fetch(`https://vkedu-fullstack-div2.ru/api/chat/${id}/`, {
-            headers: {
-                Authorization: `Bearer ${user.tokens.access}`,
-                "Content-Type": "application/json",
-            },
-        })
-            .then(res => {
-                if (res.ok) {
-                    return res.json();
-                }
-                return Promise.reject(res);
+        if (!user.tokens.access) {
+            navigate("/");
+        } else {
+            inputRef.current.focus();
+            fetch(`https://vkedu-fullstack-div2.ru/api/chat/${id}/`, {
+                headers: {
+                    Authorization: `Bearer ${user.tokens.access}`,
+                    "Content-Type": "application/json",
+                },
             })
-            .then(json => {
-                setChatInfo(json);
-            })
-            .catch(res => {
-                console.log(res);
+                .then(res => {
+                    if (res.ok) {
+                        return res.json();
+                    }
+                    return Promise.reject(res);
+                })
+                .then(json => {
+                    setChatInfo(json);
+                })
+                .catch(res => {
+                    console.log(res);
+                });
+
+            const centrifuge = new Centrifuge("wss://vkedu-fullstack-div2.ru/connection/websocket/", {
+                getToken: ctx =>
+                    fetch("https://vkedu-fullstack-div2.ru/api/centrifugo/connect/", {
+                        body: JSON.stringify(ctx),
+                        method: "POST",
+                        headers: {
+                            Authorization: `Bearer ${user.tokens.access}`,
+                            "Content-Type": "application/json",
+                        },
+                    })
+                        .then(res => res.json())
+                        .then(data => data.token),
             });
 
-        const centrifuge = new Centrifuge("wss://vkedu-fullstack-div2.ru/connection/websocket/", {
-            getToken: ctx =>
-                fetch("https://vkedu-fullstack-div2.ru/api/centrifugo/connect/", {
-                    body: JSON.stringify(ctx),
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${user.tokens.access}`,
-                        "Content-Type": "application/json",
-                    },
-                })
-                    .then(res => res.json())
-                    .then(data => data.token),
-        });
-        console.log();
-        const subscription = centrifuge.newSubscription(user.data.id, {
-            getToken: ctx =>
-                fetch("https://vkedu-fullstack-div2.ru/api/centrifugo/subscribe/", {
-                    body: JSON.stringify(ctx),
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${user.tokens.access}`,
-                        "Content-Type": "application/json",
-                    },
-                })
-                    .then(res => res.json())
-                    .then(data => data.token),
-        });
+            const subscription = centrifuge.newSubscription(user.data.id, {
+                getToken: ctx =>
+                    fetch("https://vkedu-fullstack-div2.ru/api/centrifugo/subscribe/", {
+                        body: JSON.stringify(ctx),
+                        method: "POST",
+                        headers: {
+                            Authorization: `Bearer ${user.tokens.access}`,
+                            "Content-Type": "application/json",
+                        },
+                    })
+                        .then(res => res.json())
+                        .then(data => data.token),
+            });
 
-        subscription.on("publication", ctx => {
-            const { event, message } = ctx.data;
+            subscription.on("publication", ctx => {
+                const { event, message } = ctx.data;
 
-            if (event === "create") {
-                setMessages(prevMessages => [message, ...prevMessages]);
-                scrollToBottom();
-            } else if (event === "update") {
-                setMessages(prevMessages => prevMessages.map(msg => (msg.id === message.id ? message : msg)));
-            } else if (event === "delete") {
-                setMessages(prevMessages => prevMessages.filter(msg => msg.id !== message.id));
-            }
-        });
+                if (event === "create") {
+                    setMessages(prevMessages => [message, ...prevMessages]);
+                    scrollToBottom();
+                } else if (event === "update") {
+                    setMessages(prevMessages => prevMessages.map(msg => (msg.id === message.id ? message : msg)));
+                } else if (event === "delete") {
+                    setMessages(prevMessages => prevMessages.filter(msg => msg.id !== message.id));
+                }
+            });
 
-        subscription.subscribe();
-        centrifuge.connect();
+            subscription.subscribe();
+            centrifuge.connect();
 
-        return () => {
-            subscription.unsubscribe();
-            centrifuge.disconnect();
-        };
+            return () => {
+                subscription.unsubscribe();
+                centrifuge.disconnect();
+            };
+        }
     }, []);
 
     useEffect(() => {
