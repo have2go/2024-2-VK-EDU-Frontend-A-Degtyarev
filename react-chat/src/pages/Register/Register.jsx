@@ -5,18 +5,24 @@ import { Link, useNavigate } from "react-router-dom";
 import "./Register.scss";
 
 export const Register = () => {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [bio, setBio] = useState("");
     const [avatar, setAvatar] = useState(null);
     const maxSize = 9 * 1024 * 1024;
+
+    const [errors, setErrors] = useState({});
+    const [data, setData] = useState({});
 
     const [buttonText, setButtonText] = useState("Зарегистрироваться");
 
     const navigate = useNavigate();
 
+    const handleChange = event => {
+        const name = event.target.name;
+        const value = event.target.value?.trim();
+
+        setErrors({ ...errors, [name]: null });
+        setData({ ...data, [name]: value });
+    };
+    
     const handleFileChange = event => {
         const selectedFile = event.target.files[0];
 
@@ -34,11 +40,11 @@ export const Register = () => {
 
         const body = new FormData();
 
-        body.append("username", username);
-        body.append("password", password);
-        body.append("first_name", firstName);
-        body.append("last_name", lastName);
-        if (bio !== "") body.append("bio", bio);
+        if (data.username) body.append("username", data.username);
+        if (data.password) body.append("password", data.password);
+        if (data.first_name) body.append("first_name", data.first_name);
+        if (data.last_name) body.append("last_name", data.last_name);
+        if (data.bio) body.append("bio", data.bio);
         if (avatar) body.append("avatar", avatar);
 
         setButtonText("Подождите...");
@@ -46,23 +52,27 @@ export const Register = () => {
             method: "POST",
             body: body,
         })
-            .then(response => {
-                if (response.ok) {
+            .then(res => {
+                if (res.ok) {
                     setButtonText("Успех!");
-
+                    console.log(res);
                     setTimeout(() => {
                         navigate(`/login`);
                     }, 1500);
 
                     return;
                 }
-                return Promise.reject(response);
+                return Promise.reject(res);
             })
-            .catch(response => {
-                console.log("Error: ", response.status, response.statusText);
+            .catch(res => {
+                console.log("Error: ", res.status, res.statusText);
                 setButtonText("Зарегистрироваться");
-                response.json().then(json => {
-                    console.log("Err response: ", json);
+                res.json().then(json => {
+                    const resErrs = {};
+                    for (let key in json) {
+                        resErrs[key] = json[key];
+                        setErrors(resErrs);
+                    }
                 });
             });
     };
@@ -78,51 +88,61 @@ export const Register = () => {
                     <label className="">Логин</label>
                     <input
                         type="text"
+                        name="username"
                         className=""
-                        required
-                        minLength={1}
-                        maxLength={150}
-                        value={username}
-                        onChange={e => setUsername(e.target.value)}
+                        // required
+                        // minLength={1}
+                        // maxLength={150}
+                        value={data.username}
+                        onChange={handleChange}
                     />
+                    {errors.username && <span className="register__error">{errors.username}</span>}
                     <label className="">Пароль</label>
                     <input
-                        type="text"
+                        type="password"
+                        name="password"
                         className=""
-                        required
-                        minLength={8}
-                        maxLength={150}
-                        value={password}
-                        onChange={e => setPassword(e.target.value)}
+                        // required
+                        // minLength={8}
+                        // maxLength={150}
+                        value={data.password}
+                        onChange={handleChange}
                     />
+                    {errors.password && <span className="register__error">{errors.password}</span>}
                     <label className="">Имя</label>
                     <input
                         type="text"
                         className=""
-                        required
-                        minLength={1}
-                        maxLength={150}
-                        value={firstName}
-                        onChange={e => setFirstName(e.target.value)}
+                        name="first_name"
+                        // required
+                        // minLength={1}
+                        // maxLength={150}
+                        value={data.first_name}
+                        onChange={handleChange}
                     />
+                    {errors.first_name && <span className="register__error">{errors.first_name}</span>}
                     <label className="">Фамилия</label>
                     <input
                         type="text"
                         className=""
-                        required
-                        minLength={1}
-                        maxLength={150}
-                        value={lastName}
-                        onChange={e => setLastName(e.target.value)}
+                        name="last_name"
+                        // required
+                        // minLength={1}
+                        // maxLength={150}
+                        value={data.last_name}
+                        onChange={handleChange}
                     />
+                    {errors.last_name && <span className="register__error">{errors.last_name}</span>}
                     <label className="">О себе</label>
                     <textarea
                         type="text"
                         className=""
+                        name="bio"
                         maxLength={450}
-                        value={bio}
-                        onChange={e => setBio(e.target.value)}
+                        value={data.bio}
+                        onChange={handleChange}
                     />
+                    {errors.bio && <span className="register__error">{errors.bio}</span>}
                     <label className="">Аватар</label>
                     <input type="file" accept="image/*" className="" onChange={handleFileChange} />
                     <button className="register__submit-btn">{buttonText}</button>

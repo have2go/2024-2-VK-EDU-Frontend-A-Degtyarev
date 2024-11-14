@@ -13,20 +13,27 @@ import { ConfirmationModal } from "../../components/ConfirmationModal";
 export const Profile = () => {
     const inputRefs = useRef([]);
     // const [focusedInputIndex, setFocusedInputIndex] = useState(null);
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [username, setUsername] = useState("");
-    const [bio, setBio] = useState("");
     const [avatar, setAvatar] = useState(null);
     const [isChanged, setIsChanged] = useState(false);
     const [buttonText, setButtontext] = useState("Сохранить");
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const [errors, setErrors] = useState({});
+    const [data, setData] = useState({});
 
     const modalType = "deleteProfile";
     const maxSize = 9 * 1024 * 1024;
 
     const user = useContext(UserContext);
     const navigate = useNavigate();
+
+    const handleChange = event => {
+        const name = event.target.name;
+        const value = event.target.value?.trim();
+
+        setErrors({ ...errors, [name]: null });
+        setData({ ...data, [name]: value });
+    };
 
     const handleFileChange = event => {
         const selectedFile = event.target.files[0];
@@ -56,10 +63,10 @@ export const Profile = () => {
         setButtontext("Сохранение...");
         const body = new FormData();
 
-        if (user.data.first_name !== firstName) body.append("first_name", firstName);
-        if (user.data.last_name !== lastName) body.append("last_name", lastName);
-        if (user.data.username !== username) body.append("username", username);
-        if (user.data.bio !== bio) body.append("bio", bio);
+        if (user.data.first_name !== data.first_name) body.append("first_name", data.first_name);
+        if (user.data.last_name !== data.last_name) body.append("last_name", data.last_name);
+        if (user.data.username !== data.username) body.append("username", data.username);
+        if (user.data.bio !== data.bio) body.append("bio", data.bio);
         if (user.data.avatar !== avatar) body.append("avatar", avatar);
 
         fetch(`https://vkedu-fullstack-div2.ru/api/user/${user.data.id}/`, {
@@ -82,7 +89,16 @@ export const Profile = () => {
                 setButtontext("Сохранено!");
             })
             .catch(res => {
-                console.log(res);
+                console.log("Error: ", res.status, res.statusText);
+                setIsChanged(false);
+                setButtontext("Сохранить");
+                res.json().then(json => {
+                    const resErrs = {};
+                    for (let key in json) {
+                        resErrs[key] = json[key];
+                        setErrors(resErrs);
+                    }
+                });
             });
 
         setTimeout(() => {
@@ -114,10 +130,12 @@ export const Profile = () => {
     useEffect(() => {
         if (user.tokens.access) {
             if (user.data) {
-                setFirstName(user.data.first_name);
-                setLastName(user.data.last_name);
-                setUsername(user.data.username);
-                setBio(user.data.bio);
+                setData({
+                    username: user.data.username,
+                    first_name: user.data.first_name,
+                    last_name: user.data.last_name,
+                    bio: user.data.bio,
+                });
                 setAvatar(user.data.avatar);
             }
         } else {
@@ -136,10 +154,12 @@ export const Profile = () => {
                     .then(json => {
                         user.login(json.access, json.refresh).then(res => {
                             console.log(res);
-                            setFirstName(res.first_name);
-                            setLastName(res.last_name);
-                            setUsername(res.username);
-                            setBio(res.bio);
+                            setData({
+                                username: res.username,
+                                first_name: res.first_name,
+                                last_name: res.last_name,
+                                bio: res.bio,
+                            });
                             setAvatar(res.avatar);
                         });
                     })
@@ -151,12 +171,14 @@ export const Profile = () => {
     }, []);
 
     useEffect(() => {
-        if (user.data) {
+        const hasErrors = Object.values(errors).some(value => value !== null);
+
+        if (user.data && !hasErrors) {
             if (
-                user.data.first_name !== firstName ||
-                user.data.last_name !== lastName ||
-                user.data.username !== username ||
-                user.data.bio !== bio ||
+                user.data.first_name !== data.first_name ||
+                user.data.last_name !== data.last_name ||
+                user.data.username !== data.username ||
+                user.data.bio !== data.bio ||
                 user.data.avatar !== avatar
             ) {
                 setIsChanged(true);
@@ -164,7 +186,7 @@ export const Profile = () => {
                 setIsChanged(false);
             }
         }
-    }, [firstName, lastName, username, bio, avatar]);
+    }, [data.first_name, data.last_name, data.username, data.bio, avatar]);
 
     return (
         <>
@@ -212,34 +234,40 @@ export const Profile = () => {
                             <input
                                 type="text"
                                 className="profile__input"
+                                name="first_name"
                                 ref={el => (inputRefs.current[0] = el)}
-                                value={firstName}
-                                onChange={e => setFirstName(e.target.value)}
+                                value={data.first_name}
+                                onChange={handleChange}
                                 // onBlur={handleBlur}
                             />
                         </div>
+                        {errors.first_name && <span className="register__error">{errors.first_name}</span>}
                         <div className={`profile__input-group`} onClick={() => handleFocusInput(1)}>
                             <label className="profile__label">Фамилия</label>
                             <input
                                 type="text"
                                 className="profile__input"
+                                name="last_name"
                                 ref={el => (inputRefs.current[1] = el)}
-                                value={lastName}
-                                onChange={e => setLastName(e.target.value)}
+                                value={data.last_name}
+                                onChange={handleChange}
                                 // onBlur={handleBlur}
                             />
                         </div>
+                        {errors.last_name && <span className="register__error">{errors.last_name}</span>}
                         <div className={`profile__input-group`} onClick={() => handleFocusInput(2)}>
                             <label className="profile__label">Имя пользователя</label>
                             <input
                                 type="text"
                                 className="profile__input"
+                                name="username"
                                 ref={el => (inputRefs.current[2] = el)}
-                                value={username}
-                                onChange={e => setUsername(e.target.value)}
+                                value={data.username}
+                                onChange={handleChange}
                                 // onBlur={handleBlur}
                             />
                         </div>
+                        {errors.username && <span className="register__error">{errors.username}</span>}
                         <div
                             className={`profile__input-group profile__input-group_textarea`}
                             // onClick={() => handleFocusInput(3)}
@@ -248,12 +276,15 @@ export const Profile = () => {
                             <textarea
                                 type="text"
                                 className="profile__input profile__textarea"
+                                name="bio"
+                                maxLength={450}
                                 ref={el => (inputRefs.current[3] = el)}
-                                value={bio}
-                                onChange={e => setBio(e.target.value)}
+                                value={data.bio}
+                                onChange={handleChange}
                                 // onBlur={handleBlur}
                             />
                         </div>
+                        {errors.bio && <span className="register__error">{errors.bio}</span>}
                         <div className="profile__buttons">
                             <button
                                 className={`profile__save-btn ${isChanged ? "profile__save-btn_active" : ""} ${

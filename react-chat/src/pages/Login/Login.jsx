@@ -6,8 +6,16 @@ import { UserContext } from "../../context/UserContext";
 import "./Login.scss";
 
 export const Login = () => {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
+    const [errors, setErrors] = useState({});
+    const [data, setData] = useState({});
+
+    const handleChange = event => {
+        const name = event.target.name;
+        const value = event.target.value?.trim();
+
+        setErrors({ ...errors, [name]: null });
+        setData({ ...data, [name]: value });
+    };
 
     const user = useContext(UserContext);
 
@@ -19,8 +27,8 @@ export const Login = () => {
         fetch("https://vkedu-fullstack-div2.ru/api/auth/", {
             method: "POST",
             body: JSON.stringify({
-                username: username,
-                password: password,
+                username: data.username || undefined,
+                password: data.password || undefined,
             }),
             headers: {
                 "Content-Type": "application/json",
@@ -44,7 +52,14 @@ export const Login = () => {
                 navigate("/");
             })
             .catch(res => {
-                console.log(res);
+                console.log("Error: ", res.status, res.statusText);
+                res.json().then(json => {
+                    const resErrs = {};
+                    for (let key in json) {
+                        resErrs[key] = json[key];
+                        setErrors(resErrs);
+                    }
+                });
             });
     };
     return (
@@ -59,18 +74,22 @@ export const Login = () => {
                     <input
                         type="text"
                         className=""
-                        required
-                        value={username}
-                        onChange={e => setUsername(e.target.value)}
+                        name="username"
+                        // required
+                        value={data.username}
+                        onChange={handleChange}
                     />
+                    {errors.username && <span className="login__error">{errors.username}</span>}
                     <label className="">Пароль</label>
                     <input
-                        type="text"
+                        type="password"
                         className=""
-                        required
-                        value={password}
-                        onChange={e => setPassword(e.target.value)}
+                        name="password"
+                        // required
+                        value={data.password}
+                        onChange={handleChange}
                     />
+                    {errors.password && <span className="login__error">{errors.password}</span>}
                     <button className="login__submit-btn">Войти</button>
                 </form>
                 <div className="login__already-member">

@@ -33,7 +33,6 @@ export const Chatlist = ({ handleToggleModal, isModalOpen, createNewChat }) => {
         } else {
             if (localStorage.getItem("tokens")) {
                 const tokens = JSON.parse(localStorage.getItem("tokens"));
-                console.log(123);
                 fetch("https://vkedu-fullstack-div2.ru/api/auth/refresh/", {
                     method: "POST",
                     body: JSON.stringify({
