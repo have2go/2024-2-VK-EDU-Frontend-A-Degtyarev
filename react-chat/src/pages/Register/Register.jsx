@@ -22,7 +22,7 @@ export const Register = () => {
         setErrors({ ...errors, [name]: null });
         setData({ ...data, [name]: value });
     };
-    
+
     const handleFileChange = event => {
         const selectedFile = event.target.files[0];
 
@@ -40,11 +40,9 @@ export const Register = () => {
 
         const body = new FormData();
 
-        if (data.username) body.append("username", data.username);
-        if (data.password) body.append("password", data.password);
-        if (data.first_name) body.append("first_name", data.first_name);
-        if (data.last_name) body.append("last_name", data.last_name);
-        if (data.bio) body.append("bio", data.bio);
+        for (let key in data) {
+            if (key) body.append(key, data[key]);
+        }
         if (avatar) body.append("avatar", avatar);
 
         setButtonText("Подождите...");
@@ -68,11 +66,7 @@ export const Register = () => {
                 console.log("Error: ", res.status, res.statusText);
                 setButtonText("Зарегистрироваться");
                 res.json().then(json => {
-                    const resErrs = {};
-                    for (let key in json) {
-                        resErrs[key] = json[key];
-                        setErrors(resErrs);
-                    }
+                    if (typeof json === "object") setErrors({ ...json });
                 });
             });
     };
@@ -149,7 +143,7 @@ export const Register = () => {
                 </form>
                 <div className="register__already-member">
                     Есть аккаунт?{" "}
-                    <Link to={"/login"} className="">
+                    <Link to={"/login"} className="register__link">
                         Авторизуйтесь
                     </Link>
                 </div>

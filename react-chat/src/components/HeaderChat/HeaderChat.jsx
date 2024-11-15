@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { UserContext } from "../../context/UserContext";
 import { Link, useNavigate } from "react-router-dom";
 import { ThemeContext } from "../../context/ThemeContext";
@@ -21,6 +21,8 @@ export const HeaderChat = ({ chat, selectedMessage, setSelectedMessage }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalType, setModalType] = useState(null);
     const [inputValue, setInputValue] = useState("");
+
+    const dropdownRef = useRef(null);
 
     const handleModalOpen = type => {
         setModalType(type);
@@ -94,6 +96,22 @@ export const HeaderChat = ({ chat, selectedMessage, setSelectedMessage }) => {
         }
     };
 
+    useEffect(() => {
+        const handleClickOutside = event => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsMenuOpen(false);
+            }
+        };
+
+        if (isMenuOpen) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [isMenuOpen]);
+
     return (
         <header className={`header ${theme}`}>
             <Link to={"/"} className="header__back-btn">
@@ -132,7 +150,7 @@ export const HeaderChat = ({ chat, selectedMessage, setSelectedMessage }) => {
                         </button>
                     </>
                 )}
-                <div className={`header__dropdown ${isMenuOpen ? "header__dropdown_active" : ""}`}>
+                <div ref={dropdownRef} className={`header__dropdown ${isMenuOpen ? "header__dropdown_active" : ""}`}>
                     <button className="header__dropdown-element" onClick={() => handleModalOpen("deleteChat")}>
                         <DeleteIcon color="error" /> Удалить чат
                     </button>

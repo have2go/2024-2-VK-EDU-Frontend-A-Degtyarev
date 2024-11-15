@@ -31,7 +31,16 @@ export const Profile = () => {
         const name = event.target.name;
         const value = event.target.value?.trim();
 
-        setErrors({ ...errors, [name]: null });
+        const currentErrors = { ...errors, [name]: null };
+        const hasErrors = Object.values(currentErrors).some(value => value !== null);
+
+        if (user.data[name] !== value && !hasErrors) {
+            setIsChanged(true);
+        } else {
+            setIsChanged(false);
+        }
+
+        setErrors(currentErrors);
         setData({ ...data, [name]: value });
     };
 
@@ -61,12 +70,12 @@ export const Profile = () => {
 
     const handleSave = () => {
         setButtontext("Сохранение...");
-        const body = new FormData();
 
-        if (user.data.first_name !== data.first_name) body.append("first_name", data.first_name);
-        if (user.data.last_name !== data.last_name) body.append("last_name", data.last_name);
-        if (user.data.username !== data.username) body.append("username", data.username);
-        if (user.data.bio !== data.bio) body.append("bio", data.bio);
+        const body = new FormData();
+        
+        for (let key in user.data) {
+            if (key !== "avatar" && user.data[key] !== data[key]) body.append(key, data[key]);
+        }
         if (user.data.avatar !== avatar) body.append("avatar", avatar);
 
         fetch(`https://vkedu-fullstack-div2.ru/api/user/${user.data.id}/`, {
@@ -93,11 +102,7 @@ export const Profile = () => {
                 setIsChanged(false);
                 setButtontext("Сохранить");
                 res.json().then(json => {
-                    const resErrs = {};
-                    for (let key in json) {
-                        resErrs[key] = json[key];
-                        setErrors(resErrs);
-                    }
+                    if (typeof json === "object") setErrors({ ...json });
                 });
             });
 
@@ -169,24 +174,6 @@ export const Profile = () => {
             }
         }
     }, []);
-
-    useEffect(() => {
-        const hasErrors = Object.values(errors).some(value => value !== null);
-
-        if (user.data && !hasErrors) {
-            if (
-                user.data.first_name !== data.first_name ||
-                user.data.last_name !== data.last_name ||
-                user.data.username !== data.username ||
-                user.data.bio !== data.bio ||
-                user.data.avatar !== avatar
-            ) {
-                setIsChanged(true);
-            } else {
-                setIsChanged(false);
-            }
-        }
-    }, [data.first_name, data.last_name, data.username, data.bio, avatar]);
 
     return (
         <>

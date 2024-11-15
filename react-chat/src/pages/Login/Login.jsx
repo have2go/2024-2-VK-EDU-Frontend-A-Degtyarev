@@ -27,8 +27,8 @@ export const Login = () => {
         fetch("https://vkedu-fullstack-div2.ru/api/auth/", {
             method: "POST",
             body: JSON.stringify({
-                username: data.username || undefined,
-                password: data.password || undefined,
+                username: data.username || null,
+                password: data.password || null,
             }),
             headers: {
                 "Content-Type": "application/json",
@@ -52,13 +52,8 @@ export const Login = () => {
                 navigate("/");
             })
             .catch(res => {
-                console.log("Error: ", res.status, res.statusText);
                 res.json().then(json => {
-                    const resErrs = {};
-                    for (let key in json) {
-                        resErrs[key] = json[key];
-                        setErrors(resErrs);
-                    }
+                    if (typeof json === "object") setErrors({ ...json });
                 });
             });
     };
@@ -94,10 +89,11 @@ export const Login = () => {
                 </form>
                 <div className="login__already-member">
                     Нет аккаунта?{" "}
-                    <Link to={"/register"} className="">
+                    <Link to={"/register"} className="login__link">
                         Зарегистрируйтесь
                     </Link>
                 </div>
+                {errors.detail && <span className="login__error">{errors.detail}</span>}
             </div>
         </>
     );

@@ -69,7 +69,9 @@ export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) 
                 navigate(`/chat/${json.id}`);
             })
             .catch(res => {
-                console.log(res);
+                res.json().then(json => {
+                    Object.keys(json).forEach(key => alert(json?.[key]?.[0]));
+                });
             });
     };
 
@@ -91,6 +93,7 @@ export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) 
         setTimeout(() => {
             setPage(1);
             setSelectedUser(null);
+            setInputValue("");
             if (dropdownRef.current) {
                 dropdownRef.current.scrollTop = 0;
             }

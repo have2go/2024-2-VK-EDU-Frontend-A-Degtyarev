@@ -9,14 +9,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #00000057;
-    transition: all 0.2s ease;
+    background: rgba($color: #000000, $alpha: 0.8);
+    transition: visibility 0.2s ease, opacity 0.2s ease;
     visibility: hidden;
     opacity: 0;
 
     &_active {
         visibility: visible;
         opacity: 1;
+        z-index: 1;
     }
 
     &__content {
