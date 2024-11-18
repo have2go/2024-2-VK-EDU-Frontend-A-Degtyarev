@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
+import { register } from "../../api/api";
 
 import "./Register.scss";
 
@@ -46,28 +47,17 @@ export const Register = () => {
         if (avatar) body.append("avatar", avatar);
 
         setButtonText("Подождите...");
-        await fetch("https://vkedu-fullstack-div2.ru/api/register/", {
-            method: "POST",
-            body: body,
-        })
-            .then(res => {
-                if (res.ok) {
-                    setButtonText("Успех!");
-                    console.log(res);
-                    setTimeout(() => {
-                        navigate(`/login`);
-                    }, 1500);
 
-                    return;
-                }
-                return Promise.reject(res);
+        await register(body)
+            .then(res => {
+                setButtonText("Успех!");
+                setTimeout(() => {
+                    navigate(`/login`);
+                }, 1500);
             })
-            .catch(res => {
-                console.log("Error: ", res.status, res.statusText);
+            .catch(err => {
                 setButtonText("Зарегистрироваться");
-                res.json().then(json => {
-                    if (typeof json === "object") setErrors({ ...json });
-                });
+                if (typeof err === "object") setErrors({ ...err });
             });
     };
 

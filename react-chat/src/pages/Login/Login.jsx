@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../../context/UserContext";
+import { login } from "../../api/api";
 
 import "./Login.scss";
 
@@ -24,22 +25,7 @@ export const Login = () => {
     const handleLogin = e => {
         e.preventDefault();
 
-        fetch("https://vkedu-fullstack-div2.ru/api/auth/", {
-            method: "POST",
-            body: JSON.stringify({
-                username: data.username || null,
-                password: data.password || null,
-            }),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then(res => {
-                if (res.ok) {
-                    return res.json();
-                }
-                return Promise.reject(res);
-            })
+        login(data.username, data.password)
             .then(json => {
                 user.login(json.access, json.refresh);
                 localStorage.setItem(
@@ -51,10 +37,8 @@ export const Login = () => {
                 );
                 navigate("/");
             })
-            .catch(res => {
-                res.json().then(json => {
-                    if (typeof json === "object") setErrors({ ...json });
-                });
+            .catch(err => {
+                if (typeof err === "object") setErrors({ ...err });
             });
     };
     return (

@@ -33,21 +33,6 @@
     max-height: calc(100% - 80px);
 }
 
-.test-button {
-    position: absolute;
-    top: calc(160px - 100svh);
-    left: 12px;
-    border-radius: 22px;
-    font-size: 12px;
-    width: 200px;
-    height: 50px;
-    cursor: pointer;
-    border: none;
-    background-color: greenyellow;
-    box-shadow: 0 0 10px black;
-    z-index: 9999;
-}
-
 .form {
     position: fixed;
     bottom: 0;
@@ -128,6 +113,45 @@
         border: none;
         outline: none;
         transition: background-color 0.2s ease;
+        margin: 0 auto;
+
+        &_attachments {
+            right: 60px;
+            transform: rotate(135deg);
+        }
+
+        &_voice,
+        &_attachments,
+        &_delete {
+            padding: 8px 8px 8px 5px;
+        }
+
+        &_voice_recording {
+            outline: 1px solid red;
+            animation: pulse-outline 1s infinite ease-in-out;
+        }
+
+        @keyframes pulse-outline {
+            0% {
+                outline-width: 2px;
+            }
+            25% {
+                outline-width: 3px;
+            }
+            50% {
+                outline-width: 5px;
+            }
+            75% {
+                outline-width: 3px;
+            }
+            100% {
+                outline-width: 2px;
+            }
+        }
+
+        &_delete {
+            right: 60px;
+        }
 
         &::before {
             content: "\00a0";
@@ -135,6 +159,201 @@
 
         &:hover {
             background: #1512195b;
+        }
+    }
+
+    &__timer {
+        position: absolute;
+        top: 18px;
+        right: 70px;
+        font-size: 18px;
+    }
+
+    &__audio {
+        position: absolute;
+        top: -2px;
+        left: 0;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        max-width: 210px;
+        width: 100%;
+        font-size: 12px;
+
+        // &-src {
+        // }
+
+        @media screen and (width >= 480px) {
+            max-width: 370px;
+        }
+
+        @media screen and (width >= 768px) {
+            max-width: 630px;
+        }
+    }
+
+    &__mic_recording {
+        position: relative;
+        color: red;
+        transform: scale(1.3);
+
+        &::before {
+            content: "";
+            display: block;
+            width: 25px; /* Размер внутреннего круга */
+            height: 25px;
+            background-color: white; /* Цвет внутреннего круга */
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        &::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 70px; /* Начальный размер пульсирующей окружности */
+            height: 70px;
+            background-color: rgba(255, 0, 0, 0.3); /* Полупрозрачный цвет */
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(1);
+            animation: pulse-circle 1.5s infinite ease-out; /* Анимация окружности */
+            z-index: 1; /* Окружность под иконкой */
+        }
+
+        @keyframes pulse-circle {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1.6); /* Увеличение размера окружности */
+                opacity: 0; /* Постепенное исчезновение */
+            }
+        }
+    }
+
+    &__dropdown {
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        top: -135px;
+        right: 57px;
+        border-radius: 28px;
+        min-width: 120px;
+        padding: 7px;
+        min-height: 70px;
+        z-index: 999;
+        transition: visibility 0.2s ease, opacity 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+
+        &_active {
+            opacity: 1;
+            visibility: visible;
+        }
+    }
+
+    &__dropdown-element {
+        display: flex;
+        align-items: center;
+        justify-content: start;
+        border-radius: 24px;
+        height: 56px;
+        gap: 7px;
+        padding: 0 16px;
+        background-color: transparent;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.2s ease;
+    }
+
+    &__dragging {
+        position: absolute;
+        top: calc(-100vh + 50px);
+        left: 0;
+        width: 100%;
+        max-width: 768px;
+        height: calc(100vh - 50px);
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0.2s ease, opacity 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+
+        &_active {
+            visibility: visible;
+            opacity: 1;
+            z-index: 100;
+        }
+
+        &::before {
+            content: "Перетащите файлы в эту область\A(макс. 9 МБ)";
+            white-space: pre-wrap;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        @media screen and (width >= 768px) {
+            &::before {
+                font-size: 22px;
+            }
+        }
+    }
+
+    &__modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgba($color: #000000, $alpha: 0.8);
+        transition: visibility 0.2s ease, opacity 0.2s ease;
+        visibility: hidden;
+        opacity: 0;
+
+        &_active {
+            visibility: visible;
+            opacity: 1;
+            z-index: 4;
+        }
+
+        &-content {
+            width: 300px;
+            background: #000;
+            border-radius: 28px;
+            display: flex;
+            padding: 15px;
+            flex-direction: column;
+        }
+
+        &-text {
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        &-img {
+            border-radius: 10px;
+        }
+
+        &-buttons {
+            margin-top: 30px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
         }
     }
 }
@@ -364,6 +583,33 @@
                 outline: 2px solid $primary-dark;
             }
         }
+
+        &__dropdown {
+            background-color: $secondary-dark;
+            box-shadow: 0 0 16px rgba(0, 0, 0, 1);
+        }
+
+        &__dropdown-element {
+            border: none;
+            color: $text-dark;
+
+            &:hover {
+                background-color: $onhover-dark;
+            }
+        }
+
+        &__dropdown-icon {
+            color: $primary-dark;
+        }
+
+        &__dragging {
+            background-color: $contentarea-dark;
+
+            &-title,
+            &-text {
+                color: $primary-dark;
+            }
+        }
     }
 
     .message__wrapper {
@@ -449,6 +695,33 @@
 
             &:focus-visible {
                 outline: 2px solid $primary-light;
+            }
+        }
+
+        &__dropdown {
+            background-color: $secondary-light;
+            box-shadow: 0 0 10px rgba(91, 34, 180, 0.5);
+        }
+
+        &__dropdown-element {
+            border: none;
+            color: $text-light;
+
+            &:hover {
+                background-color: $onhover-light;
+            }
+        }
+
+        &__dropdown-icon {
+            color: $primary-light;
+        }
+
+        &__dragging {
+            background-color: $contentarea-light;
+
+            &-title,
+            &-text {
+                color: $primary-light;
             }
         }
     }

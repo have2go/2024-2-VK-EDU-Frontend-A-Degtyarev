@@ -9,54 +9,33 @@ import PersonIcon from "@mui/icons-material/Person";
 import "./Chatlist.scss";
 import { Link, useNavigate } from "react-router-dom";
 import { Centrifuge } from "centrifuge";
+import { getChats, refreshTokens } from "../../api/api";
 
 export const Chatlist = ({ handleToggleModal, isModalOpen, createNewChat }) => {
     const [chats, setChats] = useState(null);
 
     const { theme } = useContext(ThemeContext);
     const user = useContext(UserContext);
-    // console.log("CONTEXT", user.data);
-    // console.log("STATE", chats);
+
     const navigate = useNavigate();
 
     useEffect(() => {
         if (user.tokens.access) {
-            fetch("https://vkedu-fullstack-div2.ru/api/chats/", {
-                headers: {
-                    Authorization: `Bearer ${user.tokens.access}`,
-                    "Content-Type": "application/json",
-                },
-            })
-                .then(response => (response.ok ? response.json() : Promise.reject(response)))
+            getChats(user.tokens.access)
                 .then(json => setChats(json))
-                .catch(console.error);
+                .catch(err => console.log(err));
         } else {
             if (localStorage.getItem("tokens")) {
                 const tokens = JSON.parse(localStorage.getItem("tokens"));
-                fetch("https://vkedu-fullstack-div2.ru/api/auth/refresh/", {
-                    method: "POST",
-                    body: JSON.stringify({
-                        refresh: tokens.refresh,
-                    }),
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                })
-                    .then(response => (response.ok ? response.json() : Promise.reject(response)))
+
+                refreshTokens(tokens.refresh)
                     .then(json => {
                         user.login(json.access, json.refresh);
-                        fetch("https://vkedu-fullstack-div2.ru/api/chats/", {
-                            headers: {
-                                Authorization: `Bearer ${json.access}`,
-                                "Content-Type": "application/json",
-                            },
-                        })
-                            .then(response => (response.ok ? response.json() : Promise.reject(response)))
+                        getChats(json.access)
                             .then(json => setChats(json))
-                            .catch(console.error);
+                            .catch(err => console.log(err));
                     })
-
-                    .catch(console.error);
+                    .catch(err => console.log(err));
             } else {
                 navigate("/login");
             }
@@ -72,6 +51,7 @@ export const Chatlist = ({ handleToggleModal, isModalOpen, createNewChat }) => {
             <div className={`content content_chatlist ${theme}`}>
                 <div className="chatlist">
                     {chats?.results.map(chat => {
+                        const lastMsg = chat.last_message;
                         return (
                             <Link to={`/chat/${chat.id}`} key={chat.id} className="chatlist__link">
                                 <div className="chatlist__element">
@@ -85,7 +65,13 @@ export const Chatlist = ({ handleToggleModal, isModalOpen, createNewChat }) => {
                                     <div className="chatlist__text-container">
                                         <p className="chatlist__name">{chat.title}</p>
                                         <p className="chatlist__last-msg">
-                                            {chat.last_message.text || "Нет сообщений"}
+                                            {lastMsg.voice && "Голосовое сообщение"}
+                                            {lastMsg.files.length > 0 && "Изображение"}
+                                            {lastMsg.text
+                                                ? lastMsg.text
+                                                : !lastMsg.voice && lastMsg.files.length === 0
+                                                ? "Нет сообщений"
+                                                : ""}
                                         </p>
                                     </div>
                                     {/* {chat.last_message.text && (

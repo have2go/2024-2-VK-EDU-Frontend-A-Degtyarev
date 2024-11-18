@@ -10,6 +10,7 @@ export const ConfirmationModal = ({
     selectedMessage,
     inputValue,
     setInputValue,
+    fileInputRef,
 }) => {
     const modalText = {
         deleteChat: "Вы действительно хотите удалить этот чат?",
@@ -20,7 +21,7 @@ export const ConfirmationModal = ({
 
     useEffect(() => {
         if (setInputValue) {
-            if (selectedMessage?.text.trim()) {
+            if (selectedMessage?.text?.trim()) {
                 setInputValue(selectedMessage.text);
             } else {
                 setInputValue("");
@@ -32,9 +33,12 @@ export const ConfirmationModal = ({
         <div className={`modal ${isModalOpen ? "modal_active" : ""}`} onClick={() => setIsModalOpen(false)}>
             <div className="modal__content" onClick={e => e.stopPropagation()}>
                 <p className="modal__text">{modalText[modalType]}</p>
-                {modalType === "editMessage" && (
+                {modalType === "editMessage" && selectedMessage?.text && (
                     <input type="text" value={inputValue} onChange={e => setInputValue(e.target.value)} />
                 )}
+                {/* {modalType === "editMessage" && selectedMessage?.isImg && (
+                    <input type="file" accept="image/*" multiple ref={fileInputRef} />
+                )} */}
                 <div className="modal__buttons">
                     <button className="modal__button modal__button_cancel" onClick={() => setIsModalOpen(false)}>
                         {modalType === "editMessage" ? "Отмена" : "Нет"}
