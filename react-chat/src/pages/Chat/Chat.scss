@@ -179,10 +179,10 @@
         max-width: 210px;
         width: 100%;
         font-size: 12px;
+        z-index: 100;
 
         // &-src {
         // }
-
         @media screen and (width >= 480px) {
             max-width: 370px;
         }
