@@ -142,7 +142,8 @@
 .messages {
     display: flex;
     flex-direction: column-reverse;
-    padding: 0px 10px 70px;
+    // justify-content: flex-start;
+    padding: 0px 0 70px;
     border-radius: 28px 28px 0 0;
     margin-top: 90px;
     width: 100%;
@@ -152,6 +153,17 @@
 
     @media screen and (width >= 768px) {
         padding-bottom: 80px;
+    }
+}
+
+.message__wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+    padding: 0 10px;
+
+    &_incoming {
+        flex-direction: row;
     }
 }
 
@@ -166,6 +178,7 @@
     max-width: 90%;
     align-self: end;
     animation: slideUp 0.3s ease-in-out;
+    transition: transform 0.1s ease;
 
     &::before {
         position: absolute;
@@ -190,6 +203,10 @@
         z-index: 3;
     }
 
+    &_selected {
+        transform: translateX(-10px);
+    }
+
     &_incoming {
         align-self: flex-start;
 
@@ -205,6 +222,10 @@
             left: -10px;
             border-radius: 100% 0;
         }
+    }
+
+    &_incoming.message_selected {
+        transform: translateX(10px);
     }
 
     &__text {
@@ -345,6 +366,12 @@
         }
     }
 
+    .message__wrapper {
+        &_active {
+            background-color: $onhover-dark;
+        }
+    }
+
     .message {
         background-color: $primary-dark;
         color: $contentarea-dark;
@@ -357,12 +384,22 @@
             background-color: $contentarea-dark;
         }
 
+        &_selected::after,
+        &_selected::before {
+            background-color: transparent;
+        }
+
         &_incoming {
             background-color: $secondary-dark;
             color: $text-dark;
 
             &::before {
                 background-color: $secondary-dark;
+            }
+
+            &.message_selected::after,
+            &.message_selected::before {
+                background-color: transparent;
             }
         }
 
@@ -416,6 +453,12 @@
         }
     }
 
+    .message__wrapper {
+        &_active {
+            background-color: $onhover-light;
+        }
+    }
+
     .message {
         background-color: $primary-light;
         color: $contentarea-light;
@@ -428,12 +471,22 @@
             background-color: $contentarea-light;
         }
 
+        &_selected::after,
+        &_selected::before {
+            background-color: transparent;
+        }
+
         &_incoming {
             background-color: $secondary-light;
             color: $text-light;
 
             &::before {
                 background-color: $secondary-light;
+            }
+
+            &.message_selected::after,
+            &.message_selected::before {
+                background-color: transparent;
             }
         }
 

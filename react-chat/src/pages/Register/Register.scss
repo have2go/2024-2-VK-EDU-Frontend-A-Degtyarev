@@ -1,0 +1,29 @@
+@use "../../variables.scss" as *;
+
+.register {
+    width: 300px;
+    min-height: 500px;
+    background-color: $secondary-dark;
+    color: $text-dark;
+    margin: auto;
+    border-radius: 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    &__form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    &__error {
+        color: red;
+    }
+
+    &__link {
+        color: greenyellow;
+        font-weight: 900;
+        font-size: 20px;
+    }
+}

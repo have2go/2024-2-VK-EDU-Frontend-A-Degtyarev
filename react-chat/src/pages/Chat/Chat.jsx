@@ -1,54 +1,66 @@
-import React, { useEffect, useRef, useState, useContext } from "react";
+import React, { useEffect, useRef, useState, useContext, useCallback } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
-import { months } from "../../utils/constants";
+import { UserContext } from "../../context/UserContext";
 import { HeaderChat } from "../../components/HeaderChat";
 import { Helmet } from "react-helmet-async";
-import DoneAllIcon from "@mui/icons-material/DoneAll";
 import SendIcon from "@mui/icons-material/Send";
 import "./Chat.scss";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { Centrifuge } from "centrifuge";
+import { Message } from "../../components/Message";
 
-export const Chat = ({ chatListArr, setChatListArr }) => {
-    const [inputValue, setInputValue] = useState("");
-    const [isEmpty, setIsempty] = useState(false);
+export const Chat = () => {
     const { theme } = useContext(ThemeContext);
     const { id } = useParams();
-    const chatEndRef = useRef(null);
-    const inputRef = useRef(null);
+
+    const user = useContext(UserContext);
     const navigate = useNavigate();
 
-    const chat =
-        chatListArr.length === 0
-            ? JSON.parse(localStorage.getItem("chatListArr")).find(chat => chat.id.toString() === id)
-            : chatListArr.find(chat => chat.id.toString() === id);
+    const [chatInfo, setChatInfo] = useState(null);
+    const [messages, setMessages] = useState([]);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(false);
+    const [isEmpty, setIsEmpty] = useState(false);
+    const [selectedMessage, setSelectedMessage] = useState(null);
 
-    const USER =
-        (JSON.parse(localStorage.getItem("currentUser")) && JSON.parse(localStorage.getItem("currentUser")).username) ||
-        "Alex";
-
-    const handleInputChange = e => {
-        setInputValue(e.target.value);
-    };
+    const chatEndRef = useRef(null);
+    const chatStartRef = useRef(null);
+    const containerRef = useRef(null);
+    const observer = useRef();
+    const inputRef = useRef();
 
     const handleSending = e => {
         e.preventDefault();
         sendMessage();
     };
 
-    const sendMessage = () => {
-        if (inputValue.trim()) {
-            const date = new Date();
-            const newMessage = {
-                message: inputValue.trim(),
-                createdAt: date,
-                author: USER,
-            };
-            console.log(newMessage);
-            const updatedArr = [...chatListArr];
-            const currChat = updatedArr.find(chat => chat.id.toString() === id);
-            currChat.messages.push(newMessage);
-            setChatListArr(updatedArr);
-            setInputValue("");
+    const scrollToBottom = () => {
+        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    const sendMessage = async () => {
+        if (inputRef.current.value.trim()) {
+            await fetch(`https://vkedu-fullstack-div2.ru/api/messages/`, {
+                method: "POST",
+                body: JSON.stringify({
+                    text: inputRef.current.value,
+                    chat: id,
+                }),
+                headers: {
+                    Authorization: `Bearer ${user.tokens.access}`,
+                    "Content-Type": "application/json",
+                },
+            })
+                .then(res => {
+                    if (res.ok) {
+                        return res.json();
+                    }
+                    return Promise.reject(res);
+                })
+                .catch(res => {
+                    console.log(res);
+                });
+            inputRef.current.value = "";
             inputRef.current.focus();
             // таймер для того, чтобы последнее сообщение успело создаться
             // и прокрутило именно в самый низ
@@ -58,50 +70,143 @@ export const Chat = ({ chatListArr, setChatListArr }) => {
         }
     };
 
-    const handleTestMessage = e => {
-        e.preventDefault();
-        sendTestMessage();
-    };
-
-    const sendTestMessage = () => {
-        const date = new Date();
-        const newMessage = {
-            message: "Тестовое сообщение",
-            createdAt: date,
-            author: chat.companionName,
-        };
-        const updatedArr = [...chatListArr];
-        const currChat = updatedArr.find(chat => chat.id.toString() === id);
-        currChat.messages.push(newMessage);
-        currChat.quantityNew += 1;
-        setChatListArr(updatedArr);
-        setTimeout(() => {
-            scrollToBottom();
-        }, 50);
-    };
-
-    const scrollToBottom = () => {
-        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const fetchMessages = async pageNumber => {
+        await fetch(`https://vkedu-fullstack-div2.ru/api/messages/?chat=${id}&page=${pageNumber}&page_size=20`, {
+            headers: {
+                Authorization: `Bearer ${user.tokens.access}`,
+                "Content-Type": "application/json",
+            },
+        })
+            .then(res => {
+                if (res.ok) {
+                    return res.json();
+                }
+                return Promise.reject(res);
+            })
+            .then(json => {
+                setMessages(prevMessages => (pageNumber === 1 ? json.results : [...prevMessages, ...json.results]));
+                if (pageNumber === 1) {
+                    setTimeout(() => {
+                        scrollToBottom();
+                    }, 50);
+                    setTimeout(() => {
+                        setHasMore(json.next !== null);
+                    }, 500);
+                } else {
+                    setHasMore(json.next !== null);
+                }
+            })
+            .catch(res => {
+                console.log(res);
+            });
     };
 
     useEffect(() => {
-        scrollToBottom();
+        if (!user.tokens.access) {
+            navigate("/");
+        } else {
+            inputRef.current.focus();
+            fetch(`https://vkedu-fullstack-div2.ru/api/chat/${id}/`, {
+                headers: {
+                    Authorization: `Bearer ${user.tokens.access}`,
+                    "Content-Type": "application/json",
+                },
+            })
+                .then(res => {
+                    if (res.ok) {
+                        return res.json();
+                    }
+                    return Promise.reject(res);
+                })
+                .then(json => {
+                    setChatInfo(json);
+                })
+                .catch(res => {
+                    console.log(res);
+                });
+
+            const centrifuge = new Centrifuge("wss://vkedu-fullstack-div2.ru/connection/websocket/", {
+                getToken: ctx =>
+                    fetch("https://vkedu-fullstack-div2.ru/api/centrifugo/connect/", {
+                        body: JSON.stringify(ctx),
+                        method: "POST",
+                        headers: {
+                            Authorization: `Bearer ${user.tokens.access}`,
+                            "Content-Type": "application/json",
+                        },
+                    })
+                        .then(res => res.json())
+                        .then(data => data.token),
+            });
+
+            const subscription = centrifuge.newSubscription(user.data.id, {
+                getToken: ctx =>
+                    fetch("https://vkedu-fullstack-div2.ru/api/centrifugo/subscribe/", {
+                        body: JSON.stringify(ctx),
+                        method: "POST",
+                        headers: {
+                            Authorization: `Bearer ${user.tokens.access}`,
+                            "Content-Type": "application/json",
+                        },
+                    })
+                        .then(res => res.json())
+                        .then(data => data.token),
+            });
+
+            subscription.on("publication", ctx => {
+                const { event, message } = ctx.data;
+
+                if (event === "create") {
+                    setMessages(prevMessages => [message, ...prevMessages]);
+                    scrollToBottom();
+                } else if (event === "update") {
+                    setMessages(prevMessages => prevMessages.map(msg => (msg.id === message.id ? message : msg)));
+                } else if (event === "delete") {
+                    setMessages(prevMessages => prevMessages.filter(msg => msg.id !== message.id));
+                }
+            });
+
+            subscription.subscribe();
+            centrifuge.connect();
+
+            return () => {
+                subscription.unsubscribe();
+                centrifuge.disconnect();
+            };
+        }
     }, []);
 
     useEffect(() => {
-        if (!chat) {
-            navigate("/404");
-        }
-    }, [id]);
+        fetchMessages(page);
+    }, [page]);
 
-    if (!chat) return null;
+    useEffect(() => {
+        const observerCallback = entries => {
+            if (entries[0].isIntersecting && hasMore) {
+                setPage(prevPage => prevPage + 1);
+            }
+        };
+        observer.current = new IntersectionObserver(observerCallback);
+        if (chatStartRef.current) {
+            observer.current.observe(chatStartRef.current);
+        }
+        return () => observer.current.disconnect();
+    }, [hasMore]);
+
+    useEffect(() => {
+        if (messages.length === 0) {
+            setIsEmpty(true);
+        } else {
+            setIsEmpty(false);
+        }
+    }, [messages]);
 
     return (
         <>
             <Helmet>
-                <title>{chat.companionName}</title>
+                <title>{chatInfo?.title}</title>
             </Helmet>
-            <HeaderChat chatListArr={chatListArr} />
+            <HeaderChat chat={chatInfo} selectedMessage={selectedMessage} setSelectedMessage={setSelectedMessage} />
             <form className={`form ${theme}`} action="/">
                 <div className="form__input-container">
                     <input
@@ -109,58 +214,31 @@ export const Chat = ({ chatListArr, setChatListArr }) => {
                         placeholder="Введите сообщение"
                         type="text"
                         autoComplete="off"
-                        value={inputValue}
-                        onChange={handleInputChange}
                         ref={inputRef}
                     />
                     <button className="form__send-btn icon" onClick={handleSending}>
                         <SendIcon />
                     </button>
                 </div>
-                <button className="test-button" onClick={handleTestMessage}>
-                    Имитация отправки сообщения от собеседника
-                </button>
                 <div className="form__bottom-spacer"></div>
             </form>
-            <div className="messages">
+            <div className="messages" ref={containerRef}>
                 <div ref={chatEndRef} />
-                {chat.messages
-                    .map((obj, i) => {
-                        const creationDate = new Date(obj.createdAt);
-
-                        const day = String(creationDate.getDate()).padStart(2, "0");
-                        const month = months[creationDate.getMonth()];
-                        const year = creationDate.getFullYear();
-                        const hours = String(creationDate.getHours()).padStart(2, "0");
-                        const minutes = String(creationDate.getMinutes()).padStart(2, "0");
-                        const seconds = String(creationDate.getSeconds()).padStart(2, "0");
-
-                        return (
-                            <div
-                                key={i}
-                                className={`message ${obj.author === chat.companionName ? "message_incoming" : ""}`}
-                            >
-                                <p className="message__text">{obj.message}</p>
-                                <div className="message__info tooltip">
-                                    <span className="tooltiptext">
-                                        {day} {month} {year}г., {hours}:{minutes}:{seconds}
-                                    </span>
-                                    <p className="message__time">{hours + ":" + minutes}</p>
-                                    <span
-                                        className={`material-symbols-outlined message__arrows ${
-                                            obj.author === chat.companionName ? "message__arrows_incoming" : ""
-                                        }`}
-                                    >
-                                        <DoneAllIcon sx={{ fontSize: 14 }} />
-                                    </span>
-                                </div>
-                            </div>
-                        );
-                    })
-                    .reverse()}
+                {messages?.map(msg => {
+                    return (
+                        <Message
+                            key={msg.id}
+                            user={user}
+                            msg={msg}
+                            selectedMessage={selectedMessage}
+                            setSelectedMessage={setSelectedMessage}
+                        />
+                    );
+                })}
+                <div ref={chatStartRef} />
             </div>
             <div className="bg"></div>
-            {chat.messages.length === 0 && <div className="empty-chat">Нет сообщений</div>}
+            {isEmpty && <div className="empty-chat">Нет сообщений</div>}
         </>
     );
 };
