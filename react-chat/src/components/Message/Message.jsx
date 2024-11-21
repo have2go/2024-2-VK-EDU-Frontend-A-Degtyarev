@@ -1,10 +1,12 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { months } from "../../utils/constants";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 
 import "./Message.scss";
 
 export const Message = ({ user, msg, selectedMessage, setSelectedMessage }) => {
+    const [isTextSelected, setIsTextSelected] = useState(false);
+
     const creationDate = new Date(msg.created_at);
 
     const day = String(creationDate.getDate()).padStart(2, "0");
@@ -17,12 +19,17 @@ export const Message = ({ user, msg, selectedMessage, setSelectedMessage }) => {
     const messageRef = useRef();
 
     const handleSelectMessage = (e, isEditable) => {
-        const message = e.target.closest(".message");
         const isLink = e.target.tagName === "A";
-        const isImg = e.target.tagName === "IMG" || Boolean(e.target.querySelector(".message__img"));
+        if (isLink || isTextSelected) return;
+
+        const el = e.target.firstChild && e.target.tagName !== "P" ? e.target.firstChild : e.target;
+
+        const message = el.closest(".message");
+        const containsLink = el.querySelector("a");
+        const isImg = el.tagName === "IMG" || el.querySelector(".message__img");
         const isVoice = msg.voice;
 
-        if (selectedMessage?.id === message?.id || isLink) {
+        if (selectedMessage?.id === message?.id) {
             setSelectedMessage(null);
         } else {
             setSelectedMessage({
@@ -31,6 +38,7 @@ export const Message = ({ user, msg, selectedMessage, setSelectedMessage }) => {
                 text: messageRef.current?.innerHTML || null,
                 isImg: isImg,
                 isVoice: isVoice,
+                containsLink: containsLink,
             });
         }
     };
@@ -54,17 +62,38 @@ export const Message = ({ user, msg, selectedMessage, setSelectedMessage }) => {
         );
     };
 
+    const handleMouseUp = () => {
+        const selectedText = window.getSelection().toString();
+        setIsTextSelected(selectedText.length > 0);
+    };
+
+    useEffect(() => {
+        document.addEventListener("mouseup", handleMouseUp);
+
+        return () => {
+            document.removeEventListener("mouseup", handleMouseUp);
+        };
+    }, []);
+
     return (
         <div
             className={`message__wrapper ${msg.sender?.id === user.data.id ? "" : "message__wrapper_incoming"} ${
                 selectedMessage?.id === msg.id ? "message__wrapper_active" : ""
             }`}
+            onClick={e => {
+                e.stopPropagation();
+                handleSelectMessage(e, msg.sender?.id === user.data.id);
+            }}
+            onDragStart={e => e.preventDefault()}
         >
             <div
                 className={`message ${msg.sender?.id === user.data.id ? "" : "message_incoming"} ${
                     selectedMessage?.id === msg.id ? "message_selected" : ""
                 }`}
-                onClick={e => handleSelectMessage(e, msg.sender?.id === user.data.id)}
+                onClick={e => {
+                    e.stopPropagation();
+                    handleSelectMessage(e, msg.sender?.id === user.data.id);
+                }}
                 id={msg.id}
             >
                 {msg.text && (

@@ -69,64 +69,74 @@ export const Register = () => {
             <div className="register">
                 <h1 className="register__title">Регистрация</h1>
                 <form className="register__form" onSubmit={handleRegister}>
-                    <label className="">Логин</label>
-                    <input
-                        type="text"
-                        name="username"
-                        className=""
-                        // required
-                        // minLength={1}
-                        // maxLength={150}
-                        value={data.username}
-                        onChange={handleChange}
-                    />
-                    {errors.username && <span className="register__error">{errors.username}</span>}
-                    <label className="">Пароль</label>
-                    <input
-                        type="password"
-                        name="password"
-                        className=""
-                        // required
-                        // minLength={8}
-                        // maxLength={150}
-                        value={data.password}
-                        onChange={handleChange}
-                    />
-                    {errors.password && <span className="register__error">{errors.password}</span>}
-                    <label className="">Имя</label>
-                    <input
-                        type="text"
-                        className=""
-                        name="first_name"
-                        // required
-                        // minLength={1}
-                        // maxLength={150}
-                        value={data.first_name}
-                        onChange={handleChange}
-                    />
-                    {errors.first_name && <span className="register__error">{errors.first_name}</span>}
-                    <label className="">Фамилия</label>
-                    <input
-                        type="text"
-                        className=""
-                        name="last_name"
-                        // required
-                        // minLength={1}
-                        // maxLength={150}
-                        value={data.last_name}
-                        onChange={handleChange}
-                    />
-                    {errors.last_name && <span className="register__error">{errors.last_name}</span>}
-                    <label className="">О себе</label>
-                    <textarea
-                        type="text"
-                        className=""
-                        name="bio"
-                        maxLength={450}
-                        value={data.bio}
-                        onChange={handleChange}
-                    />
-                    {errors.bio && <span className="register__error">{errors.bio}</span>}
+                    <div className="register__input-container">
+                        <label className="register__label">Логин</label>
+                        <input
+                            type="text"
+                            name="username"
+                            className="register__input"
+                            // required
+                            // minLength={1}
+                            // maxLength={150}
+                            value={data.username}
+                            onChange={handleChange}
+                        />
+                    </div>
+                    <span className="register__error">{errors.username && errors.username}</span>
+                    <div className="register__input-container">
+                        <label className="register__label">Пароль</label>
+                        <input
+                            type="password"
+                            name="password"
+                            className="register__input"
+                            // required
+                            // minLength={8}
+                            // maxLength={150}
+                            value={data.password}
+                            onChange={handleChange}
+                        />
+                    </div>
+                    <span className="register__error">{errors.password && errors.password}</span>
+                    <div className="register__input-container">
+                        <label className="register__label">Имя</label>
+                        <input
+                            type="text"
+                            className="register__input"
+                            name="first_name"
+                            // required
+                            // minLength={1}
+                            // maxLength={150}
+                            value={data.first_name}
+                            onChange={handleChange}
+                        />
+                    </div>
+                    <span className="register__error">{errors.first_name && errors.first_name}</span>
+                    <div className="register__input-container">
+                        <label className="register__label">Фамилия</label>
+                        <input
+                            type="text"
+                            className="register__input"
+                            name="last_name"
+                            // required
+                            // minLength={1}
+                            // maxLength={150}
+                            value={data.last_name}
+                            onChange={handleChange}
+                        />
+                    </div>
+                    <span className="register__error">{errors.last_name && errors.last_name}</span>
+                    <div className="register__input-container">
+                        <label className="register__label">О себе</label>
+                        <textarea
+                            type="text"
+                            className="register__input register__textarea"
+                            name="bio"
+                            maxLength={450}
+                            value={data.bio}
+                            onChange={handleChange}
+                        />
+                    </div>
+                    <span className="register__error">{errors.bio && errors.bio}</span>
                     <label className="">Аватар</label>
                     <input type="file" accept="image/*" className="" onChange={handleFileChange} />
                     <button className="register__submit-btn">{buttonText}</button>

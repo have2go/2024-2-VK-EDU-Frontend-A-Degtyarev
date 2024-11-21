@@ -8,6 +8,7 @@ const handleError = res => {
     return res.json().then(json => {
         console.log("Код ошибки: ", res.status);
         console.log("Ответ: ", json.detail || json);
+        return Promise.reject(json);
     });
 };
 

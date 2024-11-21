@@ -9,7 +9,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba($color: #000000, $alpha: 0.8);
     transition: visibility 0.2s ease, opacity 0.2s ease;
     visibility: hidden;
     opacity: 0;
@@ -17,17 +16,34 @@
     &_active {
         visibility: visible;
         opacity: 1;
-        z-index: 1;
+        z-index: 3;
     }
 
     &__content {
-        width: 300px;
+        width: 100%;
+        max-width: 300px;
         background: #000;
         border-radius: 28px;
-        padding: 16px;
+        padding: 18px 14px 14px;
         display: flex;
         flex-direction: column;
-        gap: 40px;
+        gap: 20px;
+
+        @media screen and (width >= 380px) {
+            max-width: 320px;
+        }
+
+        @media screen and (width >= 480px) {
+            max-width: 400px;
+        }
+    }
+
+    &__input {
+        height: 46px;
+        border-radius: 16px;
+        border: none;
+        padding: 0 10px;
+        outline: none;
     }
 
     &__text {
@@ -37,14 +53,93 @@
     &__buttons {
         width: 100%;
         display: flex;
-        justify-content: space-between;
+        justify-content: end;
+        gap: 10px;
         cursor: pointer;
     }
+
+    &__button {
+        min-width: 60px;
+        padding: 10px;
+        border-radius: 14px;
+        border: none;
+        cursor: pointer;
+
+        // &_cancel {
+
+        // }
+
+        &_confirm {
+            min-width: 80px;
+        }
+    }
 }
-// .dark {
+.dark {
+    .modal {
+        background: rgba($color: #000000, $alpha: 0.9);
 
-// }
+        &__content {
+            background-color: $mainbg-dark;
+        }
 
-// .light {
+        &__input {
+            background-color: $onhover-dark;
+            color: $text-dark;
 
-// }
+            &:focus-visible {
+                outline: 2px solid $primary-dark;
+            }
+        }
+
+        &__button {
+            &:focus-visible {
+                outline: 2px solid $primary-dark;
+            }
+
+            &_cancel {
+                background-color: $contentarea-dark;
+                color: $text-dark;
+            }
+
+            &_confirm {
+                background-color: $primary-dark;
+            }
+        }
+    }
+}
+
+.light {
+    .modal {
+        background: rgba($color: #000000, $alpha: 0.75);
+
+        &__content {
+            background-color: $mainbg-light;
+        }
+
+        &__input {
+            background-color: white;
+            color: $text-light;
+
+            &:focus-visible {
+                outline: 2px solid $primary-light;
+            }
+        }
+
+        &__button {
+            &:focus-visible {
+                outline: 2px solid $primary-light;
+            }
+
+            &_cancel {
+                background-color: $contentarea-light;
+                color: $text-light;
+                border: 1px solid $primary-light;
+            }
+
+            &_confirm {
+                background-color: $primary-light;
+                color: $text-dark;
+            }
+        }
+    }
+}

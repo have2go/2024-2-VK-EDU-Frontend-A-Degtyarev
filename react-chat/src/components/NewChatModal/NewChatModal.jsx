@@ -157,8 +157,10 @@ export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) 
                                     <PersonIcon sx={{ fontSize: 28 }} />
                                 </span>
                             )}
-
-                            <span className="newchat__username">{user.username}</span>
+                            <div className="newchat__user-info">
+                                <span className="newchat__fullname">{user.first_name + " " + user.last_name}</span>
+                                <span className="newchat__username">{"@" + user.username}</span>
+                            </div>
                         </div>
                     ))}
                     <div ref={lastElementRef} className="newchat__loading-indicator">

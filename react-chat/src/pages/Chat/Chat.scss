@@ -11,7 +11,7 @@
     justify-content: end;
     border-radius: 28px;
     padding: 0;
-    z-index: -1;
+    z-index: -2;
     transition: all 0.2s ease;
 }
 
@@ -43,6 +43,11 @@
     justify-content: end;
     padding: 0;
     z-index: 2;
+    transition: z-index 0.2s ease;
+
+    &_z-0 {
+        z-index: 1;
+    }
 
     &__input {
         border: none;
@@ -181,8 +186,6 @@
         font-size: 12px;
         z-index: 100;
 
-        // &-src {
-        // }
         @media screen and (width >= 480px) {
             max-width: 370px;
         }
@@ -317,7 +320,6 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        background: rgba($color: #000000, $alpha: 0.8);
         transition: visibility 0.2s ease, opacity 0.2s ease;
         visibility: hidden;
         opacity: 0;
@@ -325,16 +327,27 @@
         &_active {
             visibility: visible;
             opacity: 1;
-            z-index: 4;
+            z-index: 3;
         }
 
         &-content {
             width: 300px;
-            background: #000;
             border-radius: 28px;
             display: flex;
-            padding: 15px;
+            padding: 12px;
             flex-direction: column;
+
+            @media screen and (width >= 380px) {
+                width: 320px;
+            }
+
+            @media screen and (width >= 480px) {
+                width: 400px;
+            }
+
+            @media screen and (width >= 768px) {
+                width: 500px;
+            }
         }
 
         &-text {
@@ -344,16 +357,88 @@
             text-overflow: ellipsis;
         }
 
+        &-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            width: 100%;
+            gap: 2px;
+        }
+
+        &-grid-1 {
+            grid-template-columns: 1fr;
+            grid-template-rows: 1fr;
+        }
+
+        &-grid-2 {
+            grid-template-columns: 1fr;
+            grid-template-rows: repeat(2, 150px);
+
+            @media screen and (width >= 480px) {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: 250px;
+            }
+        }
+
+        &-grid-3 {
+            grid-template-rows: repeat(2, 150px);
+
+            @media screen and (width >= 768px) {
+                grid-template-columns: 1fr 1fr 1fr;
+                grid-template-rows: 200px;
+            }
+        }
+
+        &-grid-4 {
+            grid-template-rows: repeat(2, 150px);
+
+            @media screen and (width >= 480px) {
+                grid-template-rows: repeat(2, 200px);
+            }
+        }
+
+        &-grid-5 {
+            grid-template-rows: repeat(3, 100px);
+
+            @media screen and (width >= 380px) {
+                grid-template-rows: repeat(3, 120px);
+            }
+
+            @media screen and (width >= 480px) {
+                grid-template-rows: repeat(3, 150px);
+            }
+        }
+
         &-img {
-            border-radius: 10px;
+            border-radius: 16px;
+            border: 1px solid $onhover-dark;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            max-height: 400px;
         }
 
         &-buttons {
-            margin-top: 30px;
+            margin-top: 14px;
             width: 100%;
             display: flex;
-            justify-content: space-between;
+            justify-content: end;
+            gap: 10px;
             cursor: pointer;
+        }
+
+        &-button {
+            min-width: 60px;
+            padding: 10px;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+
+            // &_cancel {
+            // }
+
+            &_confirm {
+                min-width: 80px;
+            }
         }
     }
 }
@@ -367,7 +452,7 @@
     margin-top: 90px;
     width: 100%;
     max-width: 768px;
-    z-index: 1;
+    z-index: 0;
     flex-grow: 1;
 
     @media screen and (width >= 768px) {
@@ -584,6 +669,29 @@
             }
         }
 
+        &__modal {
+            background: rgba($color: #000000, $alpha: 0.9);
+
+            &-content {
+                background-color: $mainbg-dark;
+            }
+
+            &-button {
+                &:focus-visible {
+                    outline: 2px solid $primary-dark;
+                }
+
+                &_cancel {
+                    background-color: $contentarea-dark;
+                    color: $text-dark;
+                }
+
+                &_confirm {
+                    background-color: $primary-dark;
+                }
+            }
+        }
+
         &__dropdown {
             background-color: $secondary-dark;
             box-shadow: 0 0 16px rgba(0, 0, 0, 1);
@@ -632,7 +740,7 @@
 
         &_selected::after,
         &_selected::before {
-            background-color: transparent;
+            opacity: 0;
         }
 
         &_incoming {
@@ -645,7 +753,7 @@
 
             &.message_selected::after,
             &.message_selected::before {
-                background-color: transparent;
+                opacity: 0;
             }
         }
 
@@ -698,6 +806,31 @@
             }
         }
 
+        &__modal {
+            background: rgba($color: #000000, $alpha: 0.75);
+
+            &-content {
+                background-color: $mainbg-light;
+            }
+
+            &-button {
+                &:focus-visible {
+                    outline: 2px solid $primary-light;
+                }
+
+                &_cancel {
+                    background-color: $contentarea-light;
+                    color: $text-light;
+                    border: 1px solid $primary-light;
+                }
+
+                &_confirm {
+                    background-color: $primary-light;
+                    color: $text-dark;
+                }
+            }
+        }
+
         &__dropdown {
             background-color: $secondary-light;
             box-shadow: 0 0 10px rgba(91, 34, 180, 0.5);
@@ -746,7 +879,7 @@
 
         &_selected::after,
         &_selected::before {
-            background-color: transparent;
+            opacity: 0;
         }
 
         &_incoming {
@@ -759,7 +892,7 @@
 
             &.message_selected::after,
             &.message_selected::before {
-                background-color: transparent;
+                opacity: 0;
             }
         }
 

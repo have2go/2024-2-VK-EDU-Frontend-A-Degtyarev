@@ -39,6 +39,7 @@ export const Chat = () => {
     const [selectedMessage, setSelectedMessage] = useState(null);
     const [inputValue, setInputValue] = useState("");
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isHeaderModalOpen, setIsHeaderModalOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
 
@@ -57,7 +58,7 @@ export const Chat = () => {
     const dropdownRef = useRef(null);
     const fileInputRef = useRef();
 
-    const maxSize = 9 * 1024 * 1024;
+    const maxSize = 10 * 1024 * 1024;
 
     const handleSending = e => {
         e.preventDefault();
@@ -237,14 +238,24 @@ export const Chat = () => {
     const handleFileSending = async () => {
         const filesArr = Array.from(fileInputRef.current.files);
 
-        if (filesArr.some(file => file.size > maxSize)) {
+        const totalSize = filesArr.reduce((acc, file) => acc + file.size, 0);
+        if (totalSize > maxSize) {
             setIsModalOpen(false);
+            alert("Размер файла не должен превышать 10 МБ.");
             setTimeout(() => {
                 fileInputRef.current.value = "";
             }, 250);
-            alert("Размер файла не должен превышать 9 МБ.");
             return;
         }
+
+        if (filesArr.length > 5) {
+            alert("Вы не можете загрузить больше 5 файлов.");
+            setTimeout(() => {
+                fileInputRef.current.value = "";
+            }, 250);
+            return;
+        }
+
         if (!filesArr.length) return;
 
         const formData = new FormData();
@@ -359,14 +370,21 @@ export const Chat = () => {
                 selectedMessage={selectedMessage}
                 setSelectedMessage={setSelectedMessage}
                 handleFileUpload={handleFileUpload}
+                isHeaderModalOpen={isHeaderModalOpen}
+                setIsHeaderModalOpen={setIsHeaderModalOpen}
             />
-            <form className={`form ${theme}`} action="/">
+            <form className={`form ${theme} ${isHeaderModalOpen ? "form_z-0" : ""}`} action="/">
                 <div
                     className={`form__modal ${isModalOpen ? "form__modal_active" : ""}`}
-                    onClick={() => setIsModalOpen(false)}
+                    onClick={() => {
+                        setIsModalOpen(false);
+                        setTimeout(() => {
+                            fileInputRef.current.value = "";
+                        }, 250);
+                    }}
                 >
                     <div className="form__modal-content" onClick={e => e.stopPropagation()}>
-                        {fileInputRef.current?.files &&
+                        {/* {fileInputRef.current?.files &&
                             fileInputRef.current?.files.length > 1 &&
                             Array.from(fileInputRef.current?.files).map((file, i) => {
                                 return (
@@ -374,15 +392,29 @@ export const Chat = () => {
                                         {file.name}
                                     </p>
                                 );
-                            })}
-                        {fileInputRef.current?.files && fileInputRef.current?.files.length === 1 && (
-                            <img
-                                className="form__modal-img"
-                                src={URL.createObjectURL(fileInputRef.current?.files[0])}
-                                draggable={false}
-                            />
+                            })} */}
+                        {fileInputRef.current?.files && fileInputRef.current?.files.length > 0 && (
+                            <div
+                                className={`form__modal-grid ${
+                                    fileInputRef.current?.files.length >= 5
+                                        ? `form__modal-grid-5`
+                                        : `form__modal-grid-${fileInputRef.current?.files.length}`
+                                }`}
+                            >
+                                {Array.from(fileInputRef.current?.files)
+                                    .slice(0, 6)
+                                    .map((file, i) => {
+                                        return (
+                                            <img
+                                                key={i}
+                                                className="form__modal-img"
+                                                src={URL.createObjectURL(file)}
+                                                draggable={false}
+                                            />
+                                        );
+                                    })}
+                            </div>
                         )}
-
                         <div className="form__modal-buttons">
                             <button
                                 type="button"

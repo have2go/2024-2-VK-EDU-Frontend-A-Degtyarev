@@ -50,6 +50,13 @@ export const Chatlist = ({ handleToggleModal, isModalOpen, createNewChat }) => {
             <HeaderChatlist handleToggleModal={handleToggleModal} />
             <div className={`content content_chatlist ${theme}`}>
                 <div className="chatlist">
+                    {(!chats || chats?.results?.length === 0) && (
+                        <div className="chatlist__empty">
+                            Чатов нет
+                            <br />
+                            <span className="chatlist__empty-text">Попробуй написать кому-нибудь</span>
+                        </div>
+                    )}
                     {chats?.results.map(chat => {
                         const lastMsg = chat.last_message;
                         return (
@@ -65,13 +72,13 @@ export const Chatlist = ({ handleToggleModal, isModalOpen, createNewChat }) => {
                                     <div className="chatlist__text-container">
                                         <p className="chatlist__name">{chat.title}</p>
                                         <p className="chatlist__last-msg">
-                                            {lastMsg.voice && "Голосовое сообщение"}
-                                            {lastMsg.files.length > 0 && "Изображение"}
-                                            {lastMsg.text
-                                                ? lastMsg.text
-                                                : !lastMsg.voice && lastMsg.files.length === 0
-                                                ? "Нет сообщений"
-                                                : ""}
+                                            {lastMsg.voice
+                                                ? "Голосовое сообщение"
+                                                : lastMsg.files.length > 0
+                                                ? lastMsg.files.length === 1
+                                                    ? "Изображение"
+                                                    : `Изображения (${lastMsg.files.length})`
+                                                : lastMsg.text || "Нет сообщений"}
                                         </p>
                                     </div>
                                     {/* {chat.last_message.text && (

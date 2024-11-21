@@ -11,26 +11,32 @@ import EditIcon from "@mui/icons-material/Edit";
 import "./HeaderChat.scss";
 import { ConfirmationModal } from "../ConfirmationModal";
 
-export const HeaderChat = ({ chat, selectedMessage, setSelectedMessage, handleFileUpload }) => {
+export const HeaderChat = ({
+    chat,
+    selectedMessage,
+    setSelectedMessage,
+    handleFileUpload,
+    isHeaderModalOpen,
+    setIsHeaderModalOpen,
+}) => {
     const { theme } = useContext(ThemeContext);
     const user = useContext(UserContext);
 
     const navigate = useNavigate();
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalType, setModalType] = useState(null);
     const [inputValue, setInputValue] = useState("");
 
     const dropdownRef = useRef(null);
     const fileInputRef = useRef(null);
 
-    const maxSize = 9 * 1024 * 1024;
+    // const maxSize = 9 * 1024 * 1024;
 
     const handleModalOpen = type => {
         setModalType(type);
         setIsMenuOpen(false);
-        setIsModalOpen(true);
+        setIsHeaderModalOpen(true);
     };
 
     const handleConfirm = event => {
@@ -63,7 +69,7 @@ export const HeaderChat = ({ chat, selectedMessage, setSelectedMessage, handleFi
             })
                 .then(res => {
                     if (res.ok) {
-                        setIsModalOpen(false);
+                        setIsHeaderModalOpen(false);
                         setSelectedMessage(null);
                         return res.json();
                     }
@@ -87,7 +93,7 @@ export const HeaderChat = ({ chat, selectedMessage, setSelectedMessage, handleFi
                 .then(res => {
                     if (res.ok) {
                         setInputValue("");
-                        setIsModalOpen(false);
+                        setIsHeaderModalOpen(false);
                         setSelectedMessage(null);
                         return res.json();
                     }
@@ -102,7 +108,7 @@ export const HeaderChat = ({ chat, selectedMessage, setSelectedMessage, handleFi
 
         //     if (filesArr.some(file => file.size > maxSize)) {
         //         alert("Размер файла не должен превышать 9 МБ.");
-        //         setIsModalOpen(false);
+        //         setIsHeaderModalOpen(false);
         //         fileInputRef.current.value = "";
         //         return;
         //     }
@@ -128,7 +134,7 @@ export const HeaderChat = ({ chat, selectedMessage, setSelectedMessage, handleFi
         //         })
         //         .then(res => {
         //             console.log(res);
-        //             setIsModalOpen(false);
+        //             setIsHeaderModalOpen(false);
         //         })
         //         .catch(res => {
         //             res.json().then(res => console.log(res));
@@ -181,7 +187,7 @@ export const HeaderChat = ({ chat, selectedMessage, setSelectedMessage, handleFi
             <div className="header__utils-container">
                 {selectedMessage?.isEditable ? (
                     <>
-                        {!selectedMessage?.isImg && (
+                        {!(selectedMessage?.isImg || selectedMessage?.isVoice) && (
                             <button className="icon header__search" onClick={() => handleModalOpen("editMessage")}>
                                 <EditIcon sx={{ fontSize: 26 }} />
                             </button>
@@ -207,8 +213,8 @@ export const HeaderChat = ({ chat, selectedMessage, setSelectedMessage, handleFi
                 </div>
             </div>
             <ConfirmationModal
-                isModalOpen={isModalOpen}
-                setIsModalOpen={setIsModalOpen}
+                isHeaderModalOpen={isHeaderModalOpen}
+                setIsHeaderModalOpen={setIsHeaderModalOpen}
                 modalType={modalType}
                 handleConfirm={handleConfirm}
                 selectedMessage={selectedMessage}
