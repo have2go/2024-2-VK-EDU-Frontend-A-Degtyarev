@@ -22,7 +22,7 @@ export const register = async body => {
         .catch(handleError);
 };
 
-export const login = async (username, password) => {
+export const auth = async (username, password) => {
     return await fetch(BASE_URL + "/auth/", {
         method: "POST",
         body: JSON.stringify({

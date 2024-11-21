@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
-import { UserContext } from "../../context/UserContext";
 import { NewChatModal } from "../../components/NewChatModal";
 import { ChatStatus } from "../../components/ChatStatus";
 import { HeaderChatlist } from "../../components/HeaderChatlist";
@@ -10,37 +9,40 @@ import "./Chatlist.scss";
 import { Link, useNavigate } from "react-router-dom";
 import { Centrifuge } from "centrifuge";
 import { getChats, refreshTokens } from "../../api/api";
+import { useChatsStore, useCurrentUserStore } from "../../store/store";
 
 export const Chatlist = ({ handleToggleModal, isModalOpen, createNewChat }) => {
-    const [chats, setChats] = useState(null);
-
+    const { chats, fetchChats, setChats } = useChatsStore();
+    const { userData, tokens, login } = useCurrentUserStore();
+    
     const { theme } = useContext(ThemeContext);
-    const user = useContext(UserContext);
 
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (user.tokens.access) {
-            getChats(user.tokens.access)
-                .then(json => setChats(json))
-                .catch(err => console.log(err));
+    const loadChats = async () => {
+        if (tokens.access) {
+            await fetchChats(tokens.access);
         } else {
-            if (localStorage.getItem("tokens")) {
-                const tokens = JSON.parse(localStorage.getItem("tokens"));
-
-                refreshTokens(tokens.refresh)
-                    .then(json => {
-                        user.login(json.access, json.refresh);
-                        getChats(json.access)
-                            .then(json => setChats(json))
-                            .catch(err => console.log(err));
-                    })
-                    .catch(err => console.log(err));
+            const tokens = localStorage.getItem("tokens");
+            if (tokens) {
+                try {
+                    const parsedTokens = JSON.parse(tokens);
+                    const newTokens = await refreshTokens(parsedTokens.refresh);
+                    login(newTokens.access, newTokens.refresh);
+                    await fetchChats(newTokens.access);
+                } catch (err) {
+                    console.error(err);
+                    navigate("/login");
+                }
             } else {
                 navigate("/login");
             }
         }
-    }, []);
+    };
+
+    useEffect(() => {
+        loadChats();
+    }, [tokens.access, fetchChats, userData, navigate]);
 
     return (
         <>

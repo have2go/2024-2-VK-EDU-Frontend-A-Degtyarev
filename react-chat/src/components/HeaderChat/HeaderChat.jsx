@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState, useRef } from "react";
-import { UserContext } from "../../context/UserContext";
 import { Link, useNavigate } from "react-router-dom";
 import { ThemeContext } from "../../context/ThemeContext";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -10,17 +9,18 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import "./HeaderChat.scss";
 import { ConfirmationModal } from "../ConfirmationModal";
+import { useCurrentUserStore } from "../../store/store";
 
 export const HeaderChat = ({
     chat,
     selectedMessage,
     setSelectedMessage,
     handleFileUpload,
-    isHeaderModalOpen,
-    setIsHeaderModalOpen,
+    isConfirmationModalOpen,
+    setIsConfirmationModalOpen,
 }) => {
     const { theme } = useContext(ThemeContext);
-    const user = useContext(UserContext);
+    const { tokens } = useCurrentUserStore();
 
     const navigate = useNavigate();
 
@@ -31,12 +31,12 @@ export const HeaderChat = ({
     const dropdownRef = useRef(null);
     const fileInputRef = useRef(null);
 
-    // const maxSize = 9 * 1024 * 1024;
+    // const maxSize = 10 * 1024 * 1024;
 
     const handleModalOpen = type => {
         setModalType(type);
         setIsMenuOpen(false);
-        setIsHeaderModalOpen(true);
+        setIsConfirmationModalOpen(true);
     };
 
     const handleConfirm = event => {
@@ -44,7 +44,7 @@ export const HeaderChat = ({
             fetch(`https://vkedu-fullstack-div2.ru/api/chat/${chat.id}/`, {
                 method: "DELETE",
                 headers: {
-                    Authorization: `Bearer ${user.tokens.access}`,
+                    Authorization: `Bearer ${tokens.access}`,
                     "Content-Type": "application/json",
                 },
             })
@@ -63,13 +63,13 @@ export const HeaderChat = ({
             fetch(`https://vkedu-fullstack-div2.ru/api/message/${selectedMessage.id}/`, {
                 method: "DELETE",
                 headers: {
-                    Authorization: `Bearer ${user.tokens.access}`,
+                    Authorization: `Bearer ${tokens.access}`,
                     "Content-Type": "application/json",
                 },
             })
                 .then(res => {
                     if (res.ok) {
-                        setIsHeaderModalOpen(false);
+                        setIsConfirmationModalOpen(false);
                         setSelectedMessage(null);
                         return res.json();
                     }
@@ -83,7 +83,7 @@ export const HeaderChat = ({
             fetch(`https://vkedu-fullstack-div2.ru/api/message/${selectedMessage.id}/`, {
                 method: "PATCH",
                 headers: {
-                    Authorization: `Bearer ${user.tokens.access}`,
+                    Authorization: `Bearer ${tokens.access}`,
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
@@ -93,7 +93,7 @@ export const HeaderChat = ({
                 .then(res => {
                     if (res.ok) {
                         setInputValue("");
-                        setIsHeaderModalOpen(false);
+                        setIsConfirmationModalOpen(false);
                         setSelectedMessage(null);
                         return res.json();
                     }
@@ -122,7 +122,7 @@ export const HeaderChat = ({
         //     fetch(`https://vkedu-fullstack-div2.ru/api/message/${selectedMessage.id}/`, {
         //         method: "PATCH",
         //         headers: {
-        //             Authorization: `Bearer ${user.tokens.access}`,
+        //             Authorization: `Bearer ${tokens.access}`,
         //         },
         //         body: formData,
         //     })
@@ -213,8 +213,8 @@ export const HeaderChat = ({
                 </div>
             </div>
             <ConfirmationModal
-                isHeaderModalOpen={isHeaderModalOpen}
-                setIsHeaderModalOpen={setIsHeaderModalOpen}
+                isConfirmationModalOpen={isConfirmationModalOpen}
+                setIsConfirmationModalOpen={setIsConfirmationModalOpen}
                 modalType={modalType}
                 handleConfirm={handleConfirm}
                 selectedMessage={selectedMessage}

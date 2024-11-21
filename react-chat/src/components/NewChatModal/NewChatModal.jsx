@@ -1,16 +1,20 @@
 import React, { useEffect, useState, useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ThemeContext } from "../../context/ThemeContext";
-import { UserContext } from "../../context/UserContext";
 import CloseIcon from "@mui/icons-material/Close";
 import PersonIcon from "@mui/icons-material/Person";
 import "./NewChatModal.scss";
+import { useUsersStore, useCurrentUserStore } from "../../store/store";
+// import { debounce } from "lodash";
 
 export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) => {
     const { theme } = useContext(ThemeContext);
-    const user = useContext(UserContext);
+
+    const { userData, tokens } = useCurrentUserStore();
+    const { users, fetchUsers } = useUsersStore();
+
     const [inputValue, setInputValue] = useState("");
-    const [users, setUsers] = useState([]);
+    // const [users, setUsers] = useState([]);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const [selectedUser, setSelectedUser] = useState(null);
@@ -22,25 +26,25 @@ export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) 
     const dropdownRef = useRef(null);
     const observer = useRef();
 
-    const fetchUsers = async (searchTerm = "", pageNumber = 1) => {
-        const response = await fetch(
-            `https://vkedu-fullstack-div2.ru/api/users/?search=${searchTerm}&page=${pageNumber}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${user.tokens.access}`,
-                    "Content-Type": "application/json",
-                },
-            }
-        );
-        if (response.ok) {
-            const data = await response.json();
-            const arrToRender = data.results.filter(el => {
-                return el.id !== user.data.id;
-            });
-            setUsers(prevUsers => (pageNumber === 1 ? arrToRender : [...prevUsers, ...arrToRender]));
-            setHasMore(data.next !== null);
-        }
-    };
+    // const fetchUsers = async (searchTerm = "", pageNumber = 1) => {
+    //     const response = await fetch(
+    //         `https://vkedu-fullstack-div2.ru/api/users/?search=${searchTerm}&page=${pageNumber}`,
+    //         {
+    //             headers: {
+    //                 Authorization: `Bearer ${tokens.access}`,
+    //                 "Content-Type": "application/json",
+    //             },
+    //         }
+    //     );
+    //     if (response.ok) {
+    //         const data = await response.json();
+    //         const arrToRender = data.results.filter(el => {
+    //             return el.id !== userData.id;
+    //         });
+    //         setUsers(prevUsers => (pageNumber === 1 ? arrToRender : [...prevUsers, ...arrToRender]));
+    //         setHasMore(data.next !== null);
+    //     }
+    // };
 
     const submitCreation = e => {
         e.preventDefault();
@@ -53,7 +57,7 @@ export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) 
                 title: "test",
             }),
             headers: {
-                Authorization: `Bearer ${user.tokens.access}`,
+                Authorization: `Bearer ${tokens.access}`,
                 "Content-Type": "application/json",
             },
         })
@@ -76,7 +80,7 @@ export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) 
     };
 
     const handleNameChange = e => {
-        setInputValue(e.target.value);
+        setInputValue(e?.target?.value);
         setSelectedUser(null);
         setPage(1);
         if (dropdownRef.current) {
@@ -100,15 +104,18 @@ export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) 
         }, 200);
     };
 
-    useEffect(() => {
-        if (isModalOpen && user.tokens.access) {
-            fetchUsers();
+    const loadUsers = async () => {
+        if (tokens.access) {
+            const result = await fetchUsers(inputValue, page, tokens.access, userData.id);
+            setHasMore(result.hasMore);
         }
-    }, [isModalOpen, user.tokens.access]);
+    };
 
     useEffect(() => {
-        fetchUsers(inputValue, page);
-    }, [inputValue, page]);
+        if (isModalOpen) {
+            loadUsers();
+        }
+    }, [isModalOpen, inputValue, page]);
 
     useEffect(() => {
         const observerCallback = entries => {

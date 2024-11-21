@@ -1,16 +1,28 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { ChatList } from "./pages/Chatlist";
 import { Chat } from "./pages/Chat";
+import { ThemeContext } from "./context/ThemeContext";
 import "./App.scss";
 import { NotFound } from "./pages/NotFound";
 import { Profile } from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Register } from "./pages/Register";
 import { Login } from "./pages/Login";
+import { Centrifuge } from "centrifuge";
+import { useCurrentUserStore, useMessagesStore, useChatsStore } from "./store/store";
+import { connectCentrifuge, subscribeCentrifuge } from "./api/api";
+import { Bounce, ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
     const navigate = useNavigate();
+    const isConnected = useRef(false);
+
+    const { theme } = useContext(ThemeContext);
+    const { userData, tokens } = useCurrentUserStore();
+    const { chatId, addMessage, updateMessage, deleteMessage } = useMessagesStore();
+    const { fetchChats } = useChatsStore();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -32,8 +44,68 @@ function App() {
         }
     };
 
+    useEffect(() => {
+        if (userData && tokens && !isConnected.current) {
+            const centrifuge = new Centrifuge("wss://vkedu-fullstack-div2.ru/connection/websocket/", {
+                getToken: ctx => connectCentrifuge(ctx, tokens.access).then(data => data.token),
+            });
+
+            const subscription = centrifuge.newSubscription(userData.id, {
+                getToken: ctx => subscribeCentrifuge(ctx, tokens.access).then(data => data.token),
+            });
+
+            subscription.on("publication", ctx => {
+                const { event, message } = ctx.data;
+                console.log(ctx.data);
+
+                if (event === "create") {
+                    if (message.chat === chatId) {
+                        addMessage(message);
+                    } else {
+                        fetchChats(tokens.access);
+                        console.log(message);
+                        toast(`Новое сообщение от ${message.sender.first_name}`, {
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: true,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            theme: theme,
+                            transition: Bounce,
+                        });
+                    }
+                } else if (event === "update") {
+                    if (message.chat === chatId) {
+                        updateMessage(message);
+                    } else {
+                        fetchChats(tokens.access);
+                    }
+                } else if (event === "delete") {
+                    if (message.chat === chatId) {
+                        deleteMessage(message);
+                    } else {
+                        fetchChats(tokens.access);
+                    }
+                }
+            });
+
+            subscription.subscribe();
+            centrifuge.connect();
+
+            isConnected.current = true;
+
+            return () => {
+                subscription.unsubscribe();
+                centrifuge.disconnect();
+                isConnected.current = false;
+            };
+        }
+    }, [userData?.id, chatId]);
+
     return (
         <div className={`container`}>
+            <ToastContainer />
             <Routes>
                 <Route
                     path="/"

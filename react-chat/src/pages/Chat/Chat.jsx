@@ -1,18 +1,8 @@
 import React, { useEffect, useRef, useState, useContext, useCallback } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
-import { UserContext } from "../../context/UserContext";
 import { HeaderChat } from "../../components/HeaderChat";
 import { Helmet } from "react-helmet-async";
-import {
-    sendMessage,
-    sendVoice,
-    getMessages,
-    sendGeo,
-    sendImages,
-    getChatInfo,
-    connectCentrifuge,
-    subscribeCentrifuge,
-} from "../../api/api";
+import { sendMessage, sendVoice, getMessages, sendGeo, sendImages, getChatInfo } from "../../api/api";
 import SendIcon from "@mui/icons-material/Send";
 import AttachmentIcon from "@mui/icons-material/Attachment";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
@@ -21,25 +11,27 @@ import MicIcon from "@mui/icons-material/Mic";
 import DeleteIcon from "@mui/icons-material/Delete";
 import "./Chat.scss";
 import { useNavigate, useParams } from "react-router-dom";
-import { Centrifuge } from "centrifuge";
 import { Message } from "../../components/Message";
+import { useCurrentUserStore, useMessagesStore } from "../../store/store";
 
 export const Chat = () => {
     const { theme } = useContext(ThemeContext);
     const { id } = useParams();
 
-    const user = useContext(UserContext);
+    const { tokens } = useCurrentUserStore();
+    const { messages, setMessages, addMessage, setChatId } = useMessagesStore();
+
     const navigate = useNavigate();
 
     const [chatInfo, setChatInfo] = useState(null);
-    const [messages, setMessages] = useState([]);
+    // const [messages, setMessages] = useState([]);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(false);
     const [isEmpty, setIsEmpty] = useState(false);
     const [selectedMessage, setSelectedMessage] = useState(null);
     const [inputValue, setInputValue] = useState("");
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isHeaderModalOpen, setIsHeaderModalOpen] = useState(false);
+    const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
 
@@ -172,7 +164,7 @@ export const Chat = () => {
         formData.append("chat", id);
         formData.append("voice", new File([audioBlob], "voiceMsg.wav", { type: audioBlob.type }));
 
-        sendVoice(user.tokens.access, formData).then(res => {
+        sendVoice(tokens.access, formData).then(res => {
             setAudioBlob(null);
             setRecordingTime(0);
         });
@@ -180,19 +172,17 @@ export const Chat = () => {
 
     const handleSendMessage = async () => {
         if (inputValue.trim()) {
-            sendMessage(id, user.tokens.access, inputValue).then(res => {
+            sendMessage(id, tokens.access, inputValue).then(res => {
                 setInputValue("");
                 inputRef.current.focus();
-                setTimeout(() => {
-                    scrollToBottom();
-                }, 50);
+                setTimeout(() => scrollToBottom(), 50);
             });
         }
     };
 
     const fetchMessages = async pageNumber => {
-        getMessages(id, user.tokens.access, pageNumber).then(json => {
-            setMessages(prevMessages => (pageNumber === 1 ? json.results : [...prevMessages, ...json.results]));
+        getMessages(id, tokens.access, pageNumber).then(json => {
+            setMessages(pageNumber === 1 ? json.results : [...messages, ...json.results]);
             if (pageNumber === 1) {
                 setTimeout(() => {
                     scrollToBottom();
@@ -217,7 +207,7 @@ export const Chat = () => {
                 const { latitude, longitude } = position.coords;
                 const locationUrl = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
 
-                sendGeo(id, user.tokens.access, locationUrl).then(json => {
+                sendGeo(id, tokens.access, locationUrl).then(json => {
                     setIsMenuOpen(false);
                     setTimeout(() => {
                         scrollToBottom();
@@ -265,7 +255,7 @@ export const Chat = () => {
             formData.append("files", file);
         });
 
-        sendImages(user.tokens.access, formData).then(res => {
+        sendImages(tokens.access, formData).then(res => {
             setTimeout(() => {
                 setIsModalOpen(false);
                 scrollToBottom();
@@ -278,40 +268,12 @@ export const Chat = () => {
     };
 
     useEffect(() => {
-        if (!user.tokens.access) {
+        if (!tokens.access) {
             navigate("/");
         } else {
             inputRef.current.focus();
-            getChatInfo(id, user.tokens.access).then(json => setChatInfo(json));
-
-            const centrifuge = new Centrifuge("wss://vkedu-fullstack-div2.ru/connection/websocket/", {
-                getToken: ctx => connectCentrifuge(ctx, user.tokens.access).then(data => data.token),
-            });
-
-            const subscription = centrifuge.newSubscription(user.data.id, {
-                getToken: ctx => subscribeCentrifuge(ctx, user.tokens.access).then(data => data.token),
-            });
-
-            subscription.on("publication", ctx => {
-                const { event, message } = ctx.data;
-
-                if (event === "create") {
-                    setMessages(prevMessages => [message, ...prevMessages]);
-                    scrollToBottom();
-                } else if (event === "update") {
-                    setMessages(prevMessages => prevMessages.map(msg => (msg.id === message.id ? message : msg)));
-                } else if (event === "delete") {
-                    setMessages(prevMessages => prevMessages.filter(msg => msg.id !== message.id));
-                }
-            });
-
-            subscription.subscribe();
-            centrifuge.connect();
-
-            return () => {
-                subscription.unsubscribe();
-                centrifuge.disconnect();
-            };
+            getChatInfo(id, tokens.access).then(json => setChatInfo(json));
+            setChatId(id);
         }
     }, []);
 
@@ -370,10 +332,10 @@ export const Chat = () => {
                 selectedMessage={selectedMessage}
                 setSelectedMessage={setSelectedMessage}
                 handleFileUpload={handleFileUpload}
-                isHeaderModalOpen={isHeaderModalOpen}
-                setIsHeaderModalOpen={setIsHeaderModalOpen}
+                isConfirmationModalOpen={isConfirmationModalOpen}
+                setIsConfirmationModalOpen={setIsConfirmationModalOpen}
             />
-            <form className={`form ${theme} ${isHeaderModalOpen ? "form_z-0" : ""}`} action="/">
+            <form className={`form ${theme} ${isConfirmationModalOpen ? "form_z-0" : ""}`} action="/">
                 <div
                     className={`form__modal ${isModalOpen ? "form__modal_active" : ""}`}
                     onClick={() => {
@@ -542,7 +504,6 @@ export const Chat = () => {
                     return (
                         <Message
                             key={msg.id}
-                            user={user}
                             msg={msg}
                             selectedMessage={selectedMessage}
                             setSelectedMessage={setSelectedMessage}
