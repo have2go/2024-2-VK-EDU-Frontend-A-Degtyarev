@@ -1,1 +1,23 @@
 @use "../../variables.scss" as *;
+
+.message {
+    &__img {
+        max-width: 350px;
+        border-radius: 10px;
+        padding-top: 3px;
+    }
+
+    &__img-container {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    &__audio {
+        max-width: 220px;
+
+        @media screen and (width >= 380px) {
+            max-width: unset;
+        }
+    }
+}

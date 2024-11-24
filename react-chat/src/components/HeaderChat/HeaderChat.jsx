@@ -11,26 +11,35 @@ import EditIcon from "@mui/icons-material/Edit";
 import "./HeaderChat.scss";
 import { ConfirmationModal } from "../ConfirmationModal";
 
-export const HeaderChat = ({ chat, selectedMessage, setSelectedMessage }) => {
+export const HeaderChat = ({
+    chat,
+    selectedMessage,
+    setSelectedMessage,
+    handleFileUpload,
+    isHeaderModalOpen,
+    setIsHeaderModalOpen,
+}) => {
     const { theme } = useContext(ThemeContext);
     const user = useContext(UserContext);
 
     const navigate = useNavigate();
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalType, setModalType] = useState(null);
     const [inputValue, setInputValue] = useState("");
 
     const dropdownRef = useRef(null);
+    const fileInputRef = useRef(null);
+
+    // const maxSize = 9 * 1024 * 1024;
 
     const handleModalOpen = type => {
         setModalType(type);
         setIsMenuOpen(false);
-        setIsModalOpen(true);
+        setIsHeaderModalOpen(true);
     };
 
-    const handleConfirm = () => {
+    const handleConfirm = event => {
         if (modalType === `deleteChat`) {
             fetch(`https://vkedu-fullstack-div2.ru/api/chat/${chat.id}/`, {
                 method: "DELETE",
@@ -60,7 +69,7 @@ export const HeaderChat = ({ chat, selectedMessage, setSelectedMessage }) => {
             })
                 .then(res => {
                     if (res.ok) {
-                        setIsModalOpen(false);
+                        setIsHeaderModalOpen(false);
                         setSelectedMessage(null);
                         return res.json();
                     }
@@ -70,7 +79,7 @@ export const HeaderChat = ({ chat, selectedMessage, setSelectedMessage }) => {
                     console.log(res);
                 });
         }
-        if (modalType === "editMessage" && inputValue.trim()) {
+        if (modalType === "editMessage" && inputValue?.trim()) {
             fetch(`https://vkedu-fullstack-div2.ru/api/message/${selectedMessage.id}/`, {
                 method: "PATCH",
                 headers: {
@@ -84,7 +93,7 @@ export const HeaderChat = ({ chat, selectedMessage, setSelectedMessage }) => {
                 .then(res => {
                     if (res.ok) {
                         setInputValue("");
-                        setIsModalOpen(false);
+                        setIsHeaderModalOpen(false);
                         setSelectedMessage(null);
                         return res.json();
                     }
@@ -94,11 +103,52 @@ export const HeaderChat = ({ chat, selectedMessage, setSelectedMessage }) => {
                     console.log(res);
                 });
         }
+        // if (modalType === "editMessage" && selectedMessage.isImg) {
+        //     const filesArr = Array.from(fileInputRef?.current?.files);
+
+        //     if (filesArr.some(file => file.size > maxSize)) {
+        //         alert("Размер файла не должен превышать 9 МБ.");
+        //         setIsHeaderModalOpen(false);
+        //         fileInputRef.current.value = "";
+        //         return;
+        //     }
+        //     if (!filesArr.length) return;
+
+        //     const formData = new FormData();
+
+        //     formData.append("chat", chat.id);
+        //     filesArr.forEach(file => formData.append("files", file));
+
+        //     fetch(`https://vkedu-fullstack-div2.ru/api/message/${selectedMessage.id}/`, {
+        //         method: "PATCH",
+        //         headers: {
+        //             Authorization: `Bearer ${user.tokens.access}`,
+        //         },
+        //         body: formData,
+        //     })
+        //         .then(res => {
+        //             if (res.ok) {
+        //                 return res.json();
+        //             }
+        //             return Promise.reject(res);
+        //         })
+        //         .then(res => {
+        //             console.log(res);
+        //             setIsHeaderModalOpen(false);
+        //         })
+        //         .catch(res => {
+        //             res.json().then(res => console.log(res));
+        //         });
+        // }
     };
 
     useEffect(() => {
         const handleClickOutside = event => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target) &&
+                !event.target.closest(".header__more")
+            ) {
                 setIsMenuOpen(false);
             }
         };
@@ -121,9 +171,13 @@ export const HeaderChat = ({ chat, selectedMessage, setSelectedMessage }) => {
             </Link>
             <div className="header__user">
                 <div className="header__avatar-container">
-                    <span className="icon">
-                        <PersonIcon sx={{ fontSize: 30 }} />
-                    </span>
+                    {chat?.avatar ? (
+                        <img className="header__avatar" src={chat.avatar} alt="avatar"></img>
+                    ) : (
+                        <span className="icon">
+                            <PersonIcon sx={{ fontSize: 30 }} />
+                        </span>
+                    )}
                 </div>
                 <div className="header__name-container">
                     <p className="header__name">{chat?.title}</p>
@@ -133,9 +187,11 @@ export const HeaderChat = ({ chat, selectedMessage, setSelectedMessage }) => {
             <div className="header__utils-container">
                 {selectedMessage?.isEditable ? (
                     <>
-                        <button className="icon header__search" onClick={() => handleModalOpen("editMessage")}>
-                            <EditIcon sx={{ fontSize: 26 }} />
-                        </button>
+                        {!(selectedMessage?.isImg || selectedMessage?.isVoice) && (
+                            <button className="icon header__search" onClick={() => handleModalOpen("editMessage")}>
+                                <EditIcon sx={{ fontSize: 26 }} />
+                            </button>
+                        )}
                         <button className="icon header__more" onClick={() => handleModalOpen("deleteMessage")}>
                             <DeleteIcon sx={{ fontSize: 26 }} />
                         </button>
@@ -157,13 +213,14 @@ export const HeaderChat = ({ chat, selectedMessage, setSelectedMessage }) => {
                 </div>
             </div>
             <ConfirmationModal
-                isModalOpen={isModalOpen}
-                setIsModalOpen={setIsModalOpen}
+                isHeaderModalOpen={isHeaderModalOpen}
+                setIsHeaderModalOpen={setIsHeaderModalOpen}
                 modalType={modalType}
                 handleConfirm={handleConfirm}
                 selectedMessage={selectedMessage}
                 inputValue={inputValue}
                 setInputValue={setInputValue}
+                fileInputRef={fileInputRef}
             />
         </header>
     );

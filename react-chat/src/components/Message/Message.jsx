@@ -1,10 +1,12 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { months } from "../../utils/constants";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 
 import "./Message.scss";
 
 export const Message = ({ user, msg, selectedMessage, setSelectedMessage }) => {
+    const [isTextSelected, setIsTextSelected] = useState(false);
+
     const creationDate = new Date(msg.created_at);
 
     const day = String(creationDate.getDate()).padStart(2, "0");
@@ -16,34 +18,109 @@ export const Message = ({ user, msg, selectedMessage, setSelectedMessage }) => {
 
     const messageRef = useRef();
 
-    const handleSelectMessage = (div, isEditable) => {
-        if (selectedMessage?.id === div.id) {
+    const handleSelectMessage = (e, isEditable) => {
+        const isLink = e.target.tagName === "A";
+        if (isLink || isTextSelected) return;
+
+        const el = e.target.firstChild && e.target.tagName !== "P" ? e.target.firstChild : e.target;
+
+        const message = el.closest(".message");
+        const containsLink = el.querySelector("a");
+        const isImg = el.tagName === "IMG" || el.querySelector(".message__img");
+        const isVoice = msg.voice;
+
+        if (selectedMessage?.id === message?.id) {
             setSelectedMessage(null);
         } else {
             setSelectedMessage({
-                id: div.id,
+                id: message?.id,
                 isEditable: isEditable,
-                text: messageRef.current.innerHTML,
+                text: messageRef.current?.innerHTML || null,
+                isImg: isImg,
+                isVoice: isVoice,
+                containsLink: containsLink,
             });
         }
     };
+
+    const formatMessageText = text => {
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        return text.split(urlRegex).map((part, index) =>
+            urlRegex.test(part) ? (
+                <a
+                    key={index}
+                    href={part}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: "#3498db", textDecoration: "underline" }}
+                >
+                    {part}
+                </a>
+            ) : (
+                part
+            )
+        );
+    };
+
+    const handleMouseUp = () => {
+        const selectedText = window.getSelection().toString();
+        setIsTextSelected(selectedText.length > 0);
+    };
+
+    useEffect(() => {
+        document.addEventListener("mouseup", handleMouseUp);
+
+        return () => {
+            document.removeEventListener("mouseup", handleMouseUp);
+        };
+    }, []);
 
     return (
         <div
             className={`message__wrapper ${msg.sender?.id === user.data.id ? "" : "message__wrapper_incoming"} ${
                 selectedMessage?.id === msg.id ? "message__wrapper_active" : ""
             }`}
+            onClick={e => {
+                e.stopPropagation();
+                handleSelectMessage(e, msg.sender?.id === user.data.id);
+            }}
+            onDragStart={e => e.preventDefault()}
         >
             <div
                 className={`message ${msg.sender?.id === user.data.id ? "" : "message_incoming"} ${
                     selectedMessage?.id === msg.id ? "message_selected" : ""
                 }`}
-                onClick={e => handleSelectMessage(e.target.closest(".message"), msg.sender?.id === user.data.id)}
+                onClick={e => {
+                    e.stopPropagation();
+                    handleSelectMessage(e, msg.sender?.id === user.data.id);
+                }}
                 id={msg.id}
             >
-                <p className="message__text" ref={messageRef}>
-                    {msg.text}
-                </p>
+                {msg.text && (
+                    <p className="message__text" ref={messageRef}>
+                        {formatMessageText(msg.text)}
+                    </p>
+                )}
+                {msg.files.length > 0 && !msg.voice && (
+                    <div className="message__img-container">
+                        {msg.files.map((file, i) => {
+                            return (
+                                <img
+                                    key={i}
+                                    src={file.item}
+                                    alt="attachment"
+                                    className="message__img"
+                                    draggable={false}
+                                />
+                            );
+                        })}
+                    </div>
+                )}
+                {msg.voice && (
+                    <audio className="message__audio" controls>
+                        <source src={msg.voice} type="audio/wav" />
+                    </audio>
+                )}
                 <div className="message__info tooltip">
                     <span className="tooltiptext">
                         {day} {month} {year}г., {hours}:{minutes}:{seconds}

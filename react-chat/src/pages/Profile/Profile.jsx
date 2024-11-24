@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { UserContext } from "../../context/UserContext";
 import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import { saveProfile, deleteProfile, refreshTokens } from "../../api/api";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PersonIcon from "@mui/icons-material/Person";
 import EditIcon from "@mui/icons-material/Edit";
@@ -72,38 +73,22 @@ export const Profile = () => {
         setButtontext("Сохранение...");
 
         const body = new FormData();
-        
+
         for (let key in user.data) {
             if (key !== "avatar" && user.data[key] !== data[key]) body.append(key, data[key]);
         }
         if (user.data.avatar !== avatar) body.append("avatar", avatar);
 
-        fetch(`https://vkedu-fullstack-div2.ru/api/user/${user.data.id}/`, {
-            method: "PATCH",
-            headers: {
-                Authorization: `Bearer ${user.tokens.access}`,
-            },
-            body: body,
-        })
-            .then(res => {
-                if (res.ok) {
-                    return res.json();
-                }
-                return Promise.reject(res);
-            })
+        saveProfile(user.data.id, user.tokens.access, body)
             .then(json => {
-                console.log(json);
                 user.setData(json);
                 setIsChanged(false);
                 setButtontext("Сохранено!");
             })
-            .catch(res => {
-                console.log("Error: ", res.status, res.statusText);
+            .catch(err => {
                 setIsChanged(false);
                 setButtontext("Сохранить");
-                res.json().then(json => {
-                    if (typeof json === "object") setErrors({ ...json });
-                });
+                if (typeof err === "object") setErrors({ ...err });
             });
 
         setTimeout(() => {
@@ -112,24 +97,9 @@ export const Profile = () => {
     };
 
     const handleConfirmDeletion = () => {
-        fetch(`https://vkedu-fullstack-div2.ru/api/user/${user.data.id}/`, {
-            method: "DELETE",
-            headers: {
-                Authorization: `Bearer ${user.tokens.access}`,
-                "Content-Type": "application/json",
-            },
-        })
-            .then(res => {
-                console.log(res);
-                if (res.ok) {
-                    navigate(`/login`);
-                    return res.json();
-                }
-                return Promise.reject(res);
-            })
-            .catch(res => {
-                console.log(res);
-            });
+        deleteProfile(user.data.id, user.tokens.access)
+            .then(res => navigate(`/login`))
+            .catch(err => console.log(err));
     };
 
     useEffect(() => {
@@ -146,19 +116,10 @@ export const Profile = () => {
         } else {
             if (localStorage.getItem("tokens")) {
                 const tokens = JSON.parse(localStorage.getItem("tokens"));
-                fetch("https://vkedu-fullstack-div2.ru/api/auth/refresh/", {
-                    method: "POST",
-                    body: JSON.stringify({
-                        refresh: tokens.refresh,
-                    }),
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                })
-                    .then(response => (response.ok ? response.json() : Promise.reject(response)))
+
+                refreshTokens(tokens.refresh)
                     .then(json => {
                         user.login(json.access, json.refresh).then(res => {
-                            console.log(res);
                             setData({
                                 username: res.username,
                                 first_name: res.first_name,
@@ -168,7 +129,7 @@ export const Profile = () => {
                             setAvatar(res.avatar);
                         });
                     })
-                    .catch(console.error);
+                    .catch(err => console.log(err));
             } else {
                 navigate("/login");
             }

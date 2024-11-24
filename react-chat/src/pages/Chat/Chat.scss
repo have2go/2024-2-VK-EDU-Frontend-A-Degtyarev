@@ -11,7 +11,7 @@
     justify-content: end;
     border-radius: 28px;
     padding: 0;
-    z-index: -1;
+    z-index: -2;
     transition: all 0.2s ease;
 }
 
@@ -33,21 +33,6 @@
     max-height: calc(100% - 80px);
 }
 
-.test-button {
-    position: absolute;
-    top: calc(160px - 100svh);
-    left: 12px;
-    border-radius: 22px;
-    font-size: 12px;
-    width: 200px;
-    height: 50px;
-    cursor: pointer;
-    border: none;
-    background-color: greenyellow;
-    box-shadow: 0 0 10px black;
-    z-index: 9999;
-}
-
 .form {
     position: fixed;
     bottom: 0;
@@ -58,6 +43,11 @@
     justify-content: end;
     padding: 0;
     z-index: 2;
+    transition: z-index 0.2s ease;
+
+    &_z-0 {
+        z-index: 1;
+    }
 
     &__input {
         border: none;
@@ -128,6 +118,45 @@
         border: none;
         outline: none;
         transition: background-color 0.2s ease;
+        margin: 0 auto;
+
+        &_attachments {
+            right: 60px;
+            transform: rotate(135deg);
+        }
+
+        &_voice,
+        &_attachments,
+        &_delete {
+            padding: 8px 8px 8px 5px;
+        }
+
+        &_voice_recording {
+            outline: 1px solid red;
+            animation: pulse-outline 1s infinite ease-in-out;
+        }
+
+        @keyframes pulse-outline {
+            0% {
+                outline-width: 2px;
+            }
+            25% {
+                outline-width: 3px;
+            }
+            50% {
+                outline-width: 5px;
+            }
+            75% {
+                outline-width: 3px;
+            }
+            100% {
+                outline-width: 2px;
+            }
+        }
+
+        &_delete {
+            right: 60px;
+        }
 
         &::before {
             content: "\00a0";
@@ -135,6 +164,281 @@
 
         &:hover {
             background: #1512195b;
+        }
+    }
+
+    &__timer {
+        position: absolute;
+        top: 18px;
+        right: 70px;
+        font-size: 18px;
+    }
+
+    &__audio {
+        position: absolute;
+        top: -2px;
+        left: 0;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        max-width: 210px;
+        width: 100%;
+        font-size: 12px;
+        z-index: 100;
+
+        @media screen and (width >= 480px) {
+            max-width: 370px;
+        }
+
+        @media screen and (width >= 768px) {
+            max-width: 630px;
+        }
+    }
+
+    &__mic_recording {
+        position: relative;
+        color: red;
+        transform: scale(1.3);
+
+        &::before {
+            content: "";
+            display: block;
+            width: 25px; /* Размер внутреннего круга */
+            height: 25px;
+            background-color: white; /* Цвет внутреннего круга */
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        &::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 70px; /* Начальный размер пульсирующей окружности */
+            height: 70px;
+            background-color: rgba(255, 0, 0, 0.3); /* Полупрозрачный цвет */
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(1);
+            animation: pulse-circle 1.5s infinite ease-out; /* Анимация окружности */
+            z-index: 1; /* Окружность под иконкой */
+        }
+
+        @keyframes pulse-circle {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1.6); /* Увеличение размера окружности */
+                opacity: 0; /* Постепенное исчезновение */
+            }
+        }
+    }
+
+    &__dropdown {
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        top: -135px;
+        right: 57px;
+        border-radius: 28px;
+        min-width: 120px;
+        padding: 7px;
+        min-height: 70px;
+        z-index: 999;
+        transition: visibility 0.2s ease, opacity 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+
+        &_active {
+            opacity: 1;
+            visibility: visible;
+        }
+    }
+
+    &__dropdown-element {
+        display: flex;
+        align-items: center;
+        justify-content: start;
+        border-radius: 24px;
+        height: 56px;
+        gap: 7px;
+        padding: 0 16px;
+        background-color: transparent;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.2s ease;
+    }
+
+    &__dragging {
+        position: absolute;
+        top: calc(-100vh + 50px);
+        left: 0;
+        width: 100%;
+        max-width: 768px;
+        height: calc(100vh - 50px);
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0.2s ease, opacity 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+
+        &_active {
+            visibility: visible;
+            opacity: 1;
+            z-index: 100;
+        }
+
+        &::before {
+            content: "Перетащите файлы в эту область\A(макс. 9 МБ)";
+            white-space: pre-wrap;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        @media screen and (width >= 768px) {
+            &::before {
+                font-size: 22px;
+            }
+        }
+    }
+
+    &__modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: visibility 0.2s ease, opacity 0.2s ease;
+        visibility: hidden;
+        opacity: 0;
+
+        &_active {
+            visibility: visible;
+            opacity: 1;
+            z-index: 3;
+        }
+
+        &-content {
+            width: 300px;
+            border-radius: 28px;
+            display: flex;
+            padding: 12px;
+            flex-direction: column;
+
+            @media screen and (width >= 380px) {
+                width: 320px;
+            }
+
+            @media screen and (width >= 480px) {
+                width: 400px;
+            }
+
+            @media screen and (width >= 768px) {
+                width: 500px;
+            }
+        }
+
+        &-text {
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        &-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            width: 100%;
+            gap: 2px;
+        }
+
+        &-grid-1 {
+            grid-template-columns: 1fr;
+            grid-template-rows: 1fr;
+        }
+
+        &-grid-2 {
+            grid-template-columns: 1fr;
+            grid-template-rows: repeat(2, 150px);
+
+            @media screen and (width >= 480px) {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: 250px;
+            }
+        }
+
+        &-grid-3 {
+            grid-template-rows: repeat(2, 150px);
+
+            @media screen and (width >= 768px) {
+                grid-template-columns: 1fr 1fr 1fr;
+                grid-template-rows: 200px;
+            }
+        }
+
+        &-grid-4 {
+            grid-template-rows: repeat(2, 150px);
+
+            @media screen and (width >= 480px) {
+                grid-template-rows: repeat(2, 200px);
+            }
+        }
+
+        &-grid-5 {
+            grid-template-rows: repeat(3, 100px);
+
+            @media screen and (width >= 380px) {
+                grid-template-rows: repeat(3, 120px);
+            }
+
+            @media screen and (width >= 480px) {
+                grid-template-rows: repeat(3, 150px);
+            }
+        }
+
+        &-img {
+            border-radius: 16px;
+            border: 1px solid $onhover-dark;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            max-height: 400px;
+        }
+
+        &-buttons {
+            margin-top: 14px;
+            width: 100%;
+            display: flex;
+            justify-content: end;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        &-button {
+            min-width: 60px;
+            padding: 10px;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+
+            // &_cancel {
+            // }
+
+            &_confirm {
+                min-width: 80px;
+            }
         }
     }
 }
@@ -148,7 +452,7 @@
     margin-top: 90px;
     width: 100%;
     max-width: 768px;
-    z-index: 1;
+    z-index: 0;
     flex-grow: 1;
 
     @media screen and (width >= 768px) {
@@ -364,6 +668,56 @@
                 outline: 2px solid $primary-dark;
             }
         }
+
+        &__modal {
+            background: rgba($color: #000000, $alpha: 0.9);
+
+            &-content {
+                background-color: $mainbg-dark;
+            }
+
+            &-button {
+                &:focus-visible {
+                    outline: 2px solid $primary-dark;
+                }
+
+                &_cancel {
+                    background-color: $contentarea-dark;
+                    color: $text-dark;
+                }
+
+                &_confirm {
+                    background-color: $primary-dark;
+                }
+            }
+        }
+
+        &__dropdown {
+            background-color: $secondary-dark;
+            box-shadow: 0 0 16px rgba(0, 0, 0, 1);
+        }
+
+        &__dropdown-element {
+            border: none;
+            color: $text-dark;
+
+            &:hover {
+                background-color: $onhover-dark;
+            }
+        }
+
+        &__dropdown-icon {
+            color: $primary-dark;
+        }
+
+        &__dragging {
+            background-color: $contentarea-dark;
+
+            &-title,
+            &-text {
+                color: $primary-dark;
+            }
+        }
     }
 
     .message__wrapper {
@@ -386,7 +740,7 @@
 
         &_selected::after,
         &_selected::before {
-            background-color: transparent;
+            opacity: 0;
         }
 
         &_incoming {
@@ -399,7 +753,7 @@
 
             &.message_selected::after,
             &.message_selected::before {
-                background-color: transparent;
+                opacity: 0;
             }
         }
 
@@ -451,6 +805,58 @@
                 outline: 2px solid $primary-light;
             }
         }
+
+        &__modal {
+            background: rgba($color: #000000, $alpha: 0.75);
+
+            &-content {
+                background-color: $mainbg-light;
+            }
+
+            &-button {
+                &:focus-visible {
+                    outline: 2px solid $primary-light;
+                }
+
+                &_cancel {
+                    background-color: $contentarea-light;
+                    color: $text-light;
+                    border: 1px solid $primary-light;
+                }
+
+                &_confirm {
+                    background-color: $primary-light;
+                    color: $text-dark;
+                }
+            }
+        }
+
+        &__dropdown {
+            background-color: $secondary-light;
+            box-shadow: 0 0 10px rgba(91, 34, 180, 0.5);
+        }
+
+        &__dropdown-element {
+            border: none;
+            color: $text-light;
+
+            &:hover {
+                background-color: $onhover-light;
+            }
+        }
+
+        &__dropdown-icon {
+            color: $primary-light;
+        }
+
+        &__dragging {
+            background-color: $contentarea-light;
+
+            &-title,
+            &-text {
+                color: $primary-light;
+            }
+        }
     }
 
     .message__wrapper {
@@ -473,7 +879,7 @@
 
         &_selected::after,
         &_selected::before {
-            background-color: transparent;
+            opacity: 0;
         }
 
         &_incoming {
@@ -486,7 +892,7 @@
 
             &.message_selected::after,
             &.message_selected::before {
-                background-color: transparent;
+                opacity: 0;
             }
         }
 
