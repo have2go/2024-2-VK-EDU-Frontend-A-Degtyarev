@@ -290,7 +290,7 @@ export const Chat = () => {
 
     useEffect(() => {
         const preventFocusLoss = event => {
-            if (inputRef.current && !inputRef.current.contains(event.target)) {
+            if (inputRef.current) {
                 event.preventDefault();
                 inputRef.current.focus();
             }
