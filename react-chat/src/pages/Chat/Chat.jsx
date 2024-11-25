@@ -179,7 +179,7 @@ export const Chat = () => {
         if (inputValue.trim()) {
             sendMessage(id, tokens.access, inputValue).then(res => {
                 setInputValue("");
-                inputRef.current.focus();
+                // inputRef.current.focus();
                 setTimeout(() => scrollToBottom(), 50);
             });
         }
@@ -287,6 +287,10 @@ export const Chat = () => {
     useEffect(() => {
         fetchMessages(page);
     }, [page]);
+
+    useEffect(() => {
+        inputRef.current?.focus();
+    }, [inputValue]);
 
     useEffect(() => {
         const observerCallback = entries => {
