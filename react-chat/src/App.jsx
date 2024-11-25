@@ -12,7 +12,7 @@ import { Login } from "./pages/Login";
 import { Centrifuge } from "centrifuge";
 import { useCurrentUserStore, useMessagesStore, useChatsStore } from "./store/store";
 import { connectCentrifuge, subscribeCentrifuge } from "./api/api";
-import { Bounce, ToastContainer, toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function App() {
@@ -63,17 +63,8 @@ function App() {
                         addMessage(message);
                     } else {
                         fetchChats(tokens.access);
-                        console.log(message);
-                        toast(`Новое сообщение от ${message.sender.first_name}`, {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: true,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                            theme: theme,
-                            transition: Bounce,
-                        });
+                        // console.log(message);
+                        toast(`Новое сообщение от ${message.sender.first_name}`);
                     }
                 } else if (event === "update") {
                     if (message.chat === chatId) {
@@ -105,7 +96,8 @@ function App() {
 
     return (
         <div className={`container`}>
-            <ToastContainer />
+            {/* <ToastContainer /> */}
+            <ToastContainer position="top-right" autoClose={5000} closeOnClick theme={theme} style={{ zIndex: 1000 }} />
             <Routes>
                 <Route
                     path="/"

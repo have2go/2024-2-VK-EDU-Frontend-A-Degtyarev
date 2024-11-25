@@ -9,10 +9,13 @@ import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import MicIcon from "@mui/icons-material/Mic";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ClearIcon from "@mui/icons-material/Clear";
 import "./Chat.scss";
 import { useNavigate, useParams } from "react-router-dom";
 import { Message } from "../../components/Message";
 import { useCurrentUserStore, useMessagesStore } from "../../store/store";
+import { PuffLoader } from "react-spinners";
+import { toast } from "react-toastify";
 
 export const Chat = () => {
     const { theme } = useContext(ThemeContext);
@@ -24,7 +27,6 @@ export const Chat = () => {
     const navigate = useNavigate();
 
     const [chatInfo, setChatInfo] = useState(null);
-    // const [messages, setMessages] = useState([]);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(false);
     const [isEmpty, setIsEmpty] = useState(false);
@@ -34,6 +36,9 @@ export const Chat = () => {
     const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
+    const [uploadedFiles, setUploadedFiles] = useState([]);
+    const [isMessagesLoading, setIsMessagesLoading] = useState(false);
+    const [isChatInfoLoading, setIsChatInfoLoading] = useState(false);
 
     const [isRecording, setIsRecording] = useState(false);
     const [audioStream, setAudioStream] = useState(null);
@@ -181,7 +186,11 @@ export const Chat = () => {
     };
 
     const fetchMessages = async pageNumber => {
+        if (pageNumber === 1) setIsMessagesLoading(true);
+
         getMessages(id, tokens.access, pageNumber).then(json => {
+            if (setIsMessagesLoading) setIsMessagesLoading(false);
+
             setMessages(pageNumber === 1 ? json.results : [...messages, ...json.results]);
             if (pageNumber === 1) {
                 setTimeout(() => {
@@ -198,7 +207,7 @@ export const Chat = () => {
 
     const handleLocationShare = async () => {
         if (!navigator.geolocation) {
-            alert("Geolocation не поддерживается вашим браузером.");
+            toast("Определение геолокации не поддерживается вашим браузером.");
             return;
         }
 
@@ -215,43 +224,37 @@ export const Chat = () => {
                 });
             },
             error => {
-                alert("Не удалось получить местоположение.");
+                toast("Не удалось получить местоположение.");
             }
         );
     };
 
     const handleFileUpload = () => {
+        setUploadedFiles(Array.from(fileInputRef.current.files));
+        fileInputRef.current.value = "";
         setIsMenuOpen(false);
         setIsModalOpen(true);
     };
 
     const handleFileSending = async () => {
-        const filesArr = Array.from(fileInputRef.current.files);
+        const totalSize = uploadedFiles.reduce((acc, file) => acc + file.size, 0);
 
-        const totalSize = filesArr.reduce((acc, file) => acc + file.size, 0);
         if (totalSize > maxSize) {
-            setIsModalOpen(false);
-            alert("Размер файла не должен превышать 10 МБ.");
-            setTimeout(() => {
-                fileInputRef.current.value = "";
-            }, 250);
+            toast("Размер файлов не должен превышать 10 МБ.");
             return;
         }
 
-        if (filesArr.length > 5) {
-            alert("Вы не можете загрузить больше 5 файлов.");
-            setTimeout(() => {
-                fileInputRef.current.value = "";
-            }, 250);
+        if (uploadedFiles.length > 5) {
+            toast("Вы не можете загрузить больше 5 файлов.");
             return;
         }
 
-        if (!filesArr.length) return;
+        if (!uploadedFiles.length) return;
 
         const formData = new FormData();
         formData.append("chat", id);
 
-        filesArr.forEach(file => {
+        uploadedFiles.forEach(file => {
             formData.append("files", file);
         });
 
@@ -272,7 +275,11 @@ export const Chat = () => {
             navigate("/");
         } else {
             inputRef.current.focus();
-            getChatInfo(id, tokens.access).then(json => setChatInfo(json));
+            setIsChatInfoLoading(true);
+            getChatInfo(id, tokens.access).then(json => {
+                setChatInfo(json);
+                setIsChatInfoLoading(false);
+            });
             setChatId(id);
         }
     }, []);
@@ -334,6 +341,7 @@ export const Chat = () => {
                 handleFileUpload={handleFileUpload}
                 isConfirmationModalOpen={isConfirmationModalOpen}
                 setIsConfirmationModalOpen={setIsConfirmationModalOpen}
+                isChatInfoLoading={isChatInfoLoading}
             />
             <form className={`form ${theme} ${isConfirmationModalOpen ? "form_z-0" : ""}`} action="/">
                 <div
@@ -346,35 +354,32 @@ export const Chat = () => {
                     }}
                 >
                     <div className="form__modal-content" onClick={e => e.stopPropagation()}>
-                        {/* {fileInputRef.current?.files &&
-                            fileInputRef.current?.files.length > 1 &&
-                            Array.from(fileInputRef.current?.files).map((file, i) => {
-                                return (
-                                    <p key={i} className="form__modal-text">
-                                        {file.name}
-                                    </p>
-                                );
-                            })} */}
-                        {fileInputRef.current?.files && fileInputRef.current?.files.length > 0 && (
+                        {uploadedFiles.length && (
                             <div
                                 className={`form__modal-grid ${
-                                    fileInputRef.current?.files.length >= 5
+                                    uploadedFiles.length >= 5
                                         ? `form__modal-grid-5`
-                                        : `form__modal-grid-${fileInputRef.current?.files.length}`
+                                        : `form__modal-grid-${uploadedFiles.length}`
                                 }`}
                             >
-                                {Array.from(fileInputRef.current?.files)
-                                    .slice(0, 6)
-                                    .map((file, i) => {
-                                        return (
+                                {uploadedFiles.slice(0, 6).map((file, i) => {
+                                    return (
+                                        <div key={i} className="form__modal-grid-el">
+                                            <button
+                                                type="button"
+                                                className="form__modal-delete"
+                                                onClick={e => setUploadedFiles(uploadedFiles.filter(el => el !== file))}
+                                            >
+                                                <ClearIcon className="form__modal-delete-icon" sx={{ fontSize: 26 }} />
+                                            </button>
                                             <img
-                                                key={i}
                                                 className="form__modal-img"
                                                 src={URL.createObjectURL(file)}
                                                 draggable={false}
                                             />
-                                        );
-                                    })}
+                                        </div>
+                                    );
+                                })}
                             </div>
                         )}
                         <div className="form__modal-buttons">
@@ -383,9 +388,9 @@ export const Chat = () => {
                                 className="form__modal-button form__modal-button_cancel"
                                 onClick={() => {
                                     setIsModalOpen(false);
-                                    setTimeout(() => {
-                                        fileInputRef.current.value = "";
-                                    }, 250);
+                                    // setTimeout(() => {
+                                    //     fileInputRef.current.value = "";
+                                    // }, 250);
                                 }}
                             >
                                 Отмена
@@ -500,20 +505,28 @@ export const Chat = () => {
                 onDragEnter={handleDragEnter}
             >
                 <div ref={chatEndRef} />
-                {messages?.map(msg => {
-                    return (
-                        <Message
-                            key={msg.id}
-                            msg={msg}
-                            selectedMessage={selectedMessage}
-                            setSelectedMessage={setSelectedMessage}
-                        />
-                    );
-                })}
+                {isMessagesLoading ? (
+                    <PuffLoader
+                        color={theme === "dark" ? "#cfbff5" : "#5b22b4"}
+                        cssOverride={{ margin: "auto" }}
+                        size={100}
+                    />
+                ) : (
+                    messages?.map(msg => {
+                        return (
+                            <Message
+                                key={msg.id}
+                                msg={msg}
+                                selectedMessage={selectedMessage}
+                                setSelectedMessage={setSelectedMessage}
+                            />
+                        );
+                    })
+                )}
                 <div ref={chatStartRef} />
             </div>
             <div className="bg"></div>
-            {isEmpty && <div className="empty-chat">Нет сообщений</div>}
+            {isEmpty && !isMessagesLoading && <div className="empty-chat">Нет сообщений</div>}
         </>
     );
 };

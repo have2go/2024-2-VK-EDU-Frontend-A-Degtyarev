@@ -10,6 +10,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import "./HeaderChat.scss";
 import { ConfirmationModal } from "../ConfirmationModal";
 import { useCurrentUserStore } from "../../store/store";
+import { PulseLoader, PuffLoader } from "react-spinners";
 
 export const HeaderChat = ({
     chat,
@@ -18,12 +19,14 @@ export const HeaderChat = ({
     handleFileUpload,
     isConfirmationModalOpen,
     setIsConfirmationModalOpen,
+    isChatInfoLoading,
 }) => {
     const { theme } = useContext(ThemeContext);
     const { tokens } = useCurrentUserStore();
 
     const navigate = useNavigate();
 
+    const [isLoading, setIsLoading] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [modalType, setModalType] = useState(null);
     const [inputValue, setInputValue] = useState("");
@@ -180,22 +183,34 @@ export const HeaderChat = ({
                     )}
                 </div>
                 <div className="header__name-container">
-                    <p className="header__name">{chat?.title}</p>
+                    <p className="header__name">
+                        {isChatInfoLoading ? (
+                            <PulseLoader
+                                color={theme === "dark" ? "#cfbff5" : "#5b22b4"}
+                                size={8}
+                                speedMultiplier={0.8}
+                            />
+                        ) : (
+                            chat?.title
+                        )}
+                    </p>
                     <p className="header__last-seen">был 2 часа назад</p>
                 </div>
             </div>
             <div className="header__utils-container">
-                {selectedMessage?.isEditable ? (
-                    <>
-                        {!(selectedMessage?.isImg || selectedMessage?.isVoice) && (
-                            <button className="icon header__search" onClick={() => handleModalOpen("editMessage")}>
-                                <EditIcon sx={{ fontSize: 26 }} />
+                {selectedMessage ? (
+                    selectedMessage.isEditable ? (
+                        <>
+                            {!(selectedMessage.isImg || selectedMessage.isVoice) && (
+                                <button className="icon header__search" onClick={() => handleModalOpen("editMessage")}>
+                                    <EditIcon sx={{ fontSize: 26 }} />
+                                </button>
+                            )}
+                            <button className="icon header__more" onClick={() => handleModalOpen("deleteMessage")}>
+                                <DeleteIcon sx={{ fontSize: 26 }} />
                             </button>
-                        )}
-                        <button className="icon header__more" onClick={() => handleModalOpen("deleteMessage")}>
-                            <DeleteIcon sx={{ fontSize: 26 }} />
-                        </button>
-                    </>
+                        </>
+                    ) : null
                 ) : (
                     <>
                         <button className="icon header__search">

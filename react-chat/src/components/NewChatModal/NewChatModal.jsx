@@ -5,6 +5,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import PersonIcon from "@mui/icons-material/Person";
 import "./NewChatModal.scss";
 import { useUsersStore, useCurrentUserStore } from "../../store/store";
+import { toast } from "react-toastify";
+
 // import { debounce } from "lodash";
 
 export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) => {
@@ -14,7 +16,6 @@ export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) 
     const { users, fetchUsers } = useUsersStore();
 
     const [inputValue, setInputValue] = useState("");
-    // const [users, setUsers] = useState([]);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const [selectedUser, setSelectedUser] = useState(null);
@@ -74,7 +75,9 @@ export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) 
             })
             .catch(res => {
                 res.json().then(json => {
-                    Object.keys(json).forEach(key => alert(json?.[key]?.[0]));
+                    Object.keys(json).forEach(key => {
+                        toast(json?.[key]?.[0]);
+                    });
                 });
             });
     };
