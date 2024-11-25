@@ -50,10 +50,11 @@ export const Chat = () => {
     const chatEndRef = useRef(null);
     const chatStartRef = useRef(null);
     const containerRef = useRef(null);
-    const observer = useRef();
-    const inputRef = useRef();
+    const observer = useRef(null);
+    const inputRef = useRef(null);
     const dropdownRef = useRef(null);
-    const fileInputRef = useRef();
+    const fileInputRef = useRef(null);
+    const sendButtonRef = useRef(null);
 
     const maxSize = 10 * 1024 * 1024;
 
@@ -91,10 +92,6 @@ export const Chat = () => {
         setIsDragging(false);
         fileInputRef.current.files = e.dataTransfer.files;
         handleFileUpload();
-    };
-
-    const handleDragOver = e => {
-        e.preventDefault();
     };
 
     const handleToggleRecording = event => {
@@ -289,18 +286,14 @@ export const Chat = () => {
     }, [page]);
 
     useEffect(() => {
-        const restoreFocus = () => {
-            setTimeout(() => {
-                if (inputRef.current) {
-                    inputRef.current.focus();
-                }
-            }, 0);
-        };
-
-        document.addEventListener("touchend", restoreFocus);
+        if (sendButtonRef.current) {
+            sendButtonRef.current.addEventListener("touchend", e => e.preventDefault());
+        }
 
         return () => {
-            document.removeEventListener("touchend", restoreFocus);
+            if (sendButtonRef.current) {
+                sendButtonRef.current.removeEventListener("touchend", e => e.preventDefault());
+            }
         };
     }, []);
 
@@ -425,7 +418,7 @@ export const Chat = () => {
                     className={`form__dragging ${isDragging ? "form__dragging_active" : ""}`}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
-                    onDragOver={handleDragOver}
+                    onDragOver={e => e.preventDefault()}
                 ></div>
                 <div className="form__input-container">
                     <input
@@ -445,7 +438,12 @@ export const Chat = () => {
                         </audio>
                     )}
                     {inputValue.trim() ? (
-                        <button type="button" className="form__send-btn icon" onClick={handleSending}>
+                        <button
+                            type="button"
+                            className="form__send-btn icon"
+                            onClick={handleSending}
+                            ref={sendButtonRef}
+                        >
                             <SendIcon />
                         </button>
                     ) : (
