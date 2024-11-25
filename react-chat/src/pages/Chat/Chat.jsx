@@ -289,16 +289,18 @@ export const Chat = () => {
     }, [page]);
 
     useEffect(() => {
-        const handleBlur = event => {
-            if (inputRef.current && event.target !== inputRef.current) {
-                inputRef.current.focus();
-            }
+        const restoreFocus = () => {
+            setTimeout(() => {
+                if (inputRef.current) {
+                    inputRef.current.focus();
+                }
+            }, 0);
         };
 
-        inputRef.current?.addEventListener("blur", handleBlur);
+        document.addEventListener("touchend", restoreFocus);
 
         return () => {
-            inputRef.current?.removeEventListener("blur", handleBlur);
+            document.removeEventListener("touchend", restoreFocus);
         };
     }, []);
 
