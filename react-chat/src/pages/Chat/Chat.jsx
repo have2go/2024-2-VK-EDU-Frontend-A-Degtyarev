@@ -289,6 +289,21 @@ export const Chat = () => {
     }, [page]);
 
     useEffect(() => {
+        const preventFocusLoss = event => {
+            if (inputRef.current && !inputRef.current.contains(event.target)) {
+                event.preventDefault();
+                inputRef.current.focus();
+            }
+        };
+
+        document.addEventListener("touchend", preventFocusLoss);
+
+        return () => {
+            document.removeEventListener("touchend", preventFocusLoss);
+        };
+    }, []);
+
+    useEffect(() => {
         const observerCallback = entries => {
             if (entries[0].isIntersecting && hasMore) {
                 setPage(prevPage => prevPage + 1);
