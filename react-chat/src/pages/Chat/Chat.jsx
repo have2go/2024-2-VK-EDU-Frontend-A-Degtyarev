@@ -1,47 +1,44 @@
 import React, { useEffect, useRef, useState, useContext, useCallback } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
-import { UserContext } from "../../context/UserContext";
 import { HeaderChat } from "../../components/HeaderChat";
 import { Helmet } from "react-helmet-async";
-import {
-    sendMessage,
-    sendVoice,
-    getMessages,
-    sendGeo,
-    sendImages,
-    getChatInfo,
-    connectCentrifuge,
-    subscribeCentrifuge,
-} from "../../api/api";
+import { sendMessage, sendVoice, getMessages, sendGeo, sendImages, getChatInfo } from "../../api/api";
 import SendIcon from "@mui/icons-material/Send";
 import AttachmentIcon from "@mui/icons-material/Attachment";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import MicIcon from "@mui/icons-material/Mic";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ClearIcon from "@mui/icons-material/Clear";
 import "./Chat.scss";
 import { useNavigate, useParams } from "react-router-dom";
-import { Centrifuge } from "centrifuge";
 import { Message } from "../../components/Message";
+import { useCurrentUserStore, useMessagesStore } from "../../store/store";
+import { PuffLoader } from "react-spinners";
+import { toast } from "react-toastify";
 
 export const Chat = () => {
     const { theme } = useContext(ThemeContext);
     const { id } = useParams();
 
-    const user = useContext(UserContext);
+    const { tokens } = useCurrentUserStore();
+    const { messages, setMessages, addMessage, setChatId } = useMessagesStore();
+
     const navigate = useNavigate();
 
     const [chatInfo, setChatInfo] = useState(null);
-    const [messages, setMessages] = useState([]);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(false);
     const [isEmpty, setIsEmpty] = useState(false);
     const [selectedMessage, setSelectedMessage] = useState(null);
     const [inputValue, setInputValue] = useState("");
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isHeaderModalOpen, setIsHeaderModalOpen] = useState(false);
+    const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
+    const [uploadedFiles, setUploadedFiles] = useState([]);
+    const [isMessagesLoading, setIsMessagesLoading] = useState(false);
+    const [isChatInfoLoading, setIsChatInfoLoading] = useState(false);
 
     const [isRecording, setIsRecording] = useState(false);
     const [audioStream, setAudioStream] = useState(null);
@@ -53,10 +50,11 @@ export const Chat = () => {
     const chatEndRef = useRef(null);
     const chatStartRef = useRef(null);
     const containerRef = useRef(null);
-    const observer = useRef();
-    const inputRef = useRef();
+    const observer = useRef(null);
+    const inputRef = useRef(null);
     const dropdownRef = useRef(null);
-    const fileInputRef = useRef();
+    const fileInputRef = useRef(null);
+    const sendButtonRef = useRef(null);
 
     const maxSize = 10 * 1024 * 1024;
 
@@ -94,10 +92,6 @@ export const Chat = () => {
         setIsDragging(false);
         fileInputRef.current.files = e.dataTransfer.files;
         handleFileUpload();
-    };
-
-    const handleDragOver = e => {
-        e.preventDefault();
     };
 
     const handleToggleRecording = event => {
@@ -172,7 +166,7 @@ export const Chat = () => {
         formData.append("chat", id);
         formData.append("voice", new File([audioBlob], "voiceMsg.wav", { type: audioBlob.type }));
 
-        sendVoice(user.tokens.access, formData).then(res => {
+        sendVoice(tokens.access, formData).then(res => {
             setAudioBlob(null);
             setRecordingTime(0);
         });
@@ -180,19 +174,21 @@ export const Chat = () => {
 
     const handleSendMessage = async () => {
         if (inputValue.trim()) {
-            sendMessage(id, user.tokens.access, inputValue).then(res => {
+            sendMessage(id, tokens.access, inputValue).then(res => {
                 setInputValue("");
                 inputRef.current.focus();
-                setTimeout(() => {
-                    scrollToBottom();
-                }, 50);
+                setTimeout(() => scrollToBottom(), 50);
             });
         }
     };
 
     const fetchMessages = async pageNumber => {
-        getMessages(id, user.tokens.access, pageNumber).then(json => {
-            setMessages(prevMessages => (pageNumber === 1 ? json.results : [...prevMessages, ...json.results]));
+        if (pageNumber === 1) setIsMessagesLoading(true);
+
+        getMessages(id, tokens.access, pageNumber).then(json => {
+            if (setIsMessagesLoading) setIsMessagesLoading(false);
+
+            setMessages(pageNumber === 1 ? json.results : [...messages, ...json.results]);
             if (pageNumber === 1) {
                 setTimeout(() => {
                     scrollToBottom();
@@ -208,7 +204,7 @@ export const Chat = () => {
 
     const handleLocationShare = async () => {
         if (!navigator.geolocation) {
-            alert("Geolocation не поддерживается вашим браузером.");
+            toast("Определение геолокации не поддерживается вашим браузером.");
             return;
         }
 
@@ -217,7 +213,7 @@ export const Chat = () => {
                 const { latitude, longitude } = position.coords;
                 const locationUrl = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
 
-                sendGeo(id, user.tokens.access, locationUrl).then(json => {
+                sendGeo(id, tokens.access, locationUrl).then(json => {
                     setIsMenuOpen(false);
                     setTimeout(() => {
                         scrollToBottom();
@@ -225,47 +221,41 @@ export const Chat = () => {
                 });
             },
             error => {
-                alert("Не удалось получить местоположение.");
+                toast("Не удалось получить местоположение.");
             }
         );
     };
 
     const handleFileUpload = () => {
+        setUploadedFiles(Array.from(fileInputRef.current.files));
+        fileInputRef.current.value = "";
         setIsMenuOpen(false);
         setIsModalOpen(true);
     };
 
     const handleFileSending = async () => {
-        const filesArr = Array.from(fileInputRef.current.files);
+        const totalSize = uploadedFiles.reduce((acc, file) => acc + file.size, 0);
 
-        const totalSize = filesArr.reduce((acc, file) => acc + file.size, 0);
         if (totalSize > maxSize) {
-            setIsModalOpen(false);
-            alert("Размер файла не должен превышать 10 МБ.");
-            setTimeout(() => {
-                fileInputRef.current.value = "";
-            }, 250);
+            toast("Размер файлов не должен превышать 10 МБ.");
             return;
         }
 
-        if (filesArr.length > 5) {
-            alert("Вы не можете загрузить больше 5 файлов.");
-            setTimeout(() => {
-                fileInputRef.current.value = "";
-            }, 250);
+        if (uploadedFiles.length > 5) {
+            toast("Вы не можете загрузить больше 5 файлов.");
             return;
         }
 
-        if (!filesArr.length) return;
+        if (!uploadedFiles.length) return;
 
         const formData = new FormData();
         formData.append("chat", id);
 
-        filesArr.forEach(file => {
+        uploadedFiles.forEach(file => {
             formData.append("files", file);
         });
 
-        sendImages(user.tokens.access, formData).then(res => {
+        sendImages(tokens.access, formData).then(res => {
             setTimeout(() => {
                 setIsModalOpen(false);
                 scrollToBottom();
@@ -278,46 +268,34 @@ export const Chat = () => {
     };
 
     useEffect(() => {
-        if (!user.tokens.access) {
+        if (!tokens.access) {
             navigate("/");
         } else {
             inputRef.current.focus();
-            getChatInfo(id, user.tokens.access).then(json => setChatInfo(json));
-
-            const centrifuge = new Centrifuge("wss://vkedu-fullstack-div2.ru/connection/websocket/", {
-                getToken: ctx => connectCentrifuge(ctx, user.tokens.access).then(data => data.token),
+            setIsChatInfoLoading(true);
+            getChatInfo(id, tokens.access).then(json => {
+                setChatInfo(json);
+                setIsChatInfoLoading(false);
             });
-
-            const subscription = centrifuge.newSubscription(user.data.id, {
-                getToken: ctx => subscribeCentrifuge(ctx, user.tokens.access).then(data => data.token),
-            });
-
-            subscription.on("publication", ctx => {
-                const { event, message } = ctx.data;
-
-                if (event === "create") {
-                    setMessages(prevMessages => [message, ...prevMessages]);
-                    scrollToBottom();
-                } else if (event === "update") {
-                    setMessages(prevMessages => prevMessages.map(msg => (msg.id === message.id ? message : msg)));
-                } else if (event === "delete") {
-                    setMessages(prevMessages => prevMessages.filter(msg => msg.id !== message.id));
-                }
-            });
-
-            subscription.subscribe();
-            centrifuge.connect();
-
-            return () => {
-                subscription.unsubscribe();
-                centrifuge.disconnect();
-            };
+            setChatId(id);
         }
     }, []);
 
     useEffect(() => {
         fetchMessages(page);
     }, [page]);
+
+    useEffect(() => {
+        if (sendButtonRef.current) {
+            sendButtonRef.current.addEventListener("touchend", e => e.preventDefault());
+        }
+
+        return () => {
+            if (sendButtonRef.current) {
+                sendButtonRef.current.removeEventListener("touchend", e => e.preventDefault());
+            }
+        };
+    }, []);
 
     useEffect(() => {
         const observerCallback = entries => {
@@ -370,10 +348,11 @@ export const Chat = () => {
                 selectedMessage={selectedMessage}
                 setSelectedMessage={setSelectedMessage}
                 handleFileUpload={handleFileUpload}
-                isHeaderModalOpen={isHeaderModalOpen}
-                setIsHeaderModalOpen={setIsHeaderModalOpen}
+                isConfirmationModalOpen={isConfirmationModalOpen}
+                setIsConfirmationModalOpen={setIsConfirmationModalOpen}
+                isChatInfoLoading={isChatInfoLoading}
             />
-            <form className={`form ${theme} ${isHeaderModalOpen ? "form_z-0" : ""}`} action="/">
+            <form className={`form ${theme} ${isConfirmationModalOpen ? "form_z-0" : ""}`} action="/">
                 <div
                     className={`form__modal ${isModalOpen ? "form__modal_active" : ""}`}
                     onClick={() => {
@@ -384,35 +363,32 @@ export const Chat = () => {
                     }}
                 >
                     <div className="form__modal-content" onClick={e => e.stopPropagation()}>
-                        {/* {fileInputRef.current?.files &&
-                            fileInputRef.current?.files.length > 1 &&
-                            Array.from(fileInputRef.current?.files).map((file, i) => {
-                                return (
-                                    <p key={i} className="form__modal-text">
-                                        {file.name}
-                                    </p>
-                                );
-                            })} */}
-                        {fileInputRef.current?.files && fileInputRef.current?.files.length > 0 && (
+                        {uploadedFiles.length && (
                             <div
                                 className={`form__modal-grid ${
-                                    fileInputRef.current?.files.length >= 5
+                                    uploadedFiles.length >= 5
                                         ? `form__modal-grid-5`
-                                        : `form__modal-grid-${fileInputRef.current?.files.length}`
+                                        : `form__modal-grid-${uploadedFiles.length}`
                                 }`}
                             >
-                                {Array.from(fileInputRef.current?.files)
-                                    .slice(0, 6)
-                                    .map((file, i) => {
-                                        return (
+                                {uploadedFiles.slice(0, 6).map((file, i) => {
+                                    return (
+                                        <div key={i} className="form__modal-grid-el">
+                                            <button
+                                                type="button"
+                                                className="form__modal-delete"
+                                                onClick={e => setUploadedFiles(uploadedFiles.filter(el => el !== file))}
+                                            >
+                                                <ClearIcon className="form__modal-delete-icon" sx={{ fontSize: 26 }} />
+                                            </button>
                                             <img
-                                                key={i}
                                                 className="form__modal-img"
                                                 src={URL.createObjectURL(file)}
                                                 draggable={false}
                                             />
-                                        );
-                                    })}
+                                        </div>
+                                    );
+                                })}
                             </div>
                         )}
                         <div className="form__modal-buttons">
@@ -421,9 +397,9 @@ export const Chat = () => {
                                 className="form__modal-button form__modal-button_cancel"
                                 onClick={() => {
                                     setIsModalOpen(false);
-                                    setTimeout(() => {
-                                        fileInputRef.current.value = "";
-                                    }, 250);
+                                    // setTimeout(() => {
+                                    //     fileInputRef.current.value = "";
+                                    // }, 250);
                                 }}
                             >
                                 Отмена
@@ -442,7 +418,7 @@ export const Chat = () => {
                     className={`form__dragging ${isDragging ? "form__dragging_active" : ""}`}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
-                    onDragOver={handleDragOver}
+                    onDragOver={e => e.preventDefault()}
                 ></div>
                 <div className="form__input-container">
                     <input
@@ -462,7 +438,12 @@ export const Chat = () => {
                         </audio>
                     )}
                     {inputValue.trim() ? (
-                        <button className="form__send-btn icon" onClick={handleSending}>
+                        <button
+                            type="button"
+                            className="form__send-btn icon"
+                            onClick={handleSending}
+                            ref={sendButtonRef}
+                        >
                             <SendIcon />
                         </button>
                     ) : (
@@ -538,21 +519,28 @@ export const Chat = () => {
                 onDragEnter={handleDragEnter}
             >
                 <div ref={chatEndRef} />
-                {messages?.map(msg => {
-                    return (
-                        <Message
-                            key={msg.id}
-                            user={user}
-                            msg={msg}
-                            selectedMessage={selectedMessage}
-                            setSelectedMessage={setSelectedMessage}
-                        />
-                    );
-                })}
+                {isMessagesLoading ? (
+                    <PuffLoader
+                        color={theme === "dark" ? "#cfbff5" : "#5b22b4"}
+                        cssOverride={{ margin: "auto" }}
+                        size={100}
+                    />
+                ) : (
+                    messages?.map(msg => {
+                        return (
+                            <Message
+                                key={msg.id}
+                                msg={msg}
+                                selectedMessage={selectedMessage}
+                                setSelectedMessage={setSelectedMessage}
+                            />
+                        );
+                    })
+                )}
                 <div ref={chatStartRef} />
             </div>
             <div className="bg"></div>
-            {isEmpty && <div className="empty-chat">Нет сообщений</div>}
+            {isEmpty && !isMessagesLoading && <div className="empty-chat">Нет сообщений</div>}
         </>
     );
 };

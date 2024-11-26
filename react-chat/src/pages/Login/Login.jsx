@@ -1,12 +1,16 @@
 import React, { useState, useContext } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
-import { UserContext } from "../../context/UserContext";
-import { login } from "../../api/api";
+import { auth } from "../../api/api";
+import { useCurrentUserStore } from "../../store/store";
 
 import "./Login.scss";
 
 export const Login = () => {
+    const { login } = useCurrentUserStore();
+
+    const navigate = useNavigate();
+
     const [errors, setErrors] = useState({});
     const [data, setData] = useState({});
 
@@ -18,16 +22,12 @@ export const Login = () => {
         setData({ ...data, [name]: value });
     };
 
-    const user = useContext(UserContext);
-
-    const navigate = useNavigate();
-
     const handleLogin = e => {
         e.preventDefault();
 
-        login(data.username, data.password)
+        auth(data.username, data.password)
             .then(json => {
-                user.login(json.access, json.refresh);
+                login(json.access, json.refresh);
                 localStorage.setItem(
                     "tokens",
                     JSON.stringify({

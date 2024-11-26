@@ -1,10 +1,13 @@
 import React, { useRef, useState, useEffect } from "react";
 import { months } from "../../utils/constants";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
+import { useCurrentUserStore } from "../../store/store";
 
 import "./Message.scss";
 
-export const Message = ({ user, msg, selectedMessage, setSelectedMessage }) => {
+export const Message = ({ msg, selectedMessage, setSelectedMessage }) => {
+    const { userData } = useCurrentUserStore();
+
     const [isTextSelected, setIsTextSelected] = useState(false);
 
     const creationDate = new Date(msg.created_at);
@@ -77,22 +80,22 @@ export const Message = ({ user, msg, selectedMessage, setSelectedMessage }) => {
 
     return (
         <div
-            className={`message__wrapper ${msg.sender?.id === user.data.id ? "" : "message__wrapper_incoming"} ${
+            className={`message__wrapper ${msg.sender?.id === userData?.id ? "" : "message__wrapper_incoming"} ${
                 selectedMessage?.id === msg.id ? "message__wrapper_active" : ""
             }`}
             onClick={e => {
                 e.stopPropagation();
-                handleSelectMessage(e, msg.sender?.id === user.data.id);
+                handleSelectMessage(e, msg.sender?.id === userData.id);
             }}
             onDragStart={e => e.preventDefault()}
         >
             <div
-                className={`message ${msg.sender?.id === user.data.id ? "" : "message_incoming"} ${
+                className={`message ${msg.sender?.id === userData?.id ? "" : "message_incoming"} ${
                     selectedMessage?.id === msg.id ? "message_selected" : ""
                 }`}
                 onClick={e => {
                     e.stopPropagation();
-                    handleSelectMessage(e, msg.sender?.id === user.data.id);
+                    handleSelectMessage(e, msg.sender?.id === userData.id);
                 }}
                 id={msg.id}
             >
@@ -128,7 +131,7 @@ export const Message = ({ user, msg, selectedMessage, setSelectedMessage }) => {
                     <p className="message__time">{hours + ":" + minutes}</p>
                     <span
                         className={`material-symbols-outlined message__arrows ${
-                            msg.sender?.id === user.data.id ? "" : "message__arrows_incoming"
+                            msg.sender?.id === userData?.id ? "" : "message__arrows_incoming"
                         }`}
                     >
                         <DoneAllIcon sx={{ fontSize: 14 }} />

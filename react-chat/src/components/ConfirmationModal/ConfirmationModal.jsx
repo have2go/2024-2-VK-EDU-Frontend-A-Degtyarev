@@ -3,8 +3,8 @@ import React, { useEffect, useState, useRef } from "react";
 import "./ConfirmationModal.scss";
 
 export const ConfirmationModal = ({
-    isHeaderModalOpen,
-    setIsHeaderModalOpen,
+    isConfirmationModalOpen,
+    setIsConfirmationModalOpen,
     modalType,
     handleConfirm,
     selectedMessage,
@@ -30,7 +30,7 @@ export const ConfirmationModal = ({
 
     const handleMouseUp = () => {
         if (isMouseDownOutside) {
-            setIsHeaderModalOpen(false);
+            setIsConfirmationModalOpen(false);
         }
         setIsMouseDownOutside(false);
     };
@@ -50,16 +50,16 @@ export const ConfirmationModal = ({
     }, [selectedMessage]);
 
     useEffect(() => {
-        if (isHeaderModalOpen && modalType === "editMessage" && inputRef.current) {
+        if (isConfirmationModalOpen && modalType === "editMessage" && inputRef.current) {
             setTimeout(() => {
                 inputRef.current.focus();
             }, 100);
         }
-    }, [isHeaderModalOpen, modalType]);
+    }, [isConfirmationModalOpen, modalType]);
 
     return (
         <div
-            className={`modal ${isHeaderModalOpen ? "modal_active" : ""}`}
+            className={`modal ${isConfirmationModalOpen ? "modal_active" : ""}`}
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
         >
@@ -78,7 +78,10 @@ export const ConfirmationModal = ({
                     <input type="file" accept="image/*" multiple ref={fileInputRef} />
                 )} */}
                 <div className="modal__buttons">
-                    <button className="modal__button modal__button_cancel" onClick={() => setIsHeaderModalOpen(false)}>
+                    <button
+                        className="modal__button modal__button_cancel"
+                        onClick={() => setIsConfirmationModalOpen(false)}
+                    >
                         {modalType === "editMessage" ? "Отмена" : "Нет"}
                     </button>
                     <button className="modal__button modal__button_confirm" onClick={handleConfirm}>

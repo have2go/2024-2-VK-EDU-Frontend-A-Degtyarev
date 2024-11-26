@@ -1,8 +1,8 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { UserContext } from "../../context/UserContext";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { saveProfile, deleteProfile, refreshTokens } from "../../api/api";
+import { useCurrentUserStore } from "../../store/store";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PersonIcon from "@mui/icons-material/Person";
 import EditIcon from "@mui/icons-material/Edit";
@@ -12,6 +12,8 @@ import "./Profile.scss";
 import { ConfirmationModal } from "../../components/ConfirmationModal";
 
 export const Profile = () => {
+    const { userData, setUserData, tokens, login } = useCurrentUserStore();
+
     const inputRefs = useRef([]);
     // const [focusedInputIndex, setFocusedInputIndex] = useState(null);
     const [avatar, setAvatar] = useState(null);
@@ -25,7 +27,6 @@ export const Profile = () => {
     const modalType = "deleteProfile";
     const maxSize = 9 * 1024 * 1024;
 
-    const user = useContext(UserContext);
     const navigate = useNavigate();
 
     const handleChange = event => {
@@ -35,7 +36,7 @@ export const Profile = () => {
         const currentErrors = { ...errors, [name]: null };
         const hasErrors = Object.values(currentErrors).some(value => value !== null);
 
-        if (user.data[name] !== value && !hasErrors) {
+        if (userData[name] !== value && !hasErrors) {
             setIsChanged(true);
         } else {
             setIsChanged(false);
@@ -51,9 +52,10 @@ export const Profile = () => {
         if (selectedFile && selectedFile.size > maxSize) {
             alert("Размер файла не должен превышать 9 МБ.");
             event.target.value = "";
-            setAvatar(null);
+            setAvatar(userData.avatar);
         } else {
             setAvatar(selectedFile);
+            setIsChanged(true);
         }
         console.log(selectedFile);
     };
@@ -74,14 +76,14 @@ export const Profile = () => {
 
         const body = new FormData();
 
-        for (let key in user.data) {
-            if (key !== "avatar" && user.data[key] !== data[key]) body.append(key, data[key]);
+        for (let key in userData) {
+            if (key !== "avatar" && userData[key] !== data[key]) body.append(key, data[key]);
         }
-        if (user.data.avatar !== avatar) body.append("avatar", avatar);
+        if (userData.avatar !== avatar) body.append("avatar", avatar);
 
-        saveProfile(user.data.id, user.tokens.access, body)
+        saveProfile(userData.id, tokens.access, body)
             .then(json => {
-                user.setData(json);
+                setUserData(json);
                 setIsChanged(false);
                 setButtontext("Сохранено!");
             })
@@ -97,21 +99,21 @@ export const Profile = () => {
     };
 
     const handleConfirmDeletion = () => {
-        deleteProfile(user.data.id, user.tokens.access)
+        deleteProfile(userData.id, tokens.access)
             .then(res => navigate(`/login`))
             .catch(err => console.log(err));
     };
 
     useEffect(() => {
-        if (user.tokens.access) {
-            if (user.data) {
+        if (tokens.access) {
+            if (userData) {
                 setData({
-                    username: user.data.username,
-                    first_name: user.data.first_name,
-                    last_name: user.data.last_name,
-                    bio: user.data.bio,
+                    username: userData.username,
+                    first_name: userData.first_name,
+                    last_name: userData.last_name,
+                    bio: userData.bio,
                 });
-                setAvatar(user.data.avatar);
+                setAvatar(userData.avatar);
             }
         } else {
             if (localStorage.getItem("tokens")) {
@@ -119,7 +121,7 @@ export const Profile = () => {
 
                 refreshTokens(tokens.refresh)
                     .then(json => {
-                        user.login(json.access, json.refresh).then(res => {
+                        login(json.access, json.refresh).then(res => {
                             setData({
                                 username: res.username,
                                 first_name: res.first_name,
@@ -155,7 +157,7 @@ export const Profile = () => {
                         <div className="profile__avatar">
                             {avatar ? (
                                 <img
-                                    src={user.data.avatar === avatar ? avatar : URL.createObjectURL(avatar)}
+                                    src={typeof avatar === "string" ? avatar : URL.createObjectURL(avatar)}
                                     alt="avatar"
                                     className="profile__avatar-img"
                                 />
@@ -168,7 +170,7 @@ export const Profile = () => {
                                 <input
                                     id="avatarInput"
                                     type="file"
-                                    accept="image/*"
+                                    accept="image/jpeg, image/png"
                                     className="profile__avatar-input"
                                     onChange={handleFileChange}
                                 />
@@ -250,8 +252,8 @@ export const Profile = () => {
                     </div>
                 </div>
                 <ConfirmationModal
-                    isModalOpen={isModalOpen}
-                    setIsModalOpen={setIsModalOpen}
+                    isConfirmationModalOpen={isModalOpen}
+                    setIsConfirmationModalOpen={setIsModalOpen}
                     modalType={modalType}
                     handleConfirm={handleConfirmDeletion}
                 />
