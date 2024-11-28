@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import "./Login.scss";
 
 export const Login = () => {
-    const { login } = useCurrentUserStore();
+    const { login, tokens } = useCurrentUserStore();
 
     const navigate = useNavigate();
 
@@ -37,13 +37,18 @@ export const Login = () => {
                         refresh: json.refresh,
                     })
                 );
-                navigate("/");
             })
             .catch(err => {
                 if (errors.detail) toast(errors.detail);
                 if (typeof err === "object") setErrors({ ...err });
             });
     };
+
+    useEffect(() => {
+        if (tokens?.access) {
+            navigate("/", { replace: true });
+        }
+    }, [tokens]);
 
     return (
         <>

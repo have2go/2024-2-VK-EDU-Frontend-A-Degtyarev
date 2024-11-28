@@ -1,22 +1,14 @@
-import { useNavigate, useParams } from "react-router-dom";
-import { useEffect } from "react";
+import { Navigate } from "react-router-dom";
+import { useCurrentUserStore } from "../store/store";
 
-const ProtectedRoute = ({ children, chatListArr }) => {
-    const { id } = useParams();
-    const navigate = useNavigate();
+const ProtectedRoute = ({ children }) => {
+    const { tokens } = useCurrentUserStore();
 
-    // const chat =
-    //     chatListArr.length === 0
-    //         ? JSON.parse(localStorage.getItem("chatListArr")).find(chat => chat.id.toString() === id)
-    //         : chatListArr.find(chat => chat.id.toString() === id);
+    if (!tokens?.access && !localStorage.getItem("tokens")) {
+        return <Navigate to="/login" replace />;
+    }
 
-    // useEffect(() => {
-    //     if (!chat) {
-    //         navigate("/404");
-    //     }
-    // }, [id]);
-
-    return true ? children : null; 
+    return children;
 };
 
 export default ProtectedRoute;

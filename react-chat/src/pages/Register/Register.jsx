@@ -67,7 +67,7 @@ export const Register = () => {
                             refresh: json.refresh,
                         })
                     );
-                    navigate("/");
+                    navigate("/", { replace: true });
                 });
             })
             .catch(err => {

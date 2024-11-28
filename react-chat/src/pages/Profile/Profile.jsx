@@ -11,6 +11,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 
 import "./Profile.scss";
 import { ConfirmationModal } from "../../components/ConfirmationModal";
+import { replace } from "lodash";
 
 export const Profile = () => {
     const { userData, setUserData, tokens, login, logout } = useCurrentUserStore();
@@ -26,7 +27,7 @@ export const Profile = () => {
     const [data, setData] = useState({});
 
     const modalType = "deleteProfile";
-    const maxSize = 9 * 1024 * 1024;
+    const maxSize = 10 * 1024 * 1024;
 
     const navigate = useNavigate();
 
@@ -51,7 +52,7 @@ export const Profile = () => {
         const selectedFile = event.target.files[0];
 
         if (selectedFile && selectedFile.size > maxSize) {
-            alert("Размер файла не должен превышать 9 МБ.");
+            alert("Размер файла не должен превышать 10 МБ.");
             event.target.value = "";
             setAvatar(userData.avatar);
         } else {
@@ -102,7 +103,10 @@ export const Profile = () => {
     const handleConfirmDeletion = () => {
         deleteProfile(userData.id, tokens.access)
             .catch(err => console.log(err))
-            .finally(() => navigate(`/login`));
+            .finally(() => {
+                localStorage.removeItem("tokens");
+                navigate(`/login`, { replace: true });
+            });
     };
 
     useEffect(() => {
@@ -134,7 +138,7 @@ export const Profile = () => {
                     })
                     .catch(err => console.log(err));
             } else {
-                navigate("/login");
+                navigate("/login", { replace: true });
             }
         }
     }, []);
@@ -253,6 +257,7 @@ export const Profile = () => {
                                 className="profile__logout-btn"
                                 onClick={async () => {
                                     await logout();
+                                    localStorage.removeItem("tokens");
                                     navigate("/login");
                                 }}
                             >
