@@ -7,12 +7,13 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PersonIcon from "@mui/icons-material/Person";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 import "./Profile.scss";
 import { ConfirmationModal } from "../../components/ConfirmationModal";
 
 export const Profile = () => {
-    const { userData, setUserData, tokens, login } = useCurrentUserStore();
+    const { userData, setUserData, tokens, login, logout } = useCurrentUserStore();
 
     const inputRefs = useRef([]);
     // const [focusedInputIndex, setFocusedInputIndex] = useState(null);
@@ -100,8 +101,8 @@ export const Profile = () => {
 
     const handleConfirmDeletion = () => {
         deleteProfile(userData.id, tokens.access)
-            .then(res => navigate(`/login`))
-            .catch(err => console.log(err));
+            .catch(err => console.log(err))
+            .finally(() => navigate(`/login`));
     };
 
     useEffect(() => {
@@ -235,18 +236,27 @@ export const Profile = () => {
                             />
                         </div>
                         {errors.bio && <span className="register__error">{errors.bio}</span>}
+                        <button
+                            className={`profile__save-btn ${isChanged ? "profile__save-btn_active" : ""} ${
+                                buttonText === "Сохранено!" ? "profile__save-btn_saved" : ""
+                            }`}
+                            disabled={!isChanged}
+                            onClick={handleSave}
+                        >
+                            {buttonText}
+                        </button>
                         <div className="profile__buttons">
-                            <button
-                                className={`profile__save-btn ${isChanged ? "profile__save-btn_active" : ""} ${
-                                    buttonText === "Сохранено!" ? "profile__save-btn_saved" : ""
-                                }`}
-                                disabled={!isChanged}
-                                onClick={handleSave}
-                            >
-                                {buttonText}
-                            </button>
                             <button className="profile__delete-btn" onClick={() => setIsModalOpen(true)}>
-                                <DeleteIcon color="error" />
+                                <DeleteIcon />
+                            </button>
+                            <button
+                                className="profile__logout-btn"
+                                onClick={async () => {
+                                    await logout();
+                                    navigate("/login");
+                                }}
+                            >
+                                <LogoutIcon />
                             </button>
                         </div>
                     </div>

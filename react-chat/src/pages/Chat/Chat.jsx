@@ -286,18 +286,6 @@ export const Chat = () => {
     }, [page]);
 
     useEffect(() => {
-        if (sendButtonRef.current) {
-            sendButtonRef.current.addEventListener("touchend", e => e.preventDefault());
-        }
-
-        return () => {
-            if (sendButtonRef.current) {
-                sendButtonRef.current.removeEventListener("touchend", e => e.preventDefault());
-            }
-        };
-    }, []);
-
-    useEffect(() => {
         const observerCallback = entries => {
             if (entries[0].isIntersecting && hasMore) {
                 setPage(prevPage => prevPage + 1);

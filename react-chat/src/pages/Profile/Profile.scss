@@ -106,26 +106,28 @@
 
     &__save-btn {
         width: 100%;
-        height: 100%;
+        height: 50px;
         border-radius: 16px;
         border: none;
         transition: background-color 0.2s ease, transform 0.2s ease;
     }
 
-    &__delete-btn {
+    &__delete-btn,
+    &__logout-btn {
         min-width: 50px;
         height: 100%;
         border-radius: 16px;
         border: none;
-        transition: transform 0.2s ease;
         align-self: flex-end;
         display: flex;
         justify-content: center;
         align-items: center;
+        color: red;
+        transition: all 0.2s ease;
 
         &:hover {
             cursor: pointer;
-            transform: scale(1.06);
+            transform: scale(1.03);
         }
     }
 
@@ -133,6 +135,7 @@
         width: 100%;
         height: 50px;
         display: flex;
+        justify-content: end;
         gap: 15px;
     }
 }
@@ -192,8 +195,14 @@
             }
         }
 
-        &__delete-btn {
+        &__delete-btn,
+        &__logout-btn {
             background-color: $secondary-dark;
+
+            &:hover {
+                background-color: red;
+                color: white;
+            }
         }
     }
 }
@@ -251,8 +260,14 @@
             }
         }
 
-        &__delete-btn {
+        &__delete-btn,
+        &__logout-btn {
             background-color: $secondary-light;
+
+            &:hover {
+                background-color: red;
+                color: white;
+            }
         }
     }
 }

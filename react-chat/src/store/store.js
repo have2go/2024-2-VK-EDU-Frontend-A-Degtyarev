@@ -24,7 +24,7 @@ export const useCurrentUserStore = create(set => ({
 
     logout: () => {
         set({
-            data: null,
+            userData: null,
             tokens: { access: null, refresh: null },
         });
     },

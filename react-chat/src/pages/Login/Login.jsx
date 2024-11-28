@@ -1,8 +1,10 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../../api/api";
 import { useCurrentUserStore } from "../../store/store";
+import { ThemeSwitch } from "../../components/ThemeSwitch/ThemeSwitch";
+import { toast } from "react-toastify";
 
 import "./Login.scss";
 
@@ -38,9 +40,11 @@ export const Login = () => {
                 navigate("/");
             })
             .catch(err => {
+                if (errors.detail) toast(errors.detail);
                 if (typeof err === "object") setErrors({ ...err });
             });
     };
+
     return (
         <>
             <Helmet>
@@ -49,35 +53,42 @@ export const Login = () => {
             <div className="login">
                 <h1 className="login__title">Авторизация</h1>
                 <form className="login__form" onSubmit={handleLogin}>
-                    <label className="">Логин</label>
-                    <input
-                        type="text"
-                        className=""
-                        name="username"
-                        // required
-                        value={data.username}
-                        onChange={handleChange}
-                    />
-                    {errors.username && <span className="login__error">{errors.username}</span>}
-                    <label className="">Пароль</label>
-                    <input
-                        type="password"
-                        className=""
-                        name="password"
-                        // required
-                        value={data.password}
-                        onChange={handleChange}
-                    />
-                    {errors.password && <span className="login__error">{errors.password}</span>}
+                    <div className="login__input-container">
+                        <label className="login__label">Логин</label>
+                        <input
+                            type="text"
+                            className="login__input"
+                            name="username"
+                            // required
+                            value={data.username}
+                            onChange={handleChange}
+                        />
+                    </div>
+                    <span className="login__error">{errors.username && errors.username}</span>
+                    <div className="login__input-container">
+                        <label className="login__label">Пароль</label>
+                        <input
+                            type="password"
+                            className="login__input"
+                            name="password"
+                            // required
+                            value={data.password}
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    <span className="login__error">{errors.password && errors.password}</span>
                     <button className="login__submit-btn">Войти</button>
                 </form>
                 <div className="login__already-member">
                     Нет аккаунта?{" "}
                     <Link to={"/register"} className="login__link">
-                        Зарегистрируйтесь
+                        Зарегистрироваться
                     </Link>
                 </div>
-                {errors.detail && <span className="login__error">{errors.detail}</span>}
+                <div className="login__theme-switch-box">
+                    <ThemeSwitch />
+                </div>
             </div>
         </>
     );

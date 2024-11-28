@@ -103,14 +103,7 @@ function App() {
                     path="/"
                     element={<ChatList handleToggleModal={handleToggleModal} isModalOpen={isModalOpen} />}
                 />
-                <Route
-                    path="/chat/:id"
-                    element={
-                        <ProtectedRoute>
-                            <Chat />
-                        </ProtectedRoute>
-                    }
-                />
+                <Route path="/chat/:id" element={<Chat />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />
