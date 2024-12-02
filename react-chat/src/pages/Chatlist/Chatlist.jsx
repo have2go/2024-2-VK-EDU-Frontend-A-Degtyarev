@@ -93,7 +93,7 @@ export const Chatlist = ({ handleToggleModal, isModalOpen, createNewChat }) => {
                                         <div className="chatlist__text-container">
                                             <p className="chatlist__name">{chat.title}</p>
                                             <p className="chatlist__last-msg">
-                                                {lastMsg.voice
+                                                {lastMsg?.voice
                                                     ? "Голосовое сообщение"
                                                     : lastMsg.files.length > 0
                                                     ? lastMsg.files.length === 1
