@@ -39,8 +39,12 @@ export const Login = () => {
                 );
             })
             .catch(err => {
-                if (errors.detail) toast(errors.detail);
-                if (typeof err === "object") setErrors({ ...err });
+                if (err.detail) {
+                    toast(err.detail);
+                }
+                if (typeof err === "object") {
+                    setErrors({ ...err });
+                }
             });
     };
 
