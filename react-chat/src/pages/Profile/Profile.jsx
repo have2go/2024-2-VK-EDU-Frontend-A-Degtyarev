@@ -136,7 +136,7 @@ export const Profile = () => {
                             setAvatar(res.avatar);
                         });
                     })
-                    .catch(err => console.log(err));
+                    .catch(err => navigate("/login", { replace: true }));
             } else {
                 navigate("/login", { replace: true });
             }
