@@ -11,6 +11,7 @@ import "./HeaderChat.scss";
 import { ConfirmationModal } from "../ConfirmationModal";
 import { useCurrentUserStore } from "../../store/store";
 import { PulseLoader, PuffLoader } from "react-spinners";
+import { LazyImage } from "../LazyImage";
 
 export const HeaderChat = ({
     chat,
@@ -74,7 +75,7 @@ export const HeaderChat = ({
                     if (res.ok) {
                         setIsConfirmationModalOpen(false);
                         setSelectedMessage(null);
-                        return res.json();
+                        return null;
                     }
                     return Promise.reject(res);
                 })
@@ -175,7 +176,7 @@ export const HeaderChat = ({
             <div className="header__user">
                 <div className="header__avatar-container">
                     {chat?.avatar ? (
-                        <img className="header__avatar" src={chat.avatar} alt="avatar"></img>
+                        <LazyImage className={"header__avatar"} src={chat.avatar} alt={"avatar"} />
                     ) : (
                         <span className="icon">
                             <PersonIcon sx={{ fontSize: 30 }} />

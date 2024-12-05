@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
+import React, { useContext, useEffect, useLayoutEffect, useState, useRef } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
 import { NewChatModal } from "../../components/NewChatModal";
 import { ChatStatus } from "../../components/ChatStatus";
@@ -10,20 +10,24 @@ import { Link, useNavigate } from "react-router-dom";
 import { refreshTokens } from "../../api/api";
 import { useChatsStore, useCurrentUserStore } from "../../store/store";
 import { PuffLoader } from "react-spinners";
+import { LazyImage } from "../../components/LazyImage";
 
 export const Chatlist = ({ handleToggleModal, isModalOpen, createNewChat }) => {
     const { chats, fetchChats, setChats } = useChatsStore();
     const { userData, tokens, login, logout } = useCurrentUserStore();
+    const { theme } = useContext(ThemeContext);
+    const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+    const [page, setPage] = useState(1);
 
-    const { theme } = useContext(ThemeContext);
-
-    const navigate = useNavigate();
+    const observer = useRef();
+    const lastElementRef = useRef(null);
 
     const loadChats = async () => {
         if (tokens.access) {
-            await fetchChats(tokens.access);
+            await fetchChats(tokens.access, page, "");
             setIsLoading(false);
         } else {
             const tokens = localStorage.getItem("tokens");
@@ -33,7 +37,7 @@ export const Chatlist = ({ handleToggleModal, isModalOpen, createNewChat }) => {
                     .then(res => {
                         refreshTokens(res.refresh).then(async res => {
                             await login(res.access, res.refresh);
-                            fetchChats(res.access).then(res => setIsLoading(false));
+                            fetchChats(res.access, page, "").then(res => setIsLoading(false));
                         });
                     })
                     .catch(err => {
@@ -55,7 +59,30 @@ export const Chatlist = ({ handleToggleModal, isModalOpen, createNewChat }) => {
 
     useEffect(() => {
         loadChats();
-    }, []);
+    }, [page]);
+
+    useEffect(() => {
+        if (chats && chats.next) {
+            setHasMore(true);
+        } else {
+            setHasMore(false);
+        }
+    }, [chats]);
+
+    useEffect(() => {
+        const observerCallback = entries => {
+            if (entries[0].isIntersecting && hasMore) {
+                setPage(prevPage => prevPage + 1);
+            }
+        };
+
+        observer.current = new IntersectionObserver(observerCallback);
+        if (lastElementRef.current) {
+            observer.current.observe(lastElementRef.current);
+        }
+
+        return () => observer.current.disconnect();
+    }, [hasMore]);
 
     return (
         <>
@@ -84,7 +111,11 @@ export const Chatlist = ({ handleToggleModal, isModalOpen, createNewChat }) => {
                                 <Link to={`/chat/${chat.id}`} key={chat.id} className="chatlist__link">
                                     <div className="chatlist__element">
                                         {chat.avatar ? (
-                                            <img className="chatlist__avatar" src={chat.avatar} alt="avatar"></img>
+                                            <LazyImage
+                                                className={"chatlist__avatar"}
+                                                src={chat.avatar}
+                                                alt={"avatar"}
+                                            />
                                         ) : (
                                             <span className="icon chatlist__avatar chatlist__photo">
                                                 <PersonIcon />
@@ -117,6 +148,7 @@ export const Chatlist = ({ handleToggleModal, isModalOpen, createNewChat }) => {
                             );
                         })
                     )}
+                    {!isLoading && <div ref={lastElementRef} className=""></div>}
                 </div>
             </div>
             <NewChatModal

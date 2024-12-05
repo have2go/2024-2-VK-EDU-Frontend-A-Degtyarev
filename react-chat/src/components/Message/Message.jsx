@@ -79,65 +79,67 @@ export const Message = ({ msg, selectedMessage, setSelectedMessage }) => {
     }, []);
 
     return (
-        <div
-            className={`message__wrapper ${msg.sender?.id === userData?.id ? "" : "message__wrapper_incoming"} ${
-                selectedMessage?.id === msg.id ? "message__wrapper_active" : ""
-            }`}
-            onClick={e => {
-                e.stopPropagation();
-                handleSelectMessage(e, msg.sender?.id === userData.id);
-            }}
-            onDragStart={e => e.preventDefault()}
-        >
+        userData?.id && (
             <div
-                className={`message ${msg.sender?.id === userData?.id ? "" : "message_incoming"} ${
-                    selectedMessage?.id === msg.id ? "message_selected" : ""
+                className={`message__wrapper ${msg.sender?.id === userData?.id ? "" : "message__wrapper_incoming"} ${
+                    selectedMessage?.id === msg.id ? "message__wrapper_active" : ""
                 }`}
                 onClick={e => {
                     e.stopPropagation();
                     handleSelectMessage(e, msg.sender?.id === userData.id);
                 }}
-                id={msg.id}
+                onDragStart={e => e.preventDefault()}
             >
-                {msg.text && (
-                    <p className="message__text" ref={messageRef}>
-                        {formatMessageText(msg.text)}
-                    </p>
-                )}
-                {msg.files.length > 0 && !msg.voice && (
-                    <div className="message__img-container">
-                        {msg.files.map((file, i) => {
-                            return (
-                                <img
-                                    key={i}
-                                    src={file.item}
-                                    alt="attachment"
-                                    className="message__img"
-                                    draggable={false}
-                                />
-                            );
-                        })}
+                <div
+                    className={`message ${msg.sender?.id === userData?.id ? "" : "message_incoming"} ${
+                        selectedMessage?.id === msg.id ? "message_selected" : ""
+                    }`}
+                    onClick={e => {
+                        e.stopPropagation();
+                        handleSelectMessage(e, msg.sender?.id === userData.id);
+                    }}
+                    id={msg.id}
+                >
+                    {msg.text && (
+                        <p className="message__text" ref={messageRef}>
+                            {formatMessageText(msg.text)}
+                        </p>
+                    )}
+                    {msg.files.length > 0 && !msg.voice && (
+                        <div className="message__img-container">
+                            {msg.files.map((file, i) => {
+                                return (
+                                    <img
+                                        key={i}
+                                        src={file.item}
+                                        alt="attachment"
+                                        className="message__img"
+                                        draggable={false}
+                                    />
+                                );
+                            })}
+                        </div>
+                    )}
+                    {msg.voice && (
+                        <audio className="message__audio" controls>
+                            <source src={msg.voice} type="audio/wav" />
+                        </audio>
+                    )}
+                    <div className="message__info tooltip">
+                        <span className="tooltiptext">
+                            {day} {month} {year}г., {hours}:{minutes}:{seconds}
+                        </span>
+                        <p className="message__time">{hours + ":" + minutes}</p>
+                        <span
+                            className={`material-symbols-outlined message__arrows ${
+                                msg.sender?.id === userData?.id ? "" : "message__arrows_incoming"
+                            }`}
+                        >
+                            <DoneAllIcon sx={{ fontSize: 14 }} />
+                        </span>
                     </div>
-                )}
-                {msg.voice && (
-                    <audio className="message__audio" controls>
-                        <source src={msg.voice} type="audio/wav" />
-                    </audio>
-                )}
-                <div className="message__info tooltip">
-                    <span className="tooltiptext">
-                        {day} {month} {year}г., {hours}:{minutes}:{seconds}
-                    </span>
-                    <p className="message__time">{hours + ":" + minutes}</p>
-                    <span
-                        className={`material-symbols-outlined message__arrows ${
-                            msg.sender?.id === userData?.id ? "" : "message__arrows_incoming"
-                        }`}
-                    >
-                        <DoneAllIcon sx={{ fontSize: 14 }} />
-                    </span>
                 </div>
             </div>
-        </div>
+        )
     );
 };

@@ -6,6 +6,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import "./NewChatModal.scss";
 import { useUsersStore, useCurrentUserStore } from "../../store/store";
 import { toast } from "react-toastify";
+import { LazyImage } from "../LazyImage";
 
 // import { debounce } from "lodash";
 
@@ -161,7 +162,7 @@ export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) 
                             onClick={() => handleUserSelect(user)}
                         >
                             {user.avatar ? (
-                                <img className="newchat__dropdown-img" src={user.avatar} alt="avatar" />
+                                <LazyImage className={"newchat__dropdown-img"} src={user.avatar} alt={"avatar"} />
                             ) : (
                                 <span className="icon newchat__avatar-icon">
                                     <PersonIcon sx={{ fontSize: 28 }} />

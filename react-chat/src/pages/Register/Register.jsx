@@ -72,7 +72,13 @@ export const Register = () => {
             })
             .catch(err => {
                 setButtonText("Зарегистрироваться");
-                if (typeof err === "object") setErrors({ ...err });
+                if (typeof err === "object") {
+                    setErrors({ ...err });
+                } else if (Array.isArray(obj)) {
+                    err.forEach(el => {
+                        toast(el);
+                    });
+                }
             });
     };
 

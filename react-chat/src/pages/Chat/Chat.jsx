@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState, useContext, useCallback } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
 import { HeaderChat } from "../../components/HeaderChat";
 import { Helmet } from "react-helmet-async";
-import { sendMessage, sendVoice, getMessages, sendGeo, sendImages, getChatInfo } from "../../api/api";
+import { sendMessage, sendVoice, getMessages, sendGeo, sendImages, getChatInfo, refreshTokens } from "../../api/api";
 import SendIcon from "@mui/icons-material/Send";
 import AttachmentIcon from "@mui/icons-material/Attachment";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
@@ -16,12 +16,13 @@ import { Message } from "../../components/Message";
 import { useCurrentUserStore, useMessagesStore } from "../../store/store";
 import { PuffLoader } from "react-spinners";
 import { toast } from "react-toastify";
+import { LazyImage } from "../../components/LazyImage";
 
 export const Chat = () => {
     const { theme } = useContext(ThemeContext);
     const { id } = useParams();
 
-    const { tokens } = useCurrentUserStore();
+    const { tokens, login, logout } = useCurrentUserStore();
     const { messages, setMessages, addMessage, setChatId } = useMessagesStore();
 
     const navigate = useNavigate();
@@ -45,8 +46,8 @@ export const Chat = () => {
     const [mediaRecorder, setMediaRecorder] = useState(null);
     const [audioBlob, setAudioBlob] = useState(null);
     const [recordingTime, setRecordingTime] = useState(0);
-    const timerRef = useRef(null);
 
+    const timerRef = useRef(null);
     const chatEndRef = useRef(null);
     const chatStartRef = useRef(null);
     const containerRef = useRef(null);
@@ -185,9 +186,10 @@ export const Chat = () => {
     const fetchMessages = async pageNumber => {
         if (pageNumber === 1) setIsMessagesLoading(true);
 
-        getMessages(id, tokens.access, pageNumber).then(json => {
-            if (setIsMessagesLoading) setIsMessagesLoading(false);
+        const validToken = tokens.access || JSON.parse(localStorage.getItem("tokens")).access;
 
+        getMessages(id, validToken, pageNumber).then(json => {
+            if (setIsMessagesLoading) setIsMessagesLoading(false);
             setMessages(pageNumber === 1 ? json.results : [...messages, ...json.results]);
             if (pageNumber === 1) {
                 setTimeout(() => {
@@ -268,8 +270,27 @@ export const Chat = () => {
     };
 
     useEffect(() => {
-        if (!tokens.access) {
-            navigate("/");
+        const localTokens = localStorage.getItem("tokens");
+        if (!tokens.access && localTokens) {
+            const parsedTokens = JSON.parse(localTokens);
+            refreshTokens(parsedTokens.refresh)
+                .then(res => {
+                    refreshTokens(res.refresh).then(async res => {
+                        await login(res.access, res.refresh);
+                        inputRef.current.focus();
+                        setIsChatInfoLoading(true);
+                        getChatInfo(id, res.access).then(json => {
+                            setChatInfo(json);
+                            setIsChatInfoLoading(false);
+                        });
+                        setChatId(id);
+                    });
+                })
+                .catch(err => {
+                    logout();
+                    localStorage.removeItem("tokens");
+                    navigate("/login", { replace: true });
+                });
         } else {
             inputRef.current.focus();
             setIsChatInfoLoading(true);
@@ -283,7 +304,7 @@ export const Chat = () => {
 
     useEffect(() => {
         fetchMessages(page);
-    }, [page]);
+    }, [page, tokens.access]);
 
     useEffect(() => {
         const observerCallback = entries => {
@@ -376,8 +397,8 @@ export const Chat = () => {
                                                     />
                                                 </button>
                                             )}
-                                            <img
-                                                className="form__modal-img"
+                                            <LazyImage
+                                                className={"form__modal-img"}
                                                 src={URL.createObjectURL(file)}
                                                 draggable={false}
                                             />

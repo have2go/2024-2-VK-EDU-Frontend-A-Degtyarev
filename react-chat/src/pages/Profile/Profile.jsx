@@ -12,6 +12,8 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import "./Profile.scss";
 import { ConfirmationModal } from "../../components/ConfirmationModal";
 import { replace } from "lodash";
+import { LazyImage } from "../../components/LazyImage";
+import { toast } from "react-toastify";
 
 export const Profile = () => {
     const { userData, setUserData, tokens, login, logout } = useCurrentUserStore();
@@ -87,27 +89,30 @@ export const Profile = () => {
             .then(json => {
                 setUserData(json);
                 setIsChanged(false);
-                setButtontext("Сохранено!");
+                toast("Сохранено!");
             })
             .catch(err => {
                 setIsChanged(false);
                 setButtontext("Сохранить");
                 if (typeof err === "object") setErrors({ ...err });
-            });
-
-        setTimeout(() => {
-            setButtontext("Сохранить");
-        }, 2000);
+            })
+            .finally(() => setButtontext("Сохранить"));
     };
 
     const handleConfirmDeletion = () => {
         deleteProfile(userData.id, tokens.access)
-            .catch(err => console.log(err))
-            .finally(() => {
-                localStorage.removeItem("tokens");
-                navigate(`/login`, { replace: true });
-            });
+            .then(res => {
+                toast("Пользователь удалён");
+                handleLogout();
+            })
+            .catch(err => console.log(err));
     };
+
+    function handleLogout() {
+        logout();
+        localStorage.removeItem("tokens");
+        navigate("/login", { replace: true });
+    }
 
     useEffect(() => {
         if (tokens.access) {
@@ -121,24 +126,27 @@ export const Profile = () => {
                 setAvatar(userData.avatar);
             }
         } else {
-            if (localStorage.getItem("tokens")) {
-                const tokens = JSON.parse(localStorage.getItem("tokens"));
+            const tokens = localStorage.getItem("tokens");
 
-                refreshTokens(tokens.refresh)
+            if (tokens) {
+                const parsedTokens = JSON.parse(tokens);
+
+                refreshTokens(parsedTokens.refresh)
                     .then(json => {
-                        login(json.access, json.refresh).then(res => {
-                            setData({
-                                username: res.username,
-                                first_name: res.first_name,
-                                last_name: res.last_name,
-                                bio: res.bio,
-                            });
-                            setAvatar(res.avatar);
-                        });
+                        return login(json.access, json.refresh);
                     })
-                    .catch(err => navigate("/login", { replace: true }));
+                    .then(res => {
+                        setData({
+                            username: res.username,
+                            first_name: res.first_name,
+                            last_name: res.last_name,
+                            bio: res.bio,
+                        });
+                        setAvatar(res.avatar);
+                    })
+                    .catch(() => handleLogout());
             } else {
-                navigate("/login", { replace: true });
+                handleLogout();
             }
         }
     }, []);
@@ -161,10 +169,10 @@ export const Profile = () => {
                     <div className="profile__container">
                         <div className="profile__avatar">
                             {avatar ? (
-                                <img
+                                <LazyImage
                                     src={typeof avatar === "string" ? avatar : URL.createObjectURL(avatar)}
-                                    alt="avatar"
-                                    className="profile__avatar-img"
+                                    alt={"avatar"}
+                                    className={"profile__avatar-img"}
                                 />
                             ) : (
                                 <span className="icon">
@@ -258,7 +266,7 @@ export const Profile = () => {
                                 onClick={async () => {
                                     await logout();
                                     localStorage.removeItem("tokens");
-                                    navigate("/login");
+                                    navigate("/login", { replace: true });
                                 }}
                             >
                                 <LogoutIcon />
