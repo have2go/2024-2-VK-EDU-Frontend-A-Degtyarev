@@ -7,12 +7,14 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PersonIcon from "@mui/icons-material/Person";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 import "./Profile.scss";
 import { ConfirmationModal } from "../../components/ConfirmationModal";
+import { replace } from "lodash";
 
 export const Profile = () => {
-    const { userData, setUserData, tokens, login } = useCurrentUserStore();
+    const { userData, setUserData, tokens, login, logout } = useCurrentUserStore();
 
     const inputRefs = useRef([]);
     // const [focusedInputIndex, setFocusedInputIndex] = useState(null);
@@ -25,7 +27,7 @@ export const Profile = () => {
     const [data, setData] = useState({});
 
     const modalType = "deleteProfile";
-    const maxSize = 9 * 1024 * 1024;
+    const maxSize = 10 * 1024 * 1024;
 
     const navigate = useNavigate();
 
@@ -50,7 +52,7 @@ export const Profile = () => {
         const selectedFile = event.target.files[0];
 
         if (selectedFile && selectedFile.size > maxSize) {
-            alert("Размер файла не должен превышать 9 МБ.");
+            alert("Размер файла не должен превышать 10 МБ.");
             event.target.value = "";
             setAvatar(userData.avatar);
         } else {
@@ -100,8 +102,11 @@ export const Profile = () => {
 
     const handleConfirmDeletion = () => {
         deleteProfile(userData.id, tokens.access)
-            .then(res => navigate(`/login`))
-            .catch(err => console.log(err));
+            .catch(err => console.log(err))
+            .finally(() => {
+                localStorage.removeItem("tokens");
+                navigate(`/login`, { replace: true });
+            });
     };
 
     useEffect(() => {
@@ -131,9 +136,9 @@ export const Profile = () => {
                             setAvatar(res.avatar);
                         });
                     })
-                    .catch(err => console.log(err));
+                    .catch(err => navigate("/login", { replace: true }));
             } else {
-                navigate("/login");
+                navigate("/login", { replace: true });
             }
         }
     }, []);
@@ -235,18 +240,28 @@ export const Profile = () => {
                             />
                         </div>
                         {errors.bio && <span className="register__error">{errors.bio}</span>}
+                        <button
+                            className={`profile__save-btn ${isChanged ? "profile__save-btn_active" : ""} ${
+                                buttonText === "Сохранено!" ? "profile__save-btn_saved" : ""
+                            }`}
+                            disabled={!isChanged}
+                            onClick={handleSave}
+                        >
+                            {buttonText}
+                        </button>
                         <div className="profile__buttons">
-                            <button
-                                className={`profile__save-btn ${isChanged ? "profile__save-btn_active" : ""} ${
-                                    buttonText === "Сохранено!" ? "profile__save-btn_saved" : ""
-                                }`}
-                                disabled={!isChanged}
-                                onClick={handleSave}
-                            >
-                                {buttonText}
-                            </button>
                             <button className="profile__delete-btn" onClick={() => setIsModalOpen(true)}>
-                                <DeleteIcon color="error" />
+                                <DeleteIcon />
+                            </button>
+                            <button
+                                className="profile__logout-btn"
+                                onClick={async () => {
+                                    await logout();
+                                    localStorage.removeItem("tokens");
+                                    navigate("/login");
+                                }}
+                            >
+                                <LogoutIcon />
                             </button>
                         </div>
                     </div>

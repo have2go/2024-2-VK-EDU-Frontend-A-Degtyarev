@@ -7,6 +7,7 @@ import "./App.scss";
 import { NotFound } from "./pages/NotFound";
 import { Profile } from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
+import PublicRoute from "./components/PublicRoute";
 import { Register } from "./pages/Register";
 import { Login } from "./pages/Login";
 import { Centrifuge } from "centrifuge";
@@ -96,12 +97,15 @@ function App() {
 
     return (
         <div className={`container`}>
-            {/* <ToastContainer /> */}
             <ToastContainer position="top-right" autoClose={5000} closeOnClick theme={theme} style={{ zIndex: 1000 }} />
             <Routes>
                 <Route
                     path="/"
-                    element={<ChatList handleToggleModal={handleToggleModal} isModalOpen={isModalOpen} />}
+                    element={
+                        <ProtectedRoute>
+                            <ChatList handleToggleModal={handleToggleModal} isModalOpen={isModalOpen} />
+                        </ProtectedRoute>
+                    }
                 />
                 <Route
                     path="/chat/:id"
@@ -111,9 +115,30 @@ function App() {
                         </ProtectedRoute>
                     }
                 />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/login" element={<Login />} />
+                <Route
+                    path="/profile"
+                    element={
+                        <ProtectedRoute>
+                            <Profile />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/register"
+                    element={
+                        <PublicRoute>
+                            <Register />
+                        </PublicRoute>
+                    }
+                />
+                <Route
+                    path="/login"
+                    element={
+                        <PublicRoute>
+                            <Login />
+                        </PublicRoute>
+                    }
+                />
                 <Route path="/404" element={<NotFound />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>

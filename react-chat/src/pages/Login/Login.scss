@@ -1,29 +1,200 @@
 @use "../../variables.scss" as *;
 
 .login {
-    width: 300px;
-    min-height: 500px;
+    min-width: 320px;
+    max-width: 400px;
     background-color: $secondary-dark;
     color: $text-dark;
     margin: auto;
     border-radius: 28px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    padding: 14px;
+    position: relative;
+
+    &__title {
+        margin: 0;
+        font-size: 22px;
+        padding-bottom: 10px;
+        margin: 0 auto;
+        text-align: center;
+    }
 
     &__form {
         display: flex;
         flex-direction: column;
         align-items: center;
+        width: 100%;
+    }
+
+    &__input-container {
+        position: relative;
+        width: 100%;
+        min-height: 46px;
+        border-radius: 16px;
+        padding: 0 5px;
+
+        &_textarea {
+            height: 90px;
+        }
+    }
+
+    &__label {
+        position: absolute;
+        top: 3px;
+        left: 10px;
+        font-size: 11px;
+    }
+
+    &__input {
+        position: absolute;
+        top: 22px;
+        left: 8px;
+        width: 90%;
+        background-color: transparent;
+        border: none;
+        font-size: 16px;
+        outline: none;
     }
 
     &__error {
+        min-height: 10px;
+        font-size: 14px;
         color: red;
     }
 
+    &__submit-btn {
+        width: 100%;
+        height: 40px;
+        margin-top: 16px;
+        border-radius: 16px;
+        border: none;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+
+        &:hover {
+            cursor: pointer;
+            transform: scale(1.015);
+        }
+
+        &_done {
+            background-color: green;
+        }
+    }
+
     &__link {
-        color: greenyellow;
-        font-weight: 900;
-        font-size: 20px;
+        font-weight: 600;
+    }
+
+    &__already-member {
+        margin-top: 8px;
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    &__theme-switch-box {
+        position: absolute;
+        bottom: -45px;
+        left: 0;
+        width: 100%;
+
+        @media screen and (width >= 1024px) {
+            top: 35px;
+            left: -70px;
+            width: 35px;
+        }
+    }
+}
+
+.dark {
+    .login {
+        background-color: $contentarea-dark;
+
+        &__title {
+            color: $primary-dark;
+        }
+
+        &__label {
+            color: $primary-dark;
+        }
+
+        &__input-container {
+            background-color: $secondary-dark;
+
+            &:focus-within {
+                outline: 2px solid $primary-dark;
+            }
+        }
+
+        &__input {
+            color: $text-dark;
+        }
+
+        &__avatar {
+            background-color: $primary-dark;
+            color: $contentarea-dark;
+        }
+
+        &__submit-btn {
+            background-color: $primary-dark;
+            color: black;
+
+            &_done {
+                background-color: green;
+                color: white;
+            }
+
+            &:focus-visible {
+                border: 2px solid $contentarea-dark;
+                outline: 2px solid $primary-dark;
+            }
+        }
+
+        &__link {
+            color: $primary-dark;
+        }
+    }
+}
+
+.light {
+    .login {
+        background-color: $contentarea-light;
+        color: $text-light;
+
+        &__title {
+            color: $primary-light;
+        }
+
+        &__label {
+            color: $primary-light;
+        }
+
+        &__input-container {
+            background-color: $secondary-light;
+
+            &:focus-within {
+                outline: 2px solid $primary-light;
+            }
+        }
+
+        &__input {
+            color: $text-light;
+        }
+
+        &__submit-btn {
+            background-color: $primary-light;
+            color: white;
+
+            &_done {
+                background-color: green;
+            }
+
+            &:focus-visible {
+                border: 2px solid $contentarea-dark;
+                outline: 2px solid $primary-dark;
+            }
+        }
+
+        &__link {
+            color: $primary-light;
+        }
     }
 }

@@ -286,18 +286,6 @@ export const Chat = () => {
     }, [page]);
 
     useEffect(() => {
-        if (sendButtonRef.current) {
-            sendButtonRef.current.addEventListener("touchend", e => e.preventDefault());
-        }
-
-        return () => {
-            if (sendButtonRef.current) {
-                sendButtonRef.current.removeEventListener("touchend", e => e.preventDefault());
-            }
-        };
-    }, []);
-
-    useEffect(() => {
         const observerCallback = entries => {
             if (entries[0].isIntersecting && hasMore) {
                 setPage(prevPage => prevPage + 1);
@@ -374,13 +362,20 @@ export const Chat = () => {
                                 {uploadedFiles.slice(0, 6).map((file, i) => {
                                     return (
                                         <div key={i} className="form__modal-grid-el">
-                                            <button
-                                                type="button"
-                                                className="form__modal-delete"
-                                                onClick={e => setUploadedFiles(uploadedFiles.filter(el => el !== file))}
-                                            >
-                                                <ClearIcon className="form__modal-delete-icon" sx={{ fontSize: 26 }} />
-                                            </button>
+                                            {uploadedFiles.length > 1 && (
+                                                <button
+                                                    type="button"
+                                                    className="form__modal-delete"
+                                                    onClick={e =>
+                                                        setUploadedFiles(uploadedFiles.filter(el => el !== file))
+                                                    }
+                                                >
+                                                    <ClearIcon
+                                                        className="form__modal-delete-icon"
+                                                        sx={{ fontSize: 26 }}
+                                                    />
+                                                </button>
+                                            )}
                                             <img
                                                 className="form__modal-img"
                                                 src={URL.createObjectURL(file)}

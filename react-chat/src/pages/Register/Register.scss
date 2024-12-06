@@ -1,19 +1,21 @@
 @use "../../variables.scss" as *;
 
 .register {
+    position: relative;
     min-width: 320px;
     max-width: 400px;
     margin: auto;
     border-radius: 28px;
-    padding: 20px;
+    padding: 14px;
     display: grid;
 
     grid-template-columns: 1fr;
 
     &__title {
         margin: 0;
-        font-size: 24px;
-        padding-bottom: 20px;
+        font-size: 22px;
+        padding-bottom: 10px;
+        margin: 0 auto;
     }
 
     &__form {
@@ -26,25 +28,25 @@
     &__input-container {
         position: relative;
         width: 100%;
-        height: 56px;
+        min-height: 46px;
         border-radius: 16px;
         padding: 0 5px;
 
         &_textarea {
-            height: 100px;
+            height: 90px;
         }
     }
 
     &__label {
         position: absolute;
-        top: 5px;
+        top: 3px;
         left: 10px;
-        font-size: 12px;
+        font-size: 11px;
     }
 
     &__input {
         position: absolute;
-        top: 27px;
+        top: 22px;
         left: 8px;
         width: 90%;
         background-color: transparent;
@@ -55,25 +57,112 @@
 
     &__textarea {
         resize: none;
-        // height: 100px;
+        height: 60px;
     }
 
     &__error {
-        min-height: 20px;
+        min-height: 10px;
+        font-size: 14px;
         color: red;
     }
 
     &__submit-btn {
         width: 100%;
+        height: 40px;
+        margin-top: 16px;
         border-radius: 16px;
         border: none;
         transition: background-color 0.2s ease, transform 0.2s ease;
+
+        &:hover {
+            cursor: pointer;
+            transform: scale(1.015);
+        }
+
+        &_done {
+            background-color: green;
+        }
     }
 
     &__link {
-        color: greenyellow;
-        font-weight: 900;
-        font-size: 20px;
+        font-weight: 600;
+    }
+
+    &__bio-container {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        gap: 8px;
+    }
+
+    &__avatar {
+        width: 70px;
+        height: 70px;
+        border-radius: 999px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    &__avatar-edit {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+    }
+
+    &__avatar-input {
+        display: none;
+    }
+
+    &__avatar-btn {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 100%;
+        border: none;
+        background-color: rgba(0, 0, 0, 0.7);
+        opacity: 0;
+        transition: all 0.2s ease;
+        color: $text-dark;
+
+        &:hover {
+            opacity: 1;
+            cursor: pointer;
+        }
+    }
+
+    &__avatar-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 100%;
+    }
+
+    &__already-member {
+        margin-top: 8px;
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    &__theme-switch-box {
+        position: absolute;
+        bottom: -45px;
+        left: 0;
+        width: 100%;
+
+        @media screen and (width >= 1024px) {
+            bottom: unset;
+            top: 160px;
+            left: -70px;
+            width: 35px;
+        }
     }
 }
 
@@ -101,20 +190,16 @@
             color: $text-dark;
         }
 
+        &__avatar {
+            background-color: $primary-dark;
+            color: $contentarea-dark;
+        }
+
         &__submit-btn {
-            background-color: $secondary-dark;
+            background-color: $primary-dark;
+            color: black;
 
-            &_active {
-                background-color: $primary-dark;
-                // color: $text-dark;
-
-                &:hover {
-                    cursor: pointer;
-                    transform: scale(1.03);
-                }
-            }
-
-            &_saved {
+            &_done {
                 background-color: green;
                 color: white;
             }
@@ -124,16 +209,26 @@
                 outline: 2px solid $primary-dark;
             }
         }
+
+        &__link {
+            color: $primary-dark;
+        }
     }
 }
 
 .light {
     .register {
+        background-color: $contentarea-light;
+
+        &__title {
+            color: $primary-light;
+        }
+
         &__label {
             color: $primary-light;
         }
 
-        &__input-group {
+        &__input-container {
             background-color: $secondary-light;
 
             &:focus-within {
@@ -145,34 +240,27 @@
             color: $text-light;
         }
 
-        &__save-btn {
-            background-color: $secondary-light;
-            opacity: 0.5;
+        &__avatar {
+            background-color: $primary-light;
+            color: $contentarea-light;
+        }
 
-            &_active {
-                background-color: $primary-light;
-                opacity: 1;
-                color: $contentarea-light;
+        &__submit-btn {
+            background-color: $primary-light;
+            color: white;
 
-                &:hover {
-                    cursor: pointer;
-                    transform: scale(1.03);
-                }
-            }
-
-            &_saved {
+            &_done {
                 background-color: green;
-                color: white;
             }
 
             &:focus-visible {
-                border: 2px solid $contentarea-light;
-                outline: 2px solid $primary-light;
+                border: 2px solid $contentarea-dark;
+                outline: 2px solid $primary-dark;
             }
         }
 
-        &__delete-btn {
-            background-color: $secondary-light;
+        &__link {
+            color: $primary-light;
         }
     }
 }

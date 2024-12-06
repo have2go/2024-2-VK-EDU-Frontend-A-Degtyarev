@@ -13,7 +13,7 @@ import { PuffLoader } from "react-spinners";
 
 export const Chatlist = ({ handleToggleModal, isModalOpen, createNewChat }) => {
     const { chats, fetchChats, setChats } = useChatsStore();
-    const { userData, tokens, login } = useCurrentUserStore();
+    const { userData, tokens, login, logout } = useCurrentUserStore();
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -28,17 +28,22 @@ export const Chatlist = ({ handleToggleModal, isModalOpen, createNewChat }) => {
         } else {
             const tokens = localStorage.getItem("tokens");
             if (tokens) {
-                try {
-                    const parsedTokens = JSON.parse(tokens);
-                    const newTokens = await refreshTokens(parsedTokens.refresh);
-                    login(newTokens.access, newTokens.refresh);
-                    await fetchChats(newTokens.access);
-                    setIsLoading(false);
-                } catch (err) {
-                    console.error(err);
-                    navigate("/login");
-                }
+                const parsedTokens = JSON.parse(tokens);
+                await refreshTokens(parsedTokens.refresh)
+                    .then(res => {
+                        refreshTokens(res.refresh).then(async res => {
+                            await login(res.access, res.refresh);
+                            fetchChats(res.access).then(res => setIsLoading(false));
+                        });
+                    })
+                    .catch(err => {
+                        localStorage.removeItem("tokens");
+                        logout();
+                        navigate("/login");
+                    });
             } else {
+                localStorage.removeItem("tokens");
+                logout();
                 navigate("/login");
             }
         }
@@ -88,13 +93,15 @@ export const Chatlist = ({ handleToggleModal, isModalOpen, createNewChat }) => {
                                         <div className="chatlist__text-container">
                                             <p className="chatlist__name">{chat.title}</p>
                                             <p className="chatlist__last-msg">
-                                                {lastMsg.voice
-                                                    ? "Голосовое сообщение"
-                                                    : lastMsg.files.length > 0
-                                                    ? lastMsg.files.length === 1
-                                                        ? "Изображение"
-                                                        : `Изображения (${lastMsg.files.length})`
-                                                    : lastMsg.text || "Нет сообщений"}
+                                                {lastMsg
+                                                    ? lastMsg.voice
+                                                        ? "Голосовое сообщение"
+                                                        : lastMsg.files.length > 0
+                                                        ? lastMsg.files.length === 1
+                                                            ? "Изображение"
+                                                            : `Изображения (${lastMsg?.files.length})`
+                                                        : lastMsg?.text
+                                                    : "Нет сообщений"}
                                             </p>
                                         </div>
                                         {/* {chat.last_message.text && (
