@@ -17,6 +17,7 @@ import { useCurrentUserStore, useMessagesStore } from "../../store/store";
 import { PuffLoader } from "react-spinners";
 import { toast } from "react-toastify";
 import { LazyImage } from "../../components/LazyImage";
+import cn from "classnames";
 
 export const Chat = () => {
     const { theme } = useContext(ThemeContext);
@@ -58,6 +59,19 @@ export const Chat = () => {
     const sendButtonRef = useRef(null);
 
     const maxSize = 10 * 1024 * 1024;
+
+    const classes = {
+        form: cn("form", theme, { "form_z-0": isConfirmationModalOpen }),
+        formModal: cn("form__modal", { form__modal_active: isModalOpen }),
+        formModalGrid: length => {
+            const gridClass = length >= 5 ? "form__modal-grid-5" : `form__modal-grid-${length}`;
+            return cn("form__modal-grid", gridClass);
+        },
+        formDragging: cn("form__dragging ", { form__dragging_active: isDragging }),
+        formSendBtn: cn("form__send-btn form__send-btn_voice icon", { "form__send-btn_voice_recording": isRecording }),
+        formMicRecording: cn({ form__mic_recording: isRecording }),
+        formDropdown: cn("form__dropdown", { form__dropdown_active: isMenuOpen }),
+    };
 
     const handleSending = e => {
         e.preventDefault();
@@ -361,9 +375,9 @@ export const Chat = () => {
                 setIsConfirmationModalOpen={setIsConfirmationModalOpen}
                 isChatInfoLoading={isChatInfoLoading}
             />
-            <form className={`form ${theme} ${isConfirmationModalOpen ? "form_z-0" : ""}`} action="/">
+            <form className={classes.form} action="/">
                 <div
-                    className={`form__modal ${isModalOpen ? "form__modal_active" : ""}`}
+                    className={classes.formModal}
                     onClick={() => {
                         setIsModalOpen(false);
                         setTimeout(() => {
@@ -373,13 +387,7 @@ export const Chat = () => {
                 >
                     <div className="form__modal-content" onClick={e => e.stopPropagation()}>
                         {uploadedFiles.length && (
-                            <div
-                                className={`form__modal-grid ${
-                                    uploadedFiles.length >= 5
-                                        ? `form__modal-grid-5`
-                                        : `form__modal-grid-${uploadedFiles.length}`
-                                }`}
-                            >
+                            <div className={classes.formModalGrid(uploadedFiles.length)}>
                                 {uploadedFiles.slice(0, 6).map((file, i) => {
                                     return (
                                         <div key={i} className="form__modal-grid-el">
@@ -413,9 +421,6 @@ export const Chat = () => {
                                 className="form__modal-button form__modal-button_cancel"
                                 onClick={() => {
                                     setIsModalOpen(false);
-                                    // setTimeout(() => {
-                                    //     fileInputRef.current.value = "";
-                                    // }, 250);
                                 }}
                             >
                                 Отмена
@@ -431,7 +436,7 @@ export const Chat = () => {
                     </div>
                 </div>
                 <div
-                    className={`form__dragging ${isDragging ? "form__dragging_active" : ""}`}
+                    className={classes.formDragging}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
                     onDragOver={e => e.preventDefault()}
@@ -489,24 +494,18 @@ export const Chat = () => {
                             )}
                             <button
                                 type="button"
-                                className={`form__send-btn form__send-btn_voice icon ${
-                                    isRecording ? "form__send-btn_voice_recording" : ""
-                                }`}
+                                className={classes.formSendBtn}
                                 onClick={!isRecording && audioBlob ? handleSendVoice : handleToggleRecording}
                             >
                                 {!isRecording && audioBlob ? (
                                     <SendIcon />
                                 ) : (
-                                    <MicIcon className={`${isRecording ? "form__mic_recording" : ""}`} />
+                                    <MicIcon className={classes.formMicRecording} />
                                 )}
                             </button>
-                            <div>{isRecording && <div></div>}</div>
                         </>
                     )}
-                    <div
-                        ref={dropdownRef}
-                        className={`form__dropdown form__dropdown ${isMenuOpen ? "form__dropdown_active" : ""}`}
-                    >
+                    <div ref={dropdownRef} className={classes.formDropdown}>
                         <button type="button" className="form__dropdown-element" onClick={handleLocationShare}>
                             <LocationOnIcon className="form__dropdown-icon" />
                             Местоположение
@@ -527,13 +526,7 @@ export const Chat = () => {
                 </div>
                 <div className="form__bottom-spacer"></div>
             </form>
-            <div
-                className="messages"
-                ref={containerRef}
-                // onDragOver={handleDragOver}
-
-                onDragEnter={handleDragEnter}
-            >
+            <div className="messages" ref={containerRef} onDragEnter={handleDragEnter}>
                 <div ref={chatEndRef} />
                 {isMessagesLoading ? (
                     <PuffLoader

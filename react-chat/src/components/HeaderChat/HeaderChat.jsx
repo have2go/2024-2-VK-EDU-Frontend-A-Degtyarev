@@ -12,6 +12,7 @@ import { ConfirmationModal } from "../ConfirmationModal";
 import { useCurrentUserStore } from "../../store/store";
 import { PulseLoader, PuffLoader } from "react-spinners";
 import { LazyImage } from "../LazyImage";
+import cn from "classnames";
 
 export const HeaderChat = ({
     chat,
@@ -41,6 +42,11 @@ export const HeaderChat = ({
         setModalType(type);
         setIsMenuOpen(false);
         setIsConfirmationModalOpen(true);
+    };
+
+    const classes = {
+        header: cn("header", theme),
+        headerDropdown: cn("header__dropdown", { header__dropdown_active: isMenuOpen }),
     };
 
     const handleConfirm = event => {
@@ -167,7 +173,7 @@ export const HeaderChat = ({
     }, [isMenuOpen]);
 
     return (
-        <header className={`header ${theme}`}>
+        <header className={classes.header}>
             <Link to={"/"} className="header__back-btn">
                 <span className="icon header__back">
                     <ArrowBackIcon sx={{ fontSize: 30 }} />
@@ -222,7 +228,7 @@ export const HeaderChat = ({
                         </button>
                     </>
                 )}
-                <div ref={dropdownRef} className={`header__dropdown ${isMenuOpen ? "header__dropdown_active" : ""}`}>
+                <div ref={dropdownRef} className={classes.headerDropdown}>
                     <button className="header__dropdown-element" onClick={() => handleModalOpen("deleteChat")}>
                         <DeleteIcon color="error" /> Удалить чат
                     </button>

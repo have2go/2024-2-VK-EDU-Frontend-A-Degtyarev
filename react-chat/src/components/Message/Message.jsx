@@ -2,13 +2,14 @@ import React, { useRef, useState, useEffect } from "react";
 import { months } from "../../utils/constants";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import { useCurrentUserStore } from "../../store/store";
-
+import cn from "classnames";
 import "./Message.scss";
 
 export const Message = ({ msg, selectedMessage, setSelectedMessage }) => {
     const { userData } = useCurrentUserStore();
 
     const [isTextSelected, setIsTextSelected] = useState(false);
+    const [isIncoming, setIsIncoming] = useState(false);
 
     const creationDate = new Date(msg.created_at);
 
@@ -70,6 +71,18 @@ export const Message = ({ msg, selectedMessage, setSelectedMessage }) => {
         setIsTextSelected(selectedText.length > 0);
     };
 
+    const classes = {
+        messageWrapper: cn("message__wrapper", {
+            message__wrapper_incoming: isIncoming,
+            message__wrapper_active: selectedMessage?.id === msg.id,
+        }),
+        message: cn("message", {
+            message_incoming: isIncoming,
+            message_selected: selectedMessage?.id === msg.id,
+        }),
+        doneAllIconContainer: cn("material-symbols-outlined message__arrows", { message__arrows_incoming: isIncoming }),
+    };
+
     useEffect(() => {
         document.addEventListener("mouseup", handleMouseUp);
 
@@ -78,22 +91,22 @@ export const Message = ({ msg, selectedMessage, setSelectedMessage }) => {
         };
     }, []);
 
+    useEffect(() => {
+        setIsIncoming(msg.sender?.id !== userData?.id ? true : false);
+    }, [msg, userData]);
+
     return (
         userData?.id && (
             <div
-                className={`message__wrapper ${msg.sender?.id === userData?.id ? "" : "message__wrapper_incoming"} ${
-                    selectedMessage?.id === msg.id ? "message__wrapper_active" : ""
-                }`}
+                className={classes.messageWrapper}
                 onClick={e => {
                     e.stopPropagation();
-                    handleSelectMessage(e, msg.sender?.id === userData.id);
+                    handleSelectMessage(e, !isIncoming);
                 }}
                 onDragStart={e => e.preventDefault()}
             >
                 <div
-                    className={`message ${msg.sender?.id === userData?.id ? "" : "message_incoming"} ${
-                        selectedMessage?.id === msg.id ? "message_selected" : ""
-                    }`}
+                    className={classes.message}
                     onClick={e => {
                         e.stopPropagation();
                         handleSelectMessage(e, msg.sender?.id === userData.id);
@@ -130,11 +143,7 @@ export const Message = ({ msg, selectedMessage, setSelectedMessage }) => {
                             {day} {month} {year}г., {hours}:{minutes}:{seconds}
                         </span>
                         <p className="message__time">{hours + ":" + minutes}</p>
-                        <span
-                            className={`material-symbols-outlined message__arrows ${
-                                msg.sender?.id === userData?.id ? "" : "message__arrows_incoming"
-                            }`}
-                        >
+                        <span className={classes.doneAllIconContainer}>
                             <DoneAllIcon sx={{ fontSize: 14 }} />
                         </span>
                     </div>

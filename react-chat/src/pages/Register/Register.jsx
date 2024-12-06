@@ -23,6 +23,10 @@ export const Register = () => {
 
     const navigate = useNavigate();
 
+    const registerSubmitBtnClass = cn("register__submit-btn", {
+        "register__submit-btn_done": buttonText === "Успех! Заходим...",
+    });
+
     const handleChange = event => {
         const name = event.target.name;
         const value = event.target.value?.trim();
@@ -185,13 +189,7 @@ export const Register = () => {
                         </div>
                     </div>
                     <span className="register__error">{errors.bio && errors.bio}</span>
-                    <button
-                        className={`register__submit-btn ${
-                            buttonText === "Успех! Заходим..." ? "register__submit-btn_done" : ""
-                        }`}
-                    >
-                        {buttonText}
-                    </button>
+                    <button className={registerSubmitBtnClass}>{buttonText}</button>
                 </form>
                 <div className="register__already-member">
                     <p className="">Есть аккаунт?</p>

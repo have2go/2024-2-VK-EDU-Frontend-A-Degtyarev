@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-
+import cn from "classnames";
 import "./ConfirmationModal.scss";
 
 export const ConfirmationModal = ({
@@ -21,6 +21,8 @@ export const ConfirmationModal = ({
         editMessage: "Измените сообщение",
         deleteProfile: "Вы действительно хотите удалить свой профиль?",
     };
+
+    const modalClass = cn("modal", { modal_active: isConfirmationModalOpen });
 
     const handleMouseDown = e => {
         if (e.target.classList.contains("modal")) {
@@ -58,11 +60,7 @@ export const ConfirmationModal = ({
     }, [isConfirmationModalOpen, modalType]);
 
     return (
-        <div
-            className={`modal ${isConfirmationModalOpen ? "modal_active" : ""}`}
-            onMouseDown={handleMouseDown}
-            onMouseUp={handleMouseUp}
-        >
+        <div className={modalClass} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp}>
             <div className="modal__content" onClick={e => e.stopPropagation()}>
                 <p className="modal__text">{modalText[modalType]}</p>
                 {modalType === "editMessage" && selectedMessage?.text && (

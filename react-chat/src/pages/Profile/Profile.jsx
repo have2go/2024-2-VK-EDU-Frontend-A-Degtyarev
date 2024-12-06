@@ -8,7 +8,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LogoutIcon from "@mui/icons-material/Logout";
-
+import cn from "classnames";
 import "./Profile.scss";
 import { ConfirmationModal } from "../../components/ConfirmationModal";
 import { replace } from "lodash";
@@ -32,6 +32,8 @@ export const Profile = () => {
     const maxSize = 10 * 1024 * 1024;
 
     const navigate = useNavigate();
+
+    const profileSaveBtnClass = cn("profile__save-btn", { "profile__save-btn_active": isChanged });
 
     const handleChange = event => {
         const name = event.target.name;
@@ -248,13 +250,7 @@ export const Profile = () => {
                             />
                         </div>
                         {errors.bio && <span className="register__error">{errors.bio}</span>}
-                        <button
-                            className={`profile__save-btn ${isChanged ? "profile__save-btn_active" : ""} ${
-                                buttonText === "Сохранено!" ? "profile__save-btn_saved" : ""
-                            }`}
-                            disabled={!isChanged}
-                            onClick={handleSave}
-                        >
+                        <button className={profileSaveBtnClass} disabled={!isChanged} onClick={handleSave}>
                             {buttonText}
                         </button>
                         <div className="profile__buttons">

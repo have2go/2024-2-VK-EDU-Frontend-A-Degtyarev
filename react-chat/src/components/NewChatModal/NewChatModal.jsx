@@ -7,6 +7,7 @@ import "./NewChatModal.scss";
 import { useUsersStore, useCurrentUserStore } from "../../store/store";
 import { toast } from "react-toastify";
 import { LazyImage } from "../LazyImage";
+import cn from "classnames";
 
 // import { debounce } from "lodash";
 
@@ -27,6 +28,13 @@ export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) 
     const lastElementRef = useRef(null);
     const dropdownRef = useRef(null);
     const observer = useRef();
+
+    const classes = {
+        newchat: cn("newchat", theme, { newchat_active: isModalOpen }),
+        newchatDropdownItem: isSelected =>
+            cn("newchat__dropdown-item", { "newchat__dropdown-item_selected": isSelected }),
+        newchatSubmitBtn: cn("newchat__submit-btn", { "newchat__submit-btn_disabled": !selectedUser }),
+    };
 
     // const fetchUsers = async (searchTerm = "", pageNumber = 1) => {
     //     const response = await fetch(
@@ -137,11 +145,7 @@ export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) 
     }, [hasMore]);
 
     return (
-        <div
-            className={`${theme} newchat ${isModalOpen ? "newchat_active" : ""}`}
-            onClick={handleCloseModal}
-            inert="true"
-        >
+        <div className={classes.newchat} onClick={handleCloseModal} inert="true">
             <form className="newchat__form" onSubmit={submitCreation} onClick={e => e.stopPropagation()}>
                 <input
                     type="text"
@@ -156,9 +160,7 @@ export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) 
                     {users.map((user, i) => (
                         <div
                             key={i}
-                            className={`newchat__dropdown-item ${
-                                selectedUser?.id === user.id ? "newchat__dropdown-item_selected" : ""
-                            }`}
+                            className={classes.newchatDropdownItem(selectedUser?.id === user.id)}
                             onClick={() => handleUserSelect(user)}
                         >
                             {user.avatar ? (
@@ -178,11 +180,7 @@ export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) 
                         {hasMore ? "Загрузка..." : "Больше пользователей нет"}
                     </div>
                 </div>
-                <button
-                    className={`newchat__submit-btn ${selectedUser ? "" : "newchat__submit-btn_disabled"}`}
-                    type="submit"
-                    disabled={!selectedUser}
-                >
+                <button className={classes.newchatSubmitBtn} type="submit" disabled={!selectedUser}>
                     Создать чат
                 </button>
                 <button className="newchat__close-btn" onClick={handleCloseModal} type="button">
