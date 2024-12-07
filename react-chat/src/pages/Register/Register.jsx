@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 import { ThemeSwitch } from "../../components/ThemeSwitch/ThemeSwitch";
@@ -7,6 +7,7 @@ import { useCurrentUserStore } from "../../store/store";
 import { toast } from "react-toastify";
 import PersonIcon from "@mui/icons-material/Person";
 import EditIcon from "@mui/icons-material/Edit";
+import cn from "classnames";
 
 import "./Register.scss";
 
@@ -26,6 +27,14 @@ export const Register = () => {
     const registerSubmitBtnClass = cn("register__submit-btn", {
         "register__submit-btn_done": buttonText === "Успех! Заходим...",
     });
+
+    const inputRefs = useRef([]);
+
+    const handleFocusInput = index => {
+        if (inputRefs.current[index]) {
+            inputRefs.current[index].focus();
+        }
+    };
 
     const handleChange = event => {
         const name = event.target.name;
@@ -94,7 +103,7 @@ export const Register = () => {
             <div className="register">
                 <h1 className="register__title">Регистрация</h1>
                 <form className="register__form" onSubmit={handleRegister}>
-                    <div className="register__input-container">
+                    <div className="register__input-container" onClick={() => handleFocusInput(0)}>
                         <label className="register__label">Логин</label>
                         <input
                             type="text"
@@ -105,10 +114,11 @@ export const Register = () => {
                             // maxLength={150}
                             value={data.username}
                             onChange={handleChange}
+                            ref={el => (inputRefs.current[0] = el)}
                         />
                     </div>
                     <span className="register__error">{errors.username && errors.username}</span>
-                    <div className="register__input-container">
+                    <div className="register__input-container" onClick={() => handleFocusInput(1)}>
                         <label className="register__label">Пароль</label>
                         <input
                             type="password"
@@ -119,10 +129,11 @@ export const Register = () => {
                             // maxLength={150}
                             value={data.password}
                             onChange={handleChange}
+                            ref={el => (inputRefs.current[1] = el)}
                         />
                     </div>
                     <span className="register__error">{errors.password && errors.password}</span>
-                    <div className="register__input-container">
+                    <div className="register__input-container" onClick={() => handleFocusInput(2)}>
                         <label className="register__label">Имя</label>
                         <input
                             type="text"
@@ -133,10 +144,11 @@ export const Register = () => {
                             // maxLength={150}
                             value={data.first_name}
                             onChange={handleChange}
+                            ref={el => (inputRefs.current[2] = el)}
                         />
                     </div>
                     <span className="register__error">{errors.first_name && errors.first_name}</span>
-                    <div className="register__input-container">
+                    <div className="register__input-container" onClick={() => handleFocusInput(3)}>
                         <label className="register__label">Фамилия</label>
                         <input
                             type="text"
@@ -147,11 +159,15 @@ export const Register = () => {
                             // maxLength={150}
                             value={data.last_name}
                             onChange={handleChange}
+                            ref={el => (inputRefs.current[3] = el)}
                         />
                     </div>
                     <span className="register__error">{errors.last_name && errors.last_name}</span>
                     <div className="register__bio-container">
-                        <div className="register__input-container register__input-container_textarea">
+                        <div
+                            className="register__input-container register__input-container_textarea"
+                            onClick={() => handleFocusInput(4)}
+                        >
                             <label className="register__label">О себе</label>
                             <textarea
                                 type="text"
@@ -160,6 +176,7 @@ export const Register = () => {
                                 maxLength={450}
                                 value={data.bio}
                                 onChange={handleChange}
+                                ref={el => (inputRefs.current[4] = el)}
                             />
                         </div>
                         <div className="register__avatar">

@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../../api/api";
@@ -15,6 +15,9 @@ export const Login = () => {
 
     const [errors, setErrors] = useState({});
     const [data, setData] = useState({});
+
+    const usernameInputRef = useRef(null);
+    const passwordInputRef = useRef(null);
 
     const handleChange = event => {
         const name = event.target.name;
@@ -62,19 +65,20 @@ export const Login = () => {
             <div className="login">
                 <h1 className="login__title">Авторизация</h1>
                 <form className="login__form" onSubmit={handleLogin}>
-                    <div className="login__input-container">
+                    <div className="login__input-container" onClick={() => usernameInputRef.current?.focus()}>
                         <label className="login__label">Логин</label>
                         <input
                             type="text"
                             className="login__input"
                             name="username"
-                            // required
+                            // requiredF
                             value={data.username}
                             onChange={handleChange}
+                            ref={usernameInputRef}
                         />
                     </div>
                     <span className="login__error">{errors.username && errors.username}</span>
-                    <div className="login__input-container">
+                    <div className="login__input-container" onClick={() => passwordInputRef.current?.focus()}>
                         <label className="login__label">Пароль</label>
                         <input
                             type="password"
@@ -83,6 +87,7 @@ export const Login = () => {
                             // required
                             value={data.password}
                             onChange={handleChange}
+                            ref={passwordInputRef}
                         />
                     </div>
 

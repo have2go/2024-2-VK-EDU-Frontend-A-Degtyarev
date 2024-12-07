@@ -19,7 +19,7 @@ export const Profile = () => {
     const { userData, setUserData, tokens, login, logout } = useCurrentUserStore();
 
     const inputRefs = useRef([]);
-    // const [focusedInputIndex, setFocusedInputIndex] = useState(null);
+
     const [avatar, setAvatar] = useState(null);
     const [isChanged, setIsChanged] = useState(false);
     const [buttonText, setButtontext] = useState("Сохранить");
@@ -67,15 +67,10 @@ export const Profile = () => {
     };
 
     const handleFocusInput = index => {
-        // setFocusedInputIndex(index);
         if (inputRefs.current[index]) {
             inputRefs.current[index].focus();
         }
     };
-
-    // const handleBlur = () => {
-    //     setFocusedInputIndex(null);
-    // };
 
     const handleSave = () => {
         setButtontext("Сохранение...");
@@ -203,7 +198,6 @@ export const Profile = () => {
                                 ref={el => (inputRefs.current[0] = el)}
                                 value={data.first_name}
                                 onChange={handleChange}
-                                // onBlur={handleBlur}
                             />
                         </div>
                         {errors.first_name && <span className="register__error">{errors.first_name}</span>}
@@ -216,7 +210,6 @@ export const Profile = () => {
                                 ref={el => (inputRefs.current[1] = el)}
                                 value={data.last_name}
                                 onChange={handleChange}
-                                // onBlur={handleBlur}
                             />
                         </div>
                         {errors.last_name && <span className="register__error">{errors.last_name}</span>}
@@ -229,13 +222,12 @@ export const Profile = () => {
                                 ref={el => (inputRefs.current[2] = el)}
                                 value={data.username}
                                 onChange={handleChange}
-                                // onBlur={handleBlur}
                             />
                         </div>
                         {errors.username && <span className="register__error">{errors.username}</span>}
                         <div
                             className={`profile__input-group profile__input-group_textarea`}
-                            // onClick={() => handleFocusInput(3)}
+                            onClick={() => handleFocusInput(3)}
                         >
                             <label className="profile__label">О себе</label>
                             <textarea
@@ -246,7 +238,6 @@ export const Profile = () => {
                                 ref={el => (inputRefs.current[3] = el)}
                                 value={data.bio}
                                 onChange={handleChange}
-                                // onBlur={handleBlur}
                             />
                         </div>
                         {errors.bio && <span className="register__error">{errors.bio}</span>}
