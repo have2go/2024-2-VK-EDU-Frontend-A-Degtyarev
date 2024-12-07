@@ -85,7 +85,7 @@ export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) 
             .catch(res => {
                 res.json().then(json => {
                     Object.keys(json).forEach(key => {
-                        toast(json?.[key]?.[0]);
+                        toast(json?.[key]);
                     });
                 });
             });
