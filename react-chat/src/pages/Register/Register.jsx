@@ -7,7 +7,7 @@ import { useCurrentUserStore } from "../../store/store";
 import { toast } from "react-toastify";
 import PersonIcon from "@mui/icons-material/Person";
 import EditIcon from "@mui/icons-material/Edit";
-import cn from "classnames";
+import { BeatLoader } from "react-spinners";
 
 import "./Register.scss";
 
@@ -19,14 +19,9 @@ export const Register = () => {
 
     const [errors, setErrors] = useState({});
     const [data, setData] = useState({});
-
-    const [buttonText, setButtonText] = useState("Зарегистрироваться");
+    const [isLoading, setIsLoading] = useState(false);
 
     const navigate = useNavigate();
-
-    const registerSubmitBtnClass = cn("register__submit-btn", {
-        "register__submit-btn_done": buttonText === "Успех! Заходим...",
-    });
 
     const inputRefs = useRef([]);
 
@@ -66,11 +61,9 @@ export const Register = () => {
         }
         if (avatar) body.append("avatar", avatar);
 
-        setButtonText("Подождите...");
-
+        setIsLoading(true);
         await register(body)
             .then(res => {
-                setButtonText("Успех! Заходим...");
                 auth(data.username, data.password).then(json => {
                     login(json.access, json.refresh);
                     localStorage.setItem(
@@ -84,7 +77,7 @@ export const Register = () => {
                 });
             })
             .catch(err => {
-                setButtonText("Зарегистрироваться");
+                setIsLoading(false);
                 if (typeof err === "object") {
                     setErrors({ ...err });
                 } else if (Array.isArray(obj)) {
@@ -206,7 +199,13 @@ export const Register = () => {
                         </div>
                     </div>
                     <span className="register__error">{errors.bio && errors.bio}</span>
-                    <button className={registerSubmitBtnClass}>{buttonText}</button>
+                    <button className="register__submit-btn">
+                        {isLoading ? (
+                            <BeatLoader cssOverride={{ margin: "5px auto 0" }} size={10} />
+                        ) : (
+                            "Зарегистрироваться"
+                        )}
+                    </button>
                 </form>
                 <div className="register__already-member">
                     <p className="">Есть аккаунт?</p>

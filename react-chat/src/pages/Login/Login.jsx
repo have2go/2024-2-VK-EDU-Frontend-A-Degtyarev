@@ -5,6 +5,7 @@ import { auth } from "../../api/api";
 import { useCurrentUserStore } from "../../store/store";
 import { ThemeSwitch } from "../../components/ThemeSwitch/ThemeSwitch";
 import { toast } from "react-toastify";
+import { BeatLoader } from "react-spinners";
 
 import "./Login.scss";
 
@@ -15,6 +16,7 @@ export const Login = () => {
 
     const [errors, setErrors] = useState({});
     const [data, setData] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
 
     const usernameInputRef = useRef(null);
     const passwordInputRef = useRef(null);
@@ -30,6 +32,7 @@ export const Login = () => {
     const handleLogin = e => {
         e.preventDefault();
 
+        setIsLoading(true);
         auth(data.username, data.password)
             .then(json => {
                 login(json.access, json.refresh);
@@ -48,7 +51,8 @@ export const Login = () => {
                 if (typeof err === "object") {
                     setErrors({ ...err });
                 }
-            });
+            })
+            .finally(() => setIsLoading(false));
     };
 
     useEffect(() => {
@@ -92,7 +96,9 @@ export const Login = () => {
                     </div>
 
                     <span className="login__error">{errors.password && errors.password}</span>
-                    <button className="login__submit-btn">Войти</button>
+                    <button className="login__submit-btn">
+                        {isLoading ? <BeatLoader cssOverride={{ margin: "5px auto 0" }} size={10} /> : "Войти"}
+                    </button>
                 </form>
                 <div className="login__already-member">
                     Нет аккаунта?{" "}

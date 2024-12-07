@@ -8,7 +8,7 @@ import { useUsersStore, useCurrentUserStore } from "../../store/store";
 import { toast } from "react-toastify";
 import { LazyImage } from "../LazyImage";
 import cn from "classnames";
-
+import { BeatLoader } from "react-spinners";
 // import { debounce } from "lodash";
 
 export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) => {
@@ -21,6 +21,7 @@ export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) 
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const [selectedUser, setSelectedUser] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const navigate = useNavigate();
 
@@ -58,7 +59,7 @@ export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) 
 
     const submitCreation = e => {
         e.preventDefault();
-
+        setIsLoading(true);
         fetch(`https://vkedu-fullstack-div2.ru/api/chats/`, {
             method: "POST",
             body: JSON.stringify({
@@ -83,6 +84,7 @@ export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) 
                 navigate(`/chat/${json.id}`);
             })
             .catch(res => {
+                setIsLoading(false);
                 res.json().then(json => {
                     Object.keys(json).forEach(key => {
                         toast(json?.[key]);
@@ -181,7 +183,7 @@ export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) 
                     </div>
                 </div>
                 <button className={classes.newchatSubmitBtn} type="submit" disabled={!selectedUser}>
-                    Создать чат
+                    {isLoading ? <BeatLoader cssOverride={{ margin: "5px auto 0" }} size={10} /> : "Создать чат"}
                 </button>
                 <button className="newchat__close-btn" onClick={handleCloseModal} type="button">
                     <span className="icon">

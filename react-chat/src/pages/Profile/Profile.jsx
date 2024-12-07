@@ -14,6 +14,7 @@ import { ConfirmationModal } from "../../components/ConfirmationModal";
 import { replace } from "lodash";
 import { LazyImage } from "../../components/LazyImage";
 import { toast } from "react-toastify";
+import { BeatLoader } from "react-spinners";
 
 export const Profile = () => {
     const { userData, setUserData, tokens, login, logout } = useCurrentUserStore();
@@ -22,8 +23,8 @@ export const Profile = () => {
 
     const [avatar, setAvatar] = useState(null);
     const [isChanged, setIsChanged] = useState(false);
-    const [buttonText, setButtontext] = useState("Сохранить");
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const [errors, setErrors] = useState({});
     const [data, setData] = useState({});
@@ -73,8 +74,6 @@ export const Profile = () => {
     };
 
     const handleSave = () => {
-        setButtontext("Сохранение...");
-
         const body = new FormData();
 
         for (let key in userData) {
@@ -82,6 +81,7 @@ export const Profile = () => {
         }
         if (userData.avatar !== avatar) body.append("avatar", avatar);
 
+        setIsLoading(true);
         saveProfile(userData.id, tokens.access, body)
             .then(json => {
                 setUserData(json);
@@ -90,10 +90,9 @@ export const Profile = () => {
             })
             .catch(err => {
                 setIsChanged(false);
-                setButtontext("Сохранить");
                 if (typeof err === "object") setErrors({ ...err });
             })
-            .finally(() => setButtontext("Сохранить"));
+            .finally(() => setIsLoading(false));
     };
 
     const handleConfirmDeletion = () => {
@@ -242,7 +241,7 @@ export const Profile = () => {
                         </div>
                         {errors.bio && <span className="register__error">{errors.bio}</span>}
                         <button className={profileSaveBtnClass} disabled={!isChanged} onClick={handleSave}>
-                            {buttonText}
+                            {isLoading ? <BeatLoader cssOverride={{ margin: "5px auto 0" }} size={10} /> : "Сохранить"}
                         </button>
                         <div className="profile__buttons">
                             <button className="profile__delete-btn" onClick={() => setIsModalOpen(true)}>

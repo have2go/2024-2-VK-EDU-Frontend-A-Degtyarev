@@ -22,7 +22,9 @@
     }
 
     &__form {
-        width: 300px;
+        min-width: 300px;
+        max-width: 400px;
+        width: 80%;
         position: relative;
         display: flex;
         flex-direction: column;
@@ -30,10 +32,6 @@
         border-radius: 28px;
         padding: 6px;
         gap: 6px;
-
-        @media screen and (width >= 768px) {
-            width: 400px;
-        }
     }
 
     &__user-info {
