@@ -84,6 +84,18 @@ export const Chatlist = ({ handleToggleModal, isModalOpen, createNewChat }) => {
         return () => observer.current.disconnect();
     }, [hasMore]);
 
+    useEffect(() => {
+        if (isModalOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [isModalOpen]);
+
     return (
         <>
             <Helmet>
