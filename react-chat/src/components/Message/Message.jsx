@@ -2,13 +2,14 @@ import React, { useRef, useState, useEffect } from "react";
 import { months } from "../../utils/constants";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import { useCurrentUserStore } from "../../store/store";
-
+import cn from "classnames";
 import "./Message.scss";
 
 export const Message = ({ msg, selectedMessage, setSelectedMessage }) => {
     const { userData } = useCurrentUserStore();
 
     const [isTextSelected, setIsTextSelected] = useState(false);
+    const [isIncoming, setIsIncoming] = useState(false);
 
     const creationDate = new Date(msg.created_at);
 
@@ -70,6 +71,18 @@ export const Message = ({ msg, selectedMessage, setSelectedMessage }) => {
         setIsTextSelected(selectedText.length > 0);
     };
 
+    const classes = {
+        messageWrapper: cn("message__wrapper", {
+            message__wrapper_incoming: isIncoming,
+            message__wrapper_active: selectedMessage?.id === msg.id,
+        }),
+        message: cn("message", {
+            message_incoming: isIncoming,
+            message_selected: selectedMessage?.id === msg.id,
+        }),
+        doneAllIconContainer: cn("material-symbols-outlined message__arrows", { message__arrows_incoming: isIncoming }),
+    };
+
     useEffect(() => {
         document.addEventListener("mouseup", handleMouseUp);
 
@@ -78,66 +91,64 @@ export const Message = ({ msg, selectedMessage, setSelectedMessage }) => {
         };
     }, []);
 
+    useEffect(() => {
+        setIsIncoming(msg.sender?.id !== userData?.id ? true : false);
+    }, [msg, userData]);
+
     return (
-        <div
-            className={`message__wrapper ${msg.sender?.id === userData?.id ? "" : "message__wrapper_incoming"} ${
-                selectedMessage?.id === msg.id ? "message__wrapper_active" : ""
-            }`}
-            onClick={e => {
-                e.stopPropagation();
-                handleSelectMessage(e, msg.sender?.id === userData.id);
-            }}
-            onDragStart={e => e.preventDefault()}
-        >
+        userData?.id && (
             <div
-                className={`message ${msg.sender?.id === userData?.id ? "" : "message_incoming"} ${
-                    selectedMessage?.id === msg.id ? "message_selected" : ""
-                }`}
+                className={classes.messageWrapper}
                 onClick={e => {
                     e.stopPropagation();
-                    handleSelectMessage(e, msg.sender?.id === userData.id);
+                    handleSelectMessage(e, !isIncoming);
                 }}
-                id={msg.id}
+                onDragStart={e => e.preventDefault()}
             >
-                {msg.text && (
-                    <p className="message__text" ref={messageRef}>
-                        {formatMessageText(msg.text)}
-                    </p>
-                )}
-                {msg.files.length > 0 && !msg.voice && (
-                    <div className="message__img-container">
-                        {msg.files.map((file, i) => {
-                            return (
-                                <img
-                                    key={i}
-                                    src={file.item}
-                                    alt="attachment"
-                                    className="message__img"
-                                    draggable={false}
-                                />
-                            );
-                        })}
+                <div
+                    className={classes.message}
+                    onClick={e => {
+                        e.stopPropagation();
+                        handleSelectMessage(e, msg.sender?.id === userData.id);
+                    }}
+                    id={msg.id}
+                >
+                    {msg.text && (
+                        <p className="message__text" ref={messageRef}>
+                            {formatMessageText(msg.text)}
+                        </p>
+                    )}
+                    {msg.files.length > 0 && !msg.voice && (
+                        <div className="message__img-container">
+                            {msg.files.map((file, i) => {
+                                return (
+                                    <img
+                                        key={i}
+                                        src={file.item}
+                                        alt="attachment"
+                                        className="message__img"
+                                        draggable={false}
+                                    />
+                                );
+                            })}
+                        </div>
+                    )}
+                    {msg.voice && (
+                        <audio className="message__audio" controls>
+                            <source src={msg.voice} type="audio/wav" />
+                        </audio>
+                    )}
+                    <div className="message__info tooltip">
+                        <span className="tooltiptext">
+                            {day} {month} {year}г., {hours}:{minutes}:{seconds}
+                        </span>
+                        <p className="message__time">{hours + ":" + minutes}</p>
+                        <span className={classes.doneAllIconContainer}>
+                            <DoneAllIcon sx={{ fontSize: 14 }} />
+                        </span>
                     </div>
-                )}
-                {msg.voice && (
-                    <audio className="message__audio" controls>
-                        <source src={msg.voice} type="audio/wav" />
-                    </audio>
-                )}
-                <div className="message__info tooltip">
-                    <span className="tooltiptext">
-                        {day} {month} {year}г., {hours}:{minutes}:{seconds}
-                    </span>
-                    <p className="message__time">{hours + ":" + minutes}</p>
-                    <span
-                        className={`material-symbols-outlined message__arrows ${
-                            msg.sender?.id === userData?.id ? "" : "message__arrows_incoming"
-                        }`}
-                    >
-                        <DoneAllIcon sx={{ fontSize: 14 }} />
-                    </span>
                 </div>
             </div>
-        </div>
+        )
     );
 };

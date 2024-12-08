@@ -1,6 +1,7 @@
 const BASE_URL = "https://vkedu-fullstack-div2.ru/api";
 
 const handleResponse = res => {
+    if (res.status === 204) return null;
     return res.ok ? res.json() : Promise.reject(res);
 };
 

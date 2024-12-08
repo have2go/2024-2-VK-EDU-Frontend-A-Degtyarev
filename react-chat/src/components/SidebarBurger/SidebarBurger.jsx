@@ -1,15 +1,18 @@
 import React from "react";
 import { SideContent } from "../SideContent";
+import cn from "classnames";
 import "./SidebarBurger.scss";
 
 export const SidebarBurger = ({ toggleMenu, isMenuOpen }) => {
+    const classes = {
+        sidebarBurgerOverlay: cn("sidebar-burger__overlay", { "sidebar-burger__overlay_active": isMenuOpen }),
+        sidebarBurger: cn("sidebar-burger", { "sidebar-burger_open": isMenuOpen }),
+    };
+
     return (
         <>
-            <div
-                className={`sidebar-burger__overlay ${isMenuOpen ? "sidebar-burger__overlay_active" : ""}`}
-                onClick={toggleMenu}
-            ></div>
-            <div className={`sidebar-burger ${isMenuOpen ? "sidebar-burger_open" : ""}`}>
+            <div className={classes.sidebarBurgerOverlay} onClick={toggleMenu}></div>
+            <div className={classes.sidebarBurger}>
                 <SideContent />
             </div>
         </>

@@ -1,0 +1,10 @@
+@use "../../variables.scss" as *;
+
+.lazyimg {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+
+    &_visible {
+        opacity: 1;
+    }
+}

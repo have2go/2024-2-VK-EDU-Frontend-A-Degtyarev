@@ -1,17 +1,22 @@
 import React, { useContext } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
-
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
+import cn from "classnames";
 import "./ThemeSwitch.scss";
 
 export const ThemeSwitch = () => {
     const { theme, setTheme } = useContext(ThemeContext);
 
+    const classes = {
+        themeSwitchCellDark: cn("theme-switch__cell", { "theme-switch__cell_active": theme === "dark" }),
+        themeSwitchCellLight: cn("theme-switch__cell", { "theme-switch__cell_active": theme === "light" }),
+    };
+
     return (
         <div className="theme-switch">
             <button
-                className={`theme-switch__cell ${theme === "dark" ? "theme-switch__cell_active" : ""}`}
+                className={classes.themeSwitchCellDark}
                 onClick={() => {
                     setTheme("dark");
                 }}
@@ -19,7 +24,7 @@ export const ThemeSwitch = () => {
                 <DarkModeIcon sx={{ fontSize: 18 }} />
             </button>
             <button
-                className={`theme-switch__cell ${theme === "light" ? "theme-switch__cell_active" : ""}`}
+                className={classes.themeSwitchCellLight}
                 onClick={() => {
                     setTheme("light");
                 }}

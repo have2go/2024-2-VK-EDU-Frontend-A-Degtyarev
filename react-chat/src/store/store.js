@@ -62,17 +62,22 @@ export const useUsersStore = create(set => ({
 export const useChatsStore = create(set => ({
     chats: null,
     setChats: newChats => set({ chats: newChats }),
-    fetchChats: async token => {
+    fetchChats: async (token, pageNumber, searchTerm) => {
         try {
-            const response = await fetch(`https://vkedu-fullstack-div2.ru/api/chats/`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            });
+            const response = await fetch(
+                `https://vkedu-fullstack-div2.ru/api/chats/?search=${searchTerm}&page=${pageNumber}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
             if (response.ok) {
                 const data = await response.json();
-                set({ chats: data });
+                set(state => ({
+                    chats: pageNumber === 1 ? data : { ...data, results: [...state.chats.results, ...data.results] },
+                }));
             }
         } catch (error) {
             console.error("Error fetching chats:", error);
