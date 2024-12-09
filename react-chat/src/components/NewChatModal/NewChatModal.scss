@@ -22,7 +22,9 @@
     }
 
     &__form {
-        width: 300px;
+        min-width: 300px;
+        max-width: 400px;
+        width: 80%;
         position: relative;
         display: flex;
         flex-direction: column;
@@ -55,7 +57,7 @@
     }
 
     &__dropdown {
-        height: 300px;
+        height: 50vh;
         overflow-y: overlay;
         border-radius: 28px 10px 10px 28px;
         width: 100%;

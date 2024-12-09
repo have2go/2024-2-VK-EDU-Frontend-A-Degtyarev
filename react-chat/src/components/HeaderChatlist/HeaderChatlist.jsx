@@ -7,6 +7,7 @@ import { SidebarBurger } from "../SidebarBurger";
 import "./HeaderChatlist.scss";
 import { NewChatBtn } from "../NewChatBtn";
 import { Sidebar } from "../Sidebar";
+import cn from "classnames";
 
 export const HeaderChatlist = ({ handleToggleModal }) => {
     const { theme } = useContext(ThemeContext);
@@ -17,8 +18,10 @@ export const HeaderChatlist = ({ handleToggleModal }) => {
         setIsMenuOpen(!isMenuOpen);
     };
 
+    const headerClass = cn("header", theme);
+
     return (
-        <header className={`header ${theme}`}>
+        <header className={headerClass}>
             <button className="header__menu" onClick={toggleMenu}>
                 {isMenuOpen ? <MenuOpenIcon sx={{ fontSize: 32 }} /> : <MenuIcon sx={{ fontSize: 32 }} />}
             </button>

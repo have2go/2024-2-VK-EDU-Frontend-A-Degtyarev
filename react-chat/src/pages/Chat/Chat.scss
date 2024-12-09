@@ -298,7 +298,7 @@
         }
 
         &::before {
-            content: "Перетащите файлы в эту область\A(макс. 9 МБ)";
+            content: "Перетащите файлы в эту область\A(макс. 10 МБ)";
             white-space: pre-wrap;
             text-align: center;
             font-size: 16px;
@@ -663,6 +663,27 @@
     }
 }
 
+@-moz-document url-prefix() {
+    .form__audio,
+    .message__audio {
+        border-radius: 12px;
+        height: 40px;
+        top: 9px;
+    }
+
+    .form__audio {
+        left: 6px;
+
+        @media screen and (width >= 480px) {
+            left: 10px;
+        }
+
+        @media screen and (width >= 768px) {
+            left: 20px;
+        }
+    }
+}
+
 .dark {
     .bg {
         background-color: $contentarea-dark;
@@ -804,6 +825,23 @@
             &_incoming {
                 color: $text-dark;
             }
+        }
+    }
+
+    @-moz-document url-prefix() {
+        .message__audio {
+            background-color: $primary-dark;
+            mix-blend-mode: multiply;
+        }
+
+        .message_incoming .message__audio {
+            background-color: $primary-dark;
+            mix-blend-mode: hard-light;
+        }
+
+        .form__audio {
+            background-color: $contentarea-dark;
+            mix-blend-mode: luminosity;
         }
     }
 }
@@ -955,6 +993,23 @@
             &_incoming {
                 color: $text-light;
             }
+        }
+    }
+
+    @-moz-document url-prefix() {
+        .message__audio {
+            background-color: $primary-light;
+            mix-blend-mode: hard-light;
+        }
+
+        .message_incoming .message__audio {
+            background-color: $primary-light;
+            mix-blend-mode: hard-light;
+        }
+
+        .form__audio {
+            background-color: $contentarea-light;
+            mix-blend-mode: luminosity;
         }
     }
 }
