@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useContext } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
 import { HeaderChat } from "../../components/HeaderChat";
 import { Helmet } from "react-helmet-async";
@@ -24,7 +24,7 @@ export const Chat = () => {
     const { id } = useParams();
 
     const { tokens, login, logout } = useCurrentUserStore();
-    const { messages, setMessages, addMessage, setChatId } = useMessagesStore();
+    const { messages, setMessages, setChatId } = useMessagesStore();
 
     const navigate = useNavigate();
 
@@ -181,7 +181,7 @@ export const Chat = () => {
         formData.append("chat", id);
         formData.append("voice", new File([audioBlob], "voiceMsg.wav", { type: audioBlob.type }));
 
-        sendVoice(tokens.access, formData).then(res => {
+        sendVoice(tokens.access, formData).then(() => {
             setAudioBlob(null);
             setRecordingTime(0);
         });
@@ -189,7 +189,7 @@ export const Chat = () => {
 
     const handleSendMessage = async () => {
         if (inputValue.trim()) {
-            sendMessage(id, tokens.access, inputValue).then(res => {
+            sendMessage(id, tokens.access, inputValue).then(() => {
                 setInputValue("");
                 inputRef.current.focus();
                 setTimeout(() => scrollToBottom(), 50);
@@ -229,14 +229,14 @@ export const Chat = () => {
                 const { latitude, longitude } = position.coords;
                 const locationUrl = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
 
-                sendGeo(id, tokens.access, locationUrl).then(json => {
+                sendGeo(id, tokens.access, locationUrl).then(() => {
                     setIsMenuOpen(false);
                     setTimeout(() => {
                         scrollToBottom();
                     }, 50);
                 });
             },
-            error => {
+            () => {
                 toast("Не удалось получить местоположение.");
             }
         );
@@ -271,7 +271,7 @@ export const Chat = () => {
             formData.append("files", file);
         });
 
-        sendImages(tokens.access, formData).then(res => {
+        sendImages(tokens.access, formData).then(() => {
             setTimeout(() => {
                 setIsModalOpen(false);
                 scrollToBottom();
@@ -300,7 +300,7 @@ export const Chat = () => {
                         setChatId(id);
                     });
                 })
-                .catch(err => {
+                .catch(() => {
                     logout();
                     localStorage.removeItem("tokens");
                     navigate("/login", { replace: true });
@@ -395,7 +395,7 @@ export const Chat = () => {
                                                 <button
                                                     type="button"
                                                     className="form__modal-delete"
-                                                    onClick={e =>
+                                                    onClick={() =>
                                                         setUploadedFiles(uploadedFiles.filter(el => el !== file))
                                                     }
                                                 >

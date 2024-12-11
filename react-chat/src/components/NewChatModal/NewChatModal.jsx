@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useRef } from "react";
+import { useEffect, useState, useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ThemeContext } from "../../context/ThemeContext";
 import CloseIcon from "@mui/icons-material/Close";
@@ -11,7 +11,7 @@ import cn from "classnames";
 import { BeatLoader } from "react-spinners";
 // import { debounce } from "lodash";
 
-export const NewChatModal = ({ isModalOpen, handleToggleModal, createNewChat }) => {
+export const NewChatModal = ({ isModalOpen, handleToggleModal }) => {
     const { theme } = useContext(ThemeContext);
 
     const { userData, tokens } = useCurrentUserStore();

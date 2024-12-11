@@ -1,10 +1,7 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { ThemeSwitch } from "../ThemeSwitch";
 
 import PersonIcon from "@mui/icons-material/Person";
-import LoginIcon from "@mui/icons-material/Login";
-import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import "./SideContent.scss";
 
 export const SideContent = () => {
