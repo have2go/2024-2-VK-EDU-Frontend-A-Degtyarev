@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 import { ThemeSwitch } from "../../components/ThemeSwitch/ThemeSwitch";
@@ -63,7 +63,7 @@ export const Register = () => {
 
         setIsLoading(true);
         await register(body)
-            .then(res => {
+            .then(() => {
                 auth(data.username, data.password).then(json => {
                     login(json.access, json.refresh);
                     localStorage.setItem(
@@ -80,7 +80,7 @@ export const Register = () => {
                 setIsLoading(false);
                 if (typeof err === "object") {
                     setErrors({ ...err });
-                } else if (Array.isArray(obj)) {
+                } else if (Array.isArray(err)) {
                     err.forEach(el => {
                         toast(el);
                     });

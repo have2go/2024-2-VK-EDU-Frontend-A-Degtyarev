@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useContext } from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { ChatList } from "./pages/Chatlist";
 import { Chat } from "./pages/Chat";
 import { ThemeContext } from "./context/ThemeContext";
@@ -17,7 +17,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function App() {
-    const navigate = useNavigate();
     const isConnected = useRef(false);
 
     const { theme } = useContext(ThemeContext);
@@ -27,7 +26,7 @@ function App() {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleToggleModal = e => {
+    const handleToggleModal = () => {
         setIsModalOpen(!isModalOpen);
 
         const header = document.querySelector(".header");

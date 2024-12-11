@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useLayoutEffect, useState, useRef } from "react";
+import { useContext, useEffect, useLayoutEffect, useState, useRef } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
 import { NewChatModal } from "../../components/NewChatModal";
-import { ChatStatus } from "../../components/ChatStatus";
+// import { ChatStatus } from "../../components/ChatStatus";
 import { HeaderChatlist } from "../../components/HeaderChatlist";
 import { Helmet } from "react-helmet-async";
 import PersonIcon from "@mui/icons-material/Person";
@@ -13,8 +13,8 @@ import { PuffLoader } from "react-spinners";
 import { LazyImage } from "../../components/LazyImage";
 
 export const Chatlist = ({ handleToggleModal, isModalOpen, createNewChat }) => {
-    const { chats, fetchChats, setChats } = useChatsStore();
-    const { userData, tokens, login, logout } = useCurrentUserStore();
+    const { chats, fetchChats } = useChatsStore();
+    const { tokens, login, logout } = useCurrentUserStore();
     const { theme } = useContext(ThemeContext);
     const navigate = useNavigate();
 
@@ -37,10 +37,10 @@ export const Chatlist = ({ handleToggleModal, isModalOpen, createNewChat }) => {
                     .then(res => {
                         refreshTokens(res.refresh).then(async res => {
                             await login(res.access, res.refresh);
-                            fetchChats(res.access, page, "").then(res => setIsLoading(false));
+                            fetchChats(res.access, page, "").then(() => setIsLoading(false));
                         });
                     })
-                    .catch(err => {
+                    .catch(() => {
                         localStorage.removeItem("tokens");
                         logout();
                         navigate("/login");

@@ -1,4 +1,3 @@
-import React from "react";
 import { SideContent } from "../SideContent";
 import cn from "classnames";
 import "./SidebarBurger.scss";

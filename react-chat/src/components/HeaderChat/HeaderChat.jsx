@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useRef } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ThemeContext } from "../../context/ThemeContext";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -10,7 +10,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import "./HeaderChat.scss";
 import { ConfirmationModal } from "../ConfirmationModal";
 import { useCurrentUserStore } from "../../store/store";
-import { PulseLoader, PuffLoader } from "react-spinners";
+import { PulseLoader } from "react-spinners";
 import { LazyImage } from "../LazyImage";
 import cn from "classnames";
 
@@ -18,7 +18,6 @@ export const HeaderChat = ({
     chat,
     selectedMessage,
     setSelectedMessage,
-    handleFileUpload,
     isConfirmationModalOpen,
     setIsConfirmationModalOpen,
     isChatInfoLoading,
@@ -28,7 +27,6 @@ export const HeaderChat = ({
 
     const navigate = useNavigate();
 
-    const [isLoading, setIsLoading] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [modalType, setModalType] = useState(null);
     const [inputValue, setInputValue] = useState("");
@@ -49,7 +47,7 @@ export const HeaderChat = ({
         headerDropdown: cn("header__dropdown", { header__dropdown_active: isMenuOpen }),
     };
 
-    const handleConfirm = event => {
+    const handleConfirm = () => {
         if (modalType === `deleteChat`) {
             fetch(`https://vkedu-fullstack-div2.ru/api/chat/${chat.id}/`, {
                 method: "DELETE",

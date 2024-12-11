@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import cn from "classnames";
 import "./ConfirmationModal.scss";
 
@@ -10,7 +10,6 @@ export const ConfirmationModal = ({
     selectedMessage,
     inputValue,
     setInputValue,
-    fileInputRef,
 }) => {
     const [isMouseDownOutside, setIsMouseDownOutside] = useState(false);
     const inputRef = useRef(null);
