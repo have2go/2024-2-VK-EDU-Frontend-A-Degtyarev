@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { saveProfile, deleteProfile, refreshTokens } from "../../api/api";
@@ -11,7 +11,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import cn from "classnames";
 import "./Profile.scss";
 import { ConfirmationModal } from "../../components/ConfirmationModal";
-import { replace } from "lodash";
+// import { replace } from "lodash";
 import { LazyImage } from "../../components/LazyImage";
 import { toast } from "react-toastify";
 import { BeatLoader } from "react-spinners";
@@ -97,7 +97,7 @@ export const Profile = () => {
 
     const handleConfirmDeletion = () => {
         deleteProfile(userData.id, tokens.access)
-            .then(res => {
+            .then(() => {
                 toast("Пользователь удалён");
                 handleLogout();
             })

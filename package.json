@@ -1,5 +1,15 @@
 {
-  "dependencies": {
-    "gh-pages": "^6.2.0"
-  }
+    "lint-staged": {
+        "react-chat/**/*.{js,jsx,ts,tsx}": [
+            "eslint --config ./react-chat/eslint.config.js --fix"
+        ]
+    },
+    "dependencies": {
+        "gh-pages": "^6.2.0"
+    },
+    "devDependencies": {
+        "eslint": "^9.16.0",
+        "husky": "^9.1.7",
+        "lint-staged": "^15.2.11"
+    }
 }
