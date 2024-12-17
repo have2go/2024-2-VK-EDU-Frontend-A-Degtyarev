@@ -6,7 +6,6 @@ import "./ChatStatus.scss";
 
 export const ChatStatus = ({ lastMsg }) => {
     const { userData } = useCurrentUserStore();
-    console.log(userData.id === lastMsg.sender.id);
 
     return userData.id === lastMsg.sender.id ? (
         lastMsg.was_read_by.length > 0 ? (

@@ -126,7 +126,6 @@ export const Chatlist = ({ handleToggleModal, isModalOpen, createNewChat }) => {
                                 const minutes = date.getMinutes().toString().padStart(2, "0");
                                 updatedAt = `${hours}:${minutes}`;
                             }
-                            console.log(lastMsg);
                             return (
                                 <Link to={`/chat/${chat.id}`} key={chat.id} className="chatlist__link">
                                     <div className="chatlist__element">
