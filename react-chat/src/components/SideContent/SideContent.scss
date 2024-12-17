@@ -15,7 +15,7 @@
         gap: 15px;
     }
 
-    &__profile-link {
+    &__link {
         width: 100%;
         height: 66px;
         bottom: -68px;
@@ -31,15 +31,15 @@
         padding: 0 20px;
 
         &:first-of-type::after {
-            content: "Регистрация";
+            content: "Профиль";
         }
 
-        &::after {
-            content: "Войти";
-        }
+        // &::after {
+        //     content: "Войти";
+        // }
 
         &:last-of-type::after {
-            content: "Мой профиль";
+            content: "Переводчик";
         }
     }
 
@@ -58,7 +58,7 @@
         padding: 0;
         border-radius: 0;
 
-        &__profile-link {
+        &__link {
             width: 60px;
             height: 60px;
             padding: 0;
@@ -85,7 +85,7 @@
     }
 
     @media screen and (min-width: 1280px) {
-        &__profile-link {
+        &__link {
             width: 165px;
             height: 46px;
             display: flex;
@@ -96,15 +96,15 @@
             padding: 0 5px;
 
             &:first-of-type::after {
-                content: "Регистрация";
+                content: "Профиль";
             }
 
-            &::after {
-                content: "Войти";
-            }
+            // &::after {
+            //     content: "Войти";
+            // }
 
             &:last-of-type::after {
-                content: "Профиль";
+                content: "Переводчик";
             }
         }
     }
@@ -112,7 +112,7 @@
 
 .dark {
     .sidecontent {
-        &__profile-link {
+        &__link {
             color: $text-dark;
 
             &:hover {
@@ -129,7 +129,7 @@
         }
 
         @media screen and (width >= 1024px) {
-            &__profile-link {
+            &__link {
                 color: $primary-dark;
                 background-color: $primary-dark;
                 box-shadow: 0px 0px 10px $onhover-dark;
@@ -148,7 +148,7 @@
                 color: $contentarea-dark;
             }
 
-            &__profile-link {
+            &__link {
                 &::after {
                     color: $contentarea-dark;
                 }
@@ -159,7 +159,7 @@
 
 .light {
     .sidecontent {
-        &__profile-link {
+        &__link {
             color: $text-light;
 
             &:hover {
@@ -176,7 +176,7 @@
         }
 
         @media screen and (width >= 1024px) {
-            &__profile-link {
+            &__link {
                 color: $contentarea-light;
                 background-color: $contentarea-light;
                 box-shadow: none;
@@ -199,7 +199,7 @@
                 color: $primary-light;
             }
 
-            &__profile-link {
+            &__link {
                 &::after {
                     color: $text-light;
                 }

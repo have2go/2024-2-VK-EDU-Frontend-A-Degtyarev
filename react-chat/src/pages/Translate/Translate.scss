@@ -1,0 +1,248 @@
+@use "../../variables.scss" as *;
+
+.translate {
+    &__content {
+        display: flex;
+        flex-grow: 1;
+        flex-direction: column;
+        padding: 0 10px;
+        gap: 10px;
+    }
+
+    &__languages {
+        padding: 24px 0 0;
+        max-width: 90%;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        height: fit-content;
+
+        @media screen and (width >= 768px) {
+            flex-direction: row;
+            gap: 30px;
+            align-items: flex-end;
+        }
+    }
+
+    &__language {
+        display: flex;
+        flex-direction: column;
+        max-width: 280px;
+        gap: 4px;
+
+        &:first-of-type {
+            margin-bottom: 10px;
+        }
+
+        @media screen and (width >= 380px) {
+            max-width: 320px;
+        }
+
+        @media screen and (width >= 480px) {
+            max-width: 460px;
+        }
+
+        @media screen and (width >= 768px) {
+            &:first-of-type {
+                margin-bottom: 0;
+            }
+            max-width: 280px;
+        }
+    }
+
+    &__swap-btn {
+        height: 35px;
+        width: 35px;
+        margin: 0 auto;
+        border-radius: 100%;
+        outline: none;
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    &__select {
+        max-width: 100%;
+    }
+
+    &__container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        margin: 0 auto;
+        max-width: 280px;
+        gap: 10px;
+
+        @media screen and (width >= 380px) {
+            max-width: 320px;
+        }
+
+        @media screen and (width >= 480px) {
+            max-width: 460px;
+        }
+
+        @media screen and (width >= 768px) {
+            max-width: 100%;
+            flex-direction: row;
+        }
+    }
+
+    &__input-group {
+        position: relative;
+        height: 56px;
+        border-radius: 16px;
+        padding: 0 5px;
+        cursor: text;
+        margin: 0 auto;
+        width: 100%;
+
+        &_textarea {
+            height: 170px;
+
+            @media screen and (width >= 768px) {
+                height: 400px;
+            }
+        }
+    }
+
+    &__input {
+        position: absolute;
+        top: 5px;
+        left: 8px;
+        width: 90%;
+        background-color: transparent;
+        border: none;
+        font-size: 16px;
+        outline: none;
+    }
+
+    &__textarea {
+        resize: none;
+        height: 160px;
+        width: calc(100% - 15px);
+
+        @media screen and (width >= 768px) {
+            height: 400px;
+            font-size: 20px;
+        }
+    }
+
+    &__btn {
+        width: fit-content;
+        margin: 0 auto;
+        padding: 0 20px;
+        height: 40px;
+        border-radius: 16px;
+        border: none;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+}
+
+.dark {
+    .translate {
+        &__content {
+            background-color: $contentarea-dark;
+        }
+
+        &__swap-btn {
+            color: $text-dark;
+
+            &:hover {
+                color: $primary-dark;
+                transform: scale(1.07);
+            }
+        }
+
+        &__input-group {
+            background-color: $secondary-dark;
+
+            &:focus-within {
+                outline: 2px solid $primary-dark;
+            }
+        }
+
+        &__input {
+            color: $text-dark;
+        }
+
+        &__btn {
+            background-color: $secondary-dark;
+
+            &_active {
+                background-color: $primary-dark;
+                // color: $text-dark;
+
+                &:hover {
+                    cursor: pointer;
+                    transform: scale(1.03);
+                }
+            }
+
+            &_saved {
+                background-color: green;
+                color: white;
+            }
+
+            &:focus-visible {
+                border: 2px solid $contentarea-dark;
+                outline: 2px solid $primary-dark;
+            }
+        }
+    }
+}
+
+.light {
+    .translate {
+        &__content {
+            background-color: $contentarea-light;
+        }
+
+        &__avatar {
+            background-color: $primary-light;
+            color: $contentarea-light;
+        }
+
+        &__label {
+            color: $primary-light;
+        }
+
+        &__input-group {
+            background-color: $secondary-light;
+
+            &:focus-within {
+                outline: 2px solid $primary-light;
+            }
+        }
+
+        &__input {
+            color: $text-light;
+        }
+
+        &__btn {
+            background-color: $secondary-light;
+            opacity: 0.5;
+
+            &_active {
+                background-color: $primary-light;
+                opacity: 1;
+                color: $contentarea-light;
+
+                &:hover {
+                    cursor: pointer;
+                    transform: scale(1.03);
+                }
+            }
+
+            &_saved {
+                background-color: green;
+                color: white;
+            }
+
+            &:focus-visible {
+                border: 2px solid $contentarea-light;
+                outline: 2px solid $primary-light;
+            }
+        }
+    }
+}

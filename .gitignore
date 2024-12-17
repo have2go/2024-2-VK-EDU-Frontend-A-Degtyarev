@@ -5,3 +5,4 @@ node_modules
 /simple-chat/build
 /react-chat/dist
 /react-chat/node_modules
+/react-chat/ts/utils/*.js
