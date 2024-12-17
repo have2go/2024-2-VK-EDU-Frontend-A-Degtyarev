@@ -15,6 +15,7 @@ import { useCurrentUserStore, useMessagesStore, useChatsStore } from "./store/st
 import { connectCentrifuge, subscribeCentrifuge } from "./api/api";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Translate } from "./pages/Translate";
 
 function App() {
     const isConnected = useRef(false);
@@ -119,6 +120,14 @@ function App() {
                     element={
                         <ProtectedRoute>
                             <Profile />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/translate"
+                    element={
+                        <ProtectedRoute>
+                            <Translate />
                         </ProtectedRoute>
                     }
                 />

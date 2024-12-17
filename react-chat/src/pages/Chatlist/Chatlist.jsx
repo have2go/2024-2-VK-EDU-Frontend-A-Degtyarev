@@ -1,7 +1,7 @@
 import { useContext, useEffect, useLayoutEffect, useState, useRef } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
 import { NewChatModal } from "../../components/NewChatModal";
-// import { ChatStatus } from "../../components/ChatStatus";
+import { ChatStatus } from "../../components/ChatStatus";
 import { HeaderChatlist } from "../../components/HeaderChatlist";
 import { Helmet } from "react-helmet-async";
 import PersonIcon from "@mui/icons-material/Person";
@@ -119,6 +119,14 @@ export const Chatlist = ({ handleToggleModal, isModalOpen, createNewChat }) => {
                     ) : (
                         chats?.results.map(chat => {
                             const lastMsg = chat.last_message;
+                            let updatedAt = "";
+                            if (lastMsg && lastMsg.updated_at) {
+                                const date = new Date(lastMsg.updated_at);
+                                const hours = date.getHours().toString().padStart(2, "0");
+                                const minutes = date.getMinutes().toString().padStart(2, "0");
+                                updatedAt = `${hours}:${minutes}`;
+                            }
+                            console.log(lastMsg);
                             return (
                                 <Link to={`/chat/${chat.id}`} key={chat.id} className="chatlist__link">
                                     <div className="chatlist__element">
@@ -147,14 +155,12 @@ export const Chatlist = ({ handleToggleModal, isModalOpen, createNewChat }) => {
                                                     : "Нет сообщений"}
                                             </p>
                                         </div>
-                                        {/* {chat.last_message.text && (
+                                        {lastMsg && lastMsg.updated_at && (
                                             <div className="chatlist__info">
-                                                <p className="chatlist__sent-at">
-                                                    {hours}:{minutes}
-                                                </p>
-                                                <ChatStatus obj={obj} />
+                                                <p className="chatlist__sent-at">{updatedAt}</p>
+                                                <ChatStatus lastMsg={lastMsg} />
                                             </div>
-                                        )} */}
+                                        )}
                                     </div>
                                 </Link>
                             );
