@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { saveProfile, deleteProfile, refreshTokens } from "../../api/api";
+import { saveProfile, deleteProfile, refreshTokens } from "../../api/requests";
 import { useCurrentUserStore } from "../../store/store";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PersonIcon from "@mui/icons-material/Person";

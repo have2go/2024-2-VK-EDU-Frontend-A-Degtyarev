@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { getUser } from "../api/api";
+import { getChats, getCurrentUser, getUsers } from "../api/requests";
 
 export const useCurrentUserStore = create(set => ({
     userData: null,
@@ -9,17 +9,12 @@ export const useCurrentUserStore = create(set => ({
     setTokens: tokens => set({ tokens }),
 
     login: async (access, refresh) => {
-        try {
-            const userData = await getUser(access);
-            set({
-                tokens: { access, refresh },
-                userData: userData,
-            });
-            return userData;
-        } catch (error) {
-            console.error("Login failed:", error);
-            throw error;
-        }
+        const res = await getCurrentUser("/user/current/", access);
+        set({
+            tokens: { access, refresh },
+            userData: res,
+        });
+        return res;
     },
 
     logout: () => {
@@ -33,27 +28,17 @@ export const useCurrentUserStore = create(set => ({
 export const useUsersStore = create(set => ({
     users: [],
     setUsers: newUsers => set({ users: newUsers }),
-    fetchUsers: async (searchTerm, pageNumber, token, currentUserId) => {
+    fetchUsers: async (searchTerm, pageNumber, access, currentUserId) => {
         try {
-            const response = await fetch(
-                `https://vkedu-fullstack-div2.ru/api/users/?search=${searchTerm}&page=${pageNumber}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-            if (response.ok) {
-                const data = await response.json();
-                const filteredUsers = data.results.filter(user => user.id !== currentUserId);
-                set(state => ({
-                    users: pageNumber === 1 ? filteredUsers : [...state.users, ...filteredUsers],
-                }));
-                return { hasMore: data.next !== null };
-            }
-        } catch (error) {
-            console.error("Error fetching users:", error);
+            const res = await getUsers("/users/", { search: searchTerm, page: pageNumber }, access);
+
+            const filteredUsers = res.results.filter(user => user.id !== currentUserId);
+            set(state => ({
+                users: pageNumber === 1 ? filteredUsers : [...state.users, ...filteredUsers],
+            }));
+
+            return { hasMore: res.next !== null };
+        } catch {
             return { hasMore: false };
         }
     },
@@ -62,26 +47,12 @@ export const useUsersStore = create(set => ({
 export const useChatsStore = create(set => ({
     chats: null,
     setChats: newChats => set({ chats: newChats }),
-    fetchChats: async (token, pageNumber, searchTerm) => {
-        try {
-            const response = await fetch(
-                `https://vkedu-fullstack-div2.ru/api/chats/?search=${searchTerm}&page=${pageNumber}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-            if (response.ok) {
-                const data = await response.json();
-                set(state => ({
-                    chats: pageNumber === 1 ? data : { ...data, results: [...state.chats.results, ...data.results] },
-                }));
-            }
-        } catch (error) {
-            console.error("Error fetching chats:", error);
-        }
+    fetchChats: async (access, pageNumber, searchTerm) => {
+        const res = await getChats("/chats/", { search: searchTerm, page: pageNumber }, access);
+
+        set(state => ({
+            chats: pageNumber === 1 ? res : { ...res, results: [...state.chats.results, ...res.results] },
+        }));
     },
 }));
 

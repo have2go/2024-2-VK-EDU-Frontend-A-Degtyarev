@@ -2,7 +2,15 @@ import { useEffect, useRef, useState, useContext } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
 import { HeaderChat } from "../../components/HeaderChat";
 import { Helmet } from "react-helmet-async";
-import { sendMessage, sendVoice, getMessages, sendGeo, sendImages, getChatInfo, refreshTokens } from "../../api/api";
+import {
+    sendImages,
+    sendGeo,
+    sendVoice,
+    refreshTokens,
+    getChatInfo,
+    sendMessage,
+    getMessages,
+} from "../../api/requests";
 import SendIcon from "@mui/icons-material/Send";
 import AttachmentIcon from "@mui/icons-material/Attachment";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
@@ -202,7 +210,7 @@ export const Chat = () => {
 
         const validToken = tokens.access || JSON.parse(localStorage.getItem("tokens")).access;
 
-        getMessages(id, validToken, pageNumber).then(json => {
+        getMessages(validToken, { chat: id, page: pageNumber }).then(json => {
             if (setIsMessagesLoading) setIsMessagesLoading(false);
             setMessages(pageNumber === 1 ? json.results : [...messages, ...json.results]);
             if (pageNumber === 1) {
@@ -229,7 +237,7 @@ export const Chat = () => {
                 const { latitude, longitude } = position.coords;
                 const locationUrl = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
 
-                sendGeo(id, tokens.access, locationUrl).then(() => {
+                sendGeo(tokens.access, id, locationUrl).then(() => {
                     setIsMenuOpen(false);
                     setTimeout(() => {
                         scrollToBottom();
