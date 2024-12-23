@@ -23,14 +23,11 @@ export const Translator: React.FC = () => {
 
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>): void => {
         const { id, value } = e.target;
-        console.log(id)
         setSelectValues({
             ...selectValues,
             [id]: value,
         });
     };
-
-    console.log(selectValues)
 
     const handleSwap = (): void => {
         if (translatedInput) {
@@ -90,7 +87,12 @@ export const Translator: React.FC = () => {
             <section className="translate">
                 <div className="translate__languages">
                     <div className="translate__language">
-                        <select className="translate__select" value={selectValues.selectFrom} onChange={handleChange}>
+                        <select
+                            className="translate__select"
+                            value={selectValues.selectFrom}
+                            onChange={handleChange}
+                            id="selectFrom"
+                        >
                             {TranslateUtils.languages.map((lang, i) => (
                                 <option key={i} value={lang.language}>
                                     {lang.language}
@@ -104,7 +106,12 @@ export const Translator: React.FC = () => {
                         </span>
                     </button>
                     <div className="translate__language">
-                        <select className="translate__select" value={selectValues.selectTo} onChange={handleChange}>
+                        <select
+                            className="translate__select"
+                            value={selectValues.selectTo}
+                            onChange={handleChange}
+                            id="selectTo"
+                        >
                             {TranslateUtils.languages.map((lang, i) => (
                                 <option key={i} value={lang.language}>
                                     {lang.language}
