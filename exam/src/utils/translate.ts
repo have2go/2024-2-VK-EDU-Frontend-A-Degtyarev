@@ -4,6 +4,7 @@ import { languages } from "./languages";
 
 const API: string = "https://api.mymemory.translated.net";
 const TRANSLATIONS = "translations";
+const HISTORY = "history";
 
 const moveToTop = (cached: { keys: string[]; data: Record<string, T.ICachedInfo> }, text: string): void => {
     cached.keys = cached.keys.filter(key => key !== text);
@@ -35,6 +36,25 @@ const removeLeastRecent = (cached: { keys: string[]; data: Record<string, T.ICac
     }
 };
 
+const addToHistory = (text: string, fromLanguage: string, toLanguage: string, translatedText: string): void => {
+    const storedHistory: string | null = localStorage.getItem(HISTORY);
+    const history: T.ICachedInfo[] = storedHistory ? JSON.parse(storedHistory) : [];
+
+    history.unshift({
+        text,
+        fromLanguage,
+        toLanguage,
+        translatedText,
+    });
+
+    localStorage.setItem(HISTORY, JSON.stringify(history));
+};
+
+export const getHistory = (): T.ICachedInfo[] => {
+    const storedHistory: string | null = localStorage.getItem(HISTORY);
+    return storedHistory ? JSON.parse(storedHistory) : [];
+};
+
 const getCachedTranslation = (
     cached: { keys: string[]; data: Record<string, T.ICachedInfo> },
     text: string
@@ -46,6 +66,13 @@ const getCachedTranslation = (
 
     console.log("Возвращаю закешированный перевод!!!");
     return Promise.resolve(cached.data[text].translatedText);
+};
+
+const getFullLangNames = (fromLanguage: string, toLanguage: string) => {
+    const fullLangFrom = languages.find(lang => lang.code === fromLanguage)?.language;
+    const fullLangTo = languages.find(lang => lang.code === toLanguage)?.language;
+
+    return [fullLangFrom, fullLangTo];
 };
 
 export const translate = (text: string, fromLanguage: string, toLanguage: string): Promise<string> => {
@@ -60,7 +87,16 @@ export const translate = (text: string, fromLanguage: string, toLanguage: string
         cached.data[text].fromLanguage === fromLanguage &&
         cached.data[text].toLanguage === toLanguage
     ) {
-        return getCachedTranslation(cached, text);
+        return getCachedTranslation(cached, text).then(translatedText => {
+            addToHistory(text, fromLanguage, toLanguage, translatedText);
+
+            const [fullLangFrom, fullLangTo] = getFullLangNames(fromLanguage, toLanguage);
+            if (fullLangFrom && fullLangTo) {
+                useTranslationStore.getState().addTranslation(fullLangFrom, fullLangTo, text, translatedText);
+            }
+
+            return translatedText;
+        });
     }
 
     console.log("Не нашёл перевода в кэше, делаю запрос...");
@@ -72,9 +108,7 @@ export const translate = (text: string, fromLanguage: string, toLanguage: string
                 throw new Error(translatedText);
             }
 
-            const fullLangFrom = languages.find(lang => lang.code === fromLanguage)?.language;
-            const fullLangTo = languages.find(lang => lang.code === toLanguage)?.language;
-
+            const [fullLangFrom, fullLangTo] = getFullLangNames(fromLanguage, toLanguage);
             if (fullLangFrom && fullLangTo) {
                 useTranslationStore.getState().addTranslation(fullLangFrom, fullLangTo, text, translatedText);
             }
@@ -82,6 +116,8 @@ export const translate = (text: string, fromLanguage: string, toLanguage: string
             addNewTranslation(cached, text, fromLanguage, toLanguage, translatedText);
             removeLeastRecent(cached);
             localStorage.setItem(TRANSLATIONS, JSON.stringify(cached));
+
+            addToHistory(text, fromLanguage, toLanguage, translatedText);
 
             return translatedText;
         })

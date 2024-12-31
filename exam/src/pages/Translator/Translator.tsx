@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import ChangeCircleIcon from "@mui/icons-material/ChangeCircle";
 import HistoryIcon from "@mui/icons-material/History";
 import TranslateUtils from "../../utils";
@@ -29,25 +29,30 @@ export const Translator: React.FC = () => {
         });
     };
 
+    const { translateFrom, translateTo } = useMemo(() => {
+        const translateFrom = TranslateUtils.languages.find(
+            (lang: { language: string; code: string }) => lang.language === selectValues.selectFrom
+        )?.code;
+
+        const translateTo = TranslateUtils.languages.find(
+            (lang: { language: string; code: string }) => lang.language === selectValues.selectTo
+        )?.code;
+
+        return { translateFrom, translateTo };
+    }, [selectValues]);
+
     const handleSwap = (): void => {
-        if (translatedInput) {
+        if (translatedInput && translateFrom && translateTo) {
             setToTranslateInput(translatedInput);
             setTranslatedInput("");
 
-            const translateFrom = TranslateUtils.languages.find(
-                (lang: { language: string; code: string }) => lang.language === selectValues.selectFrom
-            )?.code;
-            const translateTo = TranslateUtils.languages.find(
-                (lang: { language: string; code: string }) => lang.language === selectValues.selectTo
-            )?.code;
-
-            if (translateFrom && translateTo) {
-                TranslateUtils.translate(translatedInput, translateTo, translateFrom)
-                    .then((text: string) => setTranslatedInput(text))
-                    .catch((err: Error) => {
-                        toast(err.message);
-                    });
-            }
+            TranslateUtils.translate(translatedInput, translateTo, translateFrom)
+                .then((text: string) => {
+                    setTranslatedInput(text);
+                })
+                .catch((err: Error) => {
+                    toast(err.message);
+                });
         }
 
         setSelectValues(prev => ({
@@ -57,16 +62,11 @@ export const Translator: React.FC = () => {
     };
 
     const handleTranslate = () => {
-        const translateFrom = TranslateUtils.languages.find(
-            (lang: { language: string; code: string }) => lang.language === selectValues.selectFrom
-        )?.code;
-        const translateTo = TranslateUtils.languages.find(
-            (lang: { language: string; code: string }) => lang.language === selectValues.selectTo
-        )?.code;
-
-        if (translateFrom && translateTo) {
+        if (toTranslateInput.trim() && translateFrom && translateTo) {
             TranslateUtils.translate(toTranslateInput, translateFrom, translateTo)
-                .then((text: string) => setTranslatedInput(text))
+                .then((text: string) => {
+                    setTranslatedInput(text);
+                })
                 .catch((err: Error) => {
                     toast(err.message);
                 });

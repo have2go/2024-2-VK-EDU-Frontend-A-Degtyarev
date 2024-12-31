@@ -9,7 +9,7 @@ export const History: React.FC = () => {
 
     const clearHistory = (): void => {
         setHistory([]);
-        localStorage.removeItem("translations");
+        localStorage.removeItem("history");
     };
     return (
         <>
