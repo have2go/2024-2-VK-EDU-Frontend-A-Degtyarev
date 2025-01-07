@@ -12,7 +12,7 @@ import { Register } from "./pages/Register";
 import { Login } from "./pages/Login";
 import { Centrifuge } from "centrifuge";
 import { useCurrentUserStore, useMessagesStore, useChatsStore } from "./store/store";
-import { connectCentrifuge, subscribeCentrifuge } from "./api/api";
+import { connectCentrifuge, subscribeCentrifuge } from "./api/requests";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Translate } from "./pages/Translate";

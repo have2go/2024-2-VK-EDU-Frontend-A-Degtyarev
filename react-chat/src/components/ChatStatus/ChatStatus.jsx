@@ -7,7 +7,7 @@ import "./ChatStatus.scss";
 export const ChatStatus = ({ lastMsg }) => {
     const { userData } = useCurrentUserStore();
 
-    return userData.id === lastMsg.sender.id ? (
+    return userData?.id === lastMsg?.sender?.id ? (
         lastMsg.was_read_by.length > 0 ? (
             <span className={` icon chatstatus__icon `}>
                 <DoneAllIcon />
