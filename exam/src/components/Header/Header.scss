@@ -1,0 +1,19 @@
+@use "../../variables.scss" as *;
+
+.header {
+    display: flex;
+    align-items: end;
+    border-bottom: 1px solid $border;
+
+    &__title {
+        margin: 0;
+        font-size: 26px;
+        padding: 20px 0 10px;
+        color: $main-color;
+    }
+
+    &__back-link {
+        color: $main-color;
+        padding: 0 10px 0 5px;
+    }
+}
