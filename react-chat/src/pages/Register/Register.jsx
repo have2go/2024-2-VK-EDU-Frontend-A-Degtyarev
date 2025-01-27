@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 import { ThemeSwitch } from "../../components/ThemeSwitch/ThemeSwitch";
-import { register, auth } from "../../api/api";
+import { register, auth } from "../../api/requests";
 import { useCurrentUserStore } from "../../store/store";
 import { toast } from "react-toastify";
 import PersonIcon from "@mui/icons-material/Person";

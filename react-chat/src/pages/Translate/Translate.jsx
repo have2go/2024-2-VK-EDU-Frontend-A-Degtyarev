@@ -21,6 +21,7 @@ export const Translate = () => {
 
     const handleChange = e => {
         const { id, value } = e.target;
+        console.log(id)
         setSelectValues({
             ...selectValues,
             [id]: value,

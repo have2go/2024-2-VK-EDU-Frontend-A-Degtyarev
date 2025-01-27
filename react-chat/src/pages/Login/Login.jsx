@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
-import { auth } from "../../api/api";
+import { auth } from "../../api/requests";
 import { useCurrentUserStore } from "../../store/store";
 import { ThemeSwitch } from "../../components/ThemeSwitch/ThemeSwitch";
 import { toast } from "react-toastify";
